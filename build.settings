@@ -1,0 +1,52 @@
+settings =
+{
+--[[
+  plugins =
+  {
+    ["plugin.bit"] =
+    {
+      publisherId = "com.coronalabs"
+    },
+  },
+]]
+
+  splashScreen = 
+  {
+      enable = false
+  },
+
+  android =
+  {
+    minSdkVersion = '16',
+  },
+
+  orientation =
+  {
+    default = "portrait",
+    supported = {"portrait"}, -- don't allow orientation change
+  },
+
+  window =
+  {
+    defaultMode = 'normal',
+    defaultViewWidth = 480,
+    defaultViewHeight = 480 * 16 / 9,
+    resizable = true,
+    minViewWidth = 480,
+    minViewHeight = 480 * 16 / 9,
+    enableCloseButton = true,
+    enableMinimizeButton = true,
+    suspendWhenMinimized = true,
+    titleText =
+    {
+      default = 'Must'
+    }
+  },
+
+  excludeFiles =
+  {
+    all = {'.gitignore','*.txt','*.pdn','*.keystore','*.js','*.md','assets/junk/*','PlayStoreAssets/*'},
+    android = {'*.ico'},
+    win32 = {'AndroidResources/*'}
+  },
+}
