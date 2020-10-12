@@ -28,6 +28,8 @@ function Dim.new(Q)
   o.Q20 = math.floor(Q/5)
   o.Q10 = math.floor(Q/10)
 
+  o.tileFontSize = Q * 0.66
+
   o.numX = math.floor(display.actualContentWidth / Q)
   o.numY = math.floor(display.actualContentHeight / Q)
 
