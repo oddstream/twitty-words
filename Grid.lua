@@ -20,13 +20,7 @@ function Grid.new(width, height)
   o.width = width
   o.height = height
 
-  for y = 1, height do
-    for x = 1, width do
-      local t = Tile.new(o, x, y)
-      table.insert(o.tiles, t) -- push
-    end
-  end
-
+  o:createTiles()
   o:linkTiles()
 
   return o
@@ -54,22 +48,31 @@ function Grid:reset()
 end
 
 function Grid:newLevel()
-  self:placeCoins()
-  self:colorCoins()
-  self:jumbleCoins()
-  self:createGraphics()
+  -- self:placeCoins()
+  -- self:colorCoins()
+  -- self:jumbleCoins()
+  -- self:createGraphics()
 
-  self.levelText.text = tostring(self.gameState.level)
+  -- self.levelText.text = tostring(self.gameState.level)
 
-  self:fadeIn()
+  -- self:fadeIn()
 end
 
 function Grid:advanceLevel()
-  assert(self.gameState)
-  assert(self.gameState.level)
-  self.gameState.level = self.gameState.level + 1
-  self.levelText.text = tostring(self.gameState.level)
-  self.gameState:write()
+  -- assert(self.gameState)
+  -- assert(self.gameState.level)
+  -- self.gameState.level = self.gameState.level + 1
+  -- self.levelText.text = tostring(self.gameState.level)
+  -- self.gameState:write()
+end
+
+function Grid:createTiles()
+  for y = 1, self.height do
+    for x = 1, self.width do
+      local t = Tile.new(self, x, y)
+      table.insert(self.tiles, t) -- push
+    end
+  end
 end
 
 function Grid:linkTiles()
@@ -79,7 +82,7 @@ function Grid:linkTiles()
     t.e = self:findTile(t.x + 1, t.y)
     t.se = self:findTile(t.x + 1, t.y + 1)
     t.s = self:findTile(t.x, t.y + 1)
-    t.sw = self.findTile(t.x - 1, t.y + 1)
+    t.sw = self:findTile(t.x - 1, t.y + 1)
     t.w = self:findTile(t.x - 1, t.y)
     t.nw = self:findTile(t.x - 1, t.y - 1)
   end

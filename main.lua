@@ -74,9 +74,11 @@ if nil == _G.BOLDFONT then  _G.FONT = native.systemFontBold end
 -- a global object containing useful precalculated dimensions
 _G.DIMENSIONS = {}
 
-_G.TILEFONT = 'assets/Acme-Regular.ttf'
+_G.TILE_FONT = 'assets/Acme-Regular.ttf'
 _G.FONT = 'assets/Roboto-Medium.ttf'
-_G.BOLDFONT = 'assets/Roboto-Bold.ttf'
+_G.BOLD_FONT = 'assets/Roboto-Bold.ttf'
+-- https://en.wikipedia.org/wiki/Scrabble_letter_distributions
+_G.SCRABBLE_LETTERS = 'AAAAAAAAABBCCDDDDEEEEEEEEEEEEFFGGGHHIIIIIIIIIJKLLLLMMNNNNNNOOOOOOOOPPQRRRRRRSSSSTTTTTTUUUUVVWWXYYZ'
 
 _G.MUST_COLORS = {
   uiforeground = {1,1,1},
@@ -89,6 +91,9 @@ _G.MUST_COLORS = {
   back = {100*4/1020,147*4/1020,237*4/1020}, -- CornFlowerBlue
   border = {0.75,0.75,0.75},  -- Silver
   -- border = {0.5,0.5,0.5}, -- Gray
+
+  ivory = {1, 1, 0.94}, -- normal tile background
+  gold = {1, 0.84, 0},  -- selected tile background
 
   aqua = {0,1,1},
   red = {1,0,0},

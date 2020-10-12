@@ -15,7 +15,7 @@ function scene:create(event)
   local sceneGroup = self.view
 
   _G.MUST_GROUPS.grid = display.newGroup()
-  sceneGroup:insert(gridGroup)
+  sceneGroup:insert(_G.MUST_GROUPS.grid)
 
   if system.getInfo('platform') == 'win32' then
     _G.DIMENSIONS = Dim.new(100)
@@ -26,7 +26,7 @@ function scene:create(event)
   -- for debugging the gaps between cells problem
   -- display.setDefault('background', 0.5,0.5,0.5)
 
-  grid = Grid:new(_G.DIMENSIONS.numX, _G.DIMENSIONS.numY)
+  grid = Grid.new(_G.DIMENSIONS.numX, _G.DIMENSIONS.numY)
   grid:newLevel()
 
 end
