@@ -25,7 +25,7 @@ function Slot.new(grid, x, y)
   -- calculate where the screen coords center point will be
   o.center = {x=(x*dim.Q) - dim.Q + dim.Q50, y=(y*dim.Q) - dim.Q + dim.Q50}
   o.center.x = o.center.x + dim.marginX
-  o.center.y = o.center.y + dim.marginY
+  o.center.y = dim.statusBarHeight + dim.marginY + o.center.y
 
   -- TODO title and status bar margins
 
@@ -33,33 +33,41 @@ function Slot.new(grid, x, y)
 end
 
 function Slot:reset()
-  if self.tile then
+  if self.tile and self.tile:is() then
     self.tile:reset()
-    self.tile = nil
   end
 end
 
-function Slot:createTile()
+function Slot:createTile(letter)
   self:reset()
-  self.tile = Tile.new(self)
+  self.tile = Tile.new(self, letter)
 end
 
-function Slot:deselectTiles()
+function Slot:deselectAllTiles()
   -- plural function goes up the chain to parent (Grid)
-  self.grid:deselectTiles()
+  self.grid:deselectAllTiles()
 end
 
 function Slot:deselectTile()
   -- single function goes down the chain to child (Tile)
-  if self.tile then
+  if self.tile and self.tile:is() then
     self.tile:deselect()
   end
 end
 
-function Slot:selectTile()
-  if self.tile then
-    self.tile:select()
-    self.grid:selectTile(self.tile)
+local function pointInCircle(x, y, cx, cy, radius)
+  local distanceSquared = (x - cx) * (x - cx) + (y - cy) * (y - cy)
+  return distanceSquared <= radius * radius
+end
+
+function Slot:selectTile(x, y)
+  if self.tile:is() then
+    -- only select this tile if event x/y is within radius of tile center
+    -- otherwise diagonal drags select adjacent tiles
+    if pointInCircle(x, y, self.center.x, self.center.y, _G.DIMENSIONS.Q50) then
+      self.tile:select()
+      self.grid:selectTile(self.tile)
+    end
   end
 end
 

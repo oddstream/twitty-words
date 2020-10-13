@@ -2,6 +2,7 @@
 
 local Dim = require 'Dim'
 local Grid = require 'Grid'
+local Statusbar = require 'Statusbar'
 
 local composer = require('composer')
 local scene = composer.newScene()
@@ -9,19 +10,40 @@ local widget = require('widget')
 
 widget.setTheme('widget_theme_android_holo_dark')
 
+local function loadDictionary()
+  -- look for dictionary file in resource directory (the one containing main.lua)
+  local filePath = system.pathForFile('Collins Scrabble Words (2019).txt', system.ResourceDirectory)
+  local file = io.open(filePath)
+  if not file then
+    trace('ERROR: Cannot open', filePath)
+  else
+    trace('opened', filePath)
+    _G.DICTIONARY = file:read('*a')
+    io.close(file)
+    trace('dictionary length', string.len(_G.DICTIONARY))
+  end
+end
+
 local grid = nil
 
 function scene:create(event)
   local sceneGroup = self.view
 
+  _G.MUST_GROUPS.ui = display.newGroup()
+  sceneGroup:insert(_G.MUST_GROUPS.ui)
+
   _G.MUST_GROUPS.grid = display.newGroup()
   sceneGroup:insert(_G.MUST_GROUPS.grid)
+
+  loadDictionary()
 
   if system.getInfo('platform') == 'win32' then
     _G.DIMENSIONS = Dim.new(100)
   else
     _G.DIMENSIONS = Dim.new(200)
   end
+
+  _G.statusBar = Statusbar.new({group=_G.MUST_GROUPS.ui})
 
   -- for debugging the gaps between cells problem
   -- display.setDefault('background', 0.5,0.5,0.5)

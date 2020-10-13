@@ -30,14 +30,16 @@ function Dim.new(Q)
 
   o.tileFontSize = Q * 0.66
 
+  o.titleBarHeight = display.contentHeight / 16
+  o.statusBarHeight = display.contentHeight / 24
+
+  local contentHeight = display.actualContentHeight - o.titleBarHeight - o.statusBarHeight
+
   o.numX = math.floor(display.actualContentWidth / Q)
-  o.numY = math.floor(display.actualContentHeight / Q)
+  o.numY = math.floor(contentHeight / Q)
 
   o.marginX = (display.actualContentWidth - (o.numX * Q)) / 2
-  o.marginY = (display.actualContentHeight - (o.numY * Q)) / 2
-
-  o.titleBarHeight = display.contentHeight / 16
-  o.statusBarheight = display.contentHeight / 24
+  o.marginY = (contentHeight - (o.numY * Q)) / 2
 
   return o
 end

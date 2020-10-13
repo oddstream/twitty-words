@@ -12,7 +12,7 @@ local Tile = {
 }
 Tile.__index = Tile
 
-function Tile.new(slot)
+function Tile.new(slot, letter)
   local dim = _G.DIMENSIONS
 
   local o = {}
@@ -20,9 +20,11 @@ function Tile.new(slot)
 
   o.slot = slot
 
-  do
+  if letter == nil then
     local n = math.random(1, #_G.SCRABBLE_LETTERS)
     o.letter = string.sub(_G.SCRABBLE_LETTERS, n, n)
+  else
+    o.letter = letter
   end
 
   o.grp = display.newGroup()
@@ -41,6 +43,10 @@ function Tile.new(slot)
   return o
 end
 
+function Tile:is()
+  return self.grp ~= nil
+end
+
 function Tile:refreshLetter()
   local dim = _G.DIMENSIONS
   display.remove(self.textLetter)
@@ -48,34 +54,35 @@ function Tile:refreshLetter()
   self.textLetter:setFillColor(unpack(_G.MUST_COLORS.black))
 end
 
-local function pointInCircle(x, y, cx, cy, radius)
-  local distanceSquared = (x - cx) * (x - cx) + (y - cy) * (y - cy)
-  return distanceSquared <= radius * radius
-end
-
 function Tile:touch(event)
   -- event.target is self.grp
 
   if event.phase == 'began' then
-    -- trace('touch began', event.x, event.y)
+    -- trace('touch began', event.x, event.y, self.letter)
     -- deselect any selected tiles
-    self.slot:deselectTiles()
+    self.slot:deselectAllTiles()
+
   elseif event.phase == 'moved' then
-    -- trace('touch moved', event.x, event.y)
+    -- trace('touch moved', event.x, event.y, self.letter)
     -- inform slot>grid to select tile under x,y
-    -- adds to selected word/table of selected tiles if tile is not that previously selected
-    if pointInCircle(event.x, event.y, self.slot.center.x, self.slot.center.y, _G.DIMENSIONS.Q50) then
-      -- only select this tile if event x/y is within radius of tile center
-      -- otherwise diagonal drags select adjacent tiles
-      self.slot:selectTile()
-    -- else
-    --   trace(event.x, event.y, 'outside', self.slot.center.x, self.slot.center.y, _G.DIMENSIONS.Q50)
-    -- TODO if slot doesn't have a tile then cancel the touch
+
+    if self.grp == nil then
+      -- don't get touch events if no tile
+      -- TODO if slot doesn't have a tile then end the touch
+      trace('touch move over nil tile')
     end
-  elseif event.phase == 'ended' or event.phase == 'cancelled' then
-    -- trace('touch ended/cancelled', event.x, event.y)
+
+    -- adds to selected word/table of selected tiles if tile is not that previously selected
+    self.slot:selectTile(event.x, event.y)
+
+  elseif event.phase == 'ended' then
+    -- trace('touch ended', event.x, event.y, self.letter)
     -- inform slot>grid to test selected tiles (in the order they were selected)
     self.slot:testSelection()
+
+  elseif event.phase == 'cancelled' then
+    -- trace('touch cancelled', event.x, event.y, self.letter)
+    self.slot:deselectAllTiles()
   end
 
   return true
@@ -95,7 +102,6 @@ function Tile:delete()
   self.grp:removeEventListener('touch', self)
   display.remove(self.grp)
   self.grp = nil
-  self.slot.tile = nil
 end
 
 return Tile

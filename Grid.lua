@@ -2,6 +2,7 @@
 
 local composer = require('composer')
 
+local Statusbar = require 'Statusbar'
 local Slot = require 'Slot'
 
 local Grid = {
@@ -11,6 +12,7 @@ local Grid = {
   height = nil,      -- number of rows
 
   selectedTiles = nil,  -- table of selected tiles, in order they were selected
+  score = nil,
 }
 Grid.__index = Grid
 
@@ -21,6 +23,8 @@ function Grid.new(width, height)
   o.slots = {}
   o.width = width
   o.height = height
+
+  o.score = 0
 
   o:createSlots()
   o:linkSlots()
@@ -50,7 +54,7 @@ function Grid:reset()
     composer.setVariable('last_using', after)
   end
 
-  self:newLevel()
+  -- self:newLevel()
 end
 
 function Grid:newLevel()
@@ -111,10 +115,17 @@ end
 
 function Grid:getSelectedWord()
   local word = ''
+  local score = 0
   for _,t in ipairs(self.selectedTiles) do
     word = word .. t.letter
+    score = score + _G.SCRABBLE_SCORES[t.letter]
   end
-  return word
+  return word, score * score
+end
+
+local function isWordInDictionary(word)
+  local first, last = string.find(_G.DICTIONARY, '[^%u]' .. word .. '[^%u]')
+  return first ~= nil
 end
 
 function Grid:createTiles()
@@ -123,17 +134,19 @@ function Grid:createTiles()
   end)
 end
 
-function Grid:deselectTiles()
+function Grid:deselectAllTiles()
   self:iterator(function(s)
     s:deselectTile()
   end)
   self.selectedTiles = {}
+  _G.statusBar:setCenter(nil)
 end
 
 function Grid:selectTile(t)
   if t ~= self.selectedTiles[#self.selectedTiles] then
     table.insert(self.selectedTiles, t)
-    trace('selected word', self:getSelectedWord())
+    local word, score = self:getSelectedWord()
+    _G.statusBar:setCenter(word)
   end
 end
 
@@ -144,14 +157,40 @@ function Grid:testSelection()
     t1.letter, t2.letter = t2.letter, t1.letter
     t1:refreshLetter()
     t2:refreshLetter()
+    _G.statusBar:setCenter(nil)
   elseif #self.selectedTiles > 2 then
-    trace('test selected word against dictionary', self:getSelectedWord())
-    for _,t in ipairs(self.selectedTiles) do
-      t:delete()
+    local word, score = self:getSelectedWord()
+    if isWordInDictionary(word) then
+      trace(word, 'in dictionary, score', score)
+      self.score = self.score + score
+      _G.statusBar:setRight(tonumber(self.score))
+      for _,t in ipairs(self.selectedTiles) do
+        t:delete()
+      end
+      self.selectedTiles = {}
+      self:gravity()
+    else
+      trace(word, 'NOT in dictionary')
+      self:deselectAllTiles()
     end
-    self.selectedTiles = {}
-    -- TODO gravity
   end
+end
+
+function Grid:gravity()
+  repeat
+    local moved = 0
+    for _,src in ipairs(self.slots) do
+      if src.tile:is() then
+        local dst = src.s
+        if dst and not dst.tile:is() then
+          local letter = src.tile.letter
+          src.tile:delete()
+          dst:createTile(letter)
+          moved = moved + 1
+        end
+      end
+    end
+  until moved == 0
 end
 
 return Grid
