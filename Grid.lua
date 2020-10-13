@@ -2,7 +2,6 @@
 
 local composer = require('composer')
 
-local Statusbar = require 'Statusbar'
 local Slot = require 'Slot'
 
 local Grid = {
@@ -143,7 +142,9 @@ function Grid:deselectAllTiles()
 end
 
 function Grid:selectTile(t)
-  if t ~= self.selectedTiles[#self.selectedTiles] then
+  -- if t ~= self.selectedTiles[#self.selectedTiles] then
+  -- TODO check that t's slot connects to the slot for self.selectedTiles[#self.selectedTiles]
+  if not table.contains(self.selectedTiles, t) then
     table.insert(self.selectedTiles, t)
     local word, score = self:getSelectedWord()
     _G.statusBar:setCenter(word)
@@ -161,7 +162,7 @@ function Grid:testSelection()
   elseif #self.selectedTiles > 2 then
     local word, score = self:getSelectedWord()
     if isWordInDictionary(word) then
-      trace(word, 'in dictionary, score', score)
+      -- trace(word, 'in dictionary, score', score)
       self.score = self.score + score
       _G.statusBar:setRight(tonumber(self.score))
       for _,t in ipairs(self.selectedTiles) do
@@ -170,13 +171,14 @@ function Grid:testSelection()
       self.selectedTiles = {}
       self:gravity()
     else
-      trace(word, 'NOT in dictionary')
+      -- trace(word, 'NOT in dictionary')
       self:deselectAllTiles()
     end
   end
 end
 
 function Grid:gravity()
+
   repeat
     local moved = 0
     for _,src in ipairs(self.slots) do
@@ -191,6 +193,22 @@ function Grid:gravity()
       end
     end
   until moved == 0
+
+  repeat
+    local moved = 0
+    for _,src in ipairs(self.slots) do
+      if src.tile:is() then
+        local dst = src.e
+        if dst and not dst.tile:is() then
+          local letter = src.tile.letter
+          src.tile:delete()
+          dst:createTile(letter)
+          moved = moved + 1
+        end
+      end
+    end
+  until moved == 0
+
 end
 
 return Grid

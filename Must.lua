@@ -37,11 +37,7 @@ function scene:create(event)
 
   loadDictionary()
 
-  if system.getInfo('platform') == 'win32' then
-    _G.DIMENSIONS = Dim.new(100)
-  else
-    _G.DIMENSIONS = Dim.new(200)
-  end
+  _G.DIMENSIONS = Dim.new()
 
   _G.statusBar = Statusbar.new({group=_G.MUST_GROUPS.ui})
 
