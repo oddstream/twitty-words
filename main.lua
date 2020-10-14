@@ -108,6 +108,8 @@ _G.SCRABBLE_SCORES = {
   Z = 10,
 }
 
+_G.FLIGHT_TIME = 500
+
 _G.MUST_COLORS = {
   uiforeground = {1,1,1},
   uibackground = {0.1,0.1,0.1},
@@ -122,13 +124,14 @@ _G.MUST_COLORS = {
 
   ivory = {1, 1, 0.94}, -- normal tile background
   gold = {1, 0.84, 0},  -- selected tile background
+  greenery = {0x88*4/1020, 0xB0*4/1020, 0x4b*4/1020},
 
   aqua = {0,1,1},
   red = {1,0,0},
   orange = {1,0.65,0},
   pink = {1,192*4/1020,203*4/1020},
   blue = {0,0,1},
-  green = {0,0.5,0},
+  green = {0,1,0},
   purple = {0.5,0,0.5},
   gray = {0.5,0.5,0.5},
   black = {0,0,0},

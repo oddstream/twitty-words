@@ -2,6 +2,7 @@
 
 local composer = require('composer')
 
+local Tile = require 'Tile'
 local Slot = require 'Slot'
 
 local Grid = {
@@ -119,7 +120,7 @@ function Grid:getSelectedWord()
     word = word .. t.letter
     score = score + _G.SCRABBLE_SCORES[t.letter]
   end
-  return word, score * score
+  return word, score * word:len()
 end
 
 local function isWordInDictionary(word)
@@ -166,17 +167,18 @@ function Grid:testSelection()
       self.score = self.score + score
       _G.statusBar:setRight(tonumber(self.score))
       for _,t in ipairs(self.selectedTiles) do
-        t:delete()
+        t:flyAway()
       end
       self.selectedTiles = {}
-      self:gravity()
+      -- timer.performWithDelay(_G.FLIGHT_TIME, function() self:gravity() end)
+      timer.performWithDelay(_G.FLIGHT_TIME, function() self:dropColumns() end)
     else
       -- trace(word, 'NOT in dictionary')
       self:deselectAllTiles()
     end
   end
 end
-
+--[[
 function Grid:gravity()
 
   repeat
@@ -194,21 +196,83 @@ function Grid:gravity()
     end
   until moved == 0
 
-  repeat
-    local moved = 0
-    for _,src in ipairs(self.slots) do
-      if src.tile:is() then
-        local dst = src.e
-        if dst and not dst.tile:is() then
-          local letter = src.tile.letter
-          src.tile:delete()
-          dst:createTile(letter)
-          moved = moved + 1
-        end
-      end
-    end
-  until moved == 0
+end
+]]
+function Grid:dropColumn(bottomSlot)
 
+  trace('dropping column', bottomSlot.tile.letter)
+
+  -- make an array of contiguous (sharing a common border; touching) tiles
+  local contigTiles = {}
+  local slot = bottomSlot
+  while slot do
+    if slot:hasTile() then
+      table.insert(contigTiles, slot.tile) -- push
+    end
+    slot = slot.n
+  end
+  trace('#contigTiles', #contigTiles)
+
+  -- copy contigous tiles to original column of slots
+  -- y is kept in two places: slot.center.y and slot.tile.grp.y
+  -- slot.center.y does not change; slot.tile.grp.y does
+
+  -- length of src will be less than or equal to 'length' of dst
+  assert(#contigTiles <= self.height)
+  -- if #contigTiles == self.height then
+  --   trace('skipping untouched column')
+  --   return
+  -- end
+
+  local dst = bottomSlot
+
+  for _,tile in ipairs(contigTiles) do
+
+    -- assert(src.center.x==dst.center.x)
+    -- trace('transitioning')
+--[[
+      transition.moveTo(tile.grp, {
+        x = dst.center.x,
+        y = dst.center.y,
+        time = _G.FLIGHT_TIME,
+        transition = easing.linear,
+      })
+]]
+    assert(tile.grp)
+
+    dst.tile = tile
+    dst.tile.grp.y = dst.center.y
+
+    -- dst.tile:refreshEventListener()
+
+    dst = dst.n
+  end
+
+  -- blank out any remaining slots in the original column
+  -- tile.grp may be cloned, in two slots at once
+  -- so don't mess with it
+
+  while dst do
+    -- dst.tile:delete()
+    -- dst.tile = Tile.new(dst, 'X')
+    if dst.tile.grp then
+      assert( dst.tile.grp.y ~= dst.center.y )
+      trace('removing cloned tile.grp at', dst.x, ',', dst.y, 'letter', dst.tile.letter)
+      dst.tile.grp = nil
+    end
+    dst = dst.n
+  end
+
+end
+
+function Grid:dropColumns()
+  -- foreach column (find slots with no south link)
+  -- (could use slot.y == self.height)
+  for _,slot in ipairs(self.slots) do
+    if not slot.s then
+      self:dropColumn(slot)
+    end
+  end
 end
 
 return Grid

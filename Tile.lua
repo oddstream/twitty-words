@@ -38,6 +38,7 @@ function Tile.new(slot, letter)
   o.textLetter = display.newText(o.grp, o.letter, 0, 0, _G.TILE_FONT, dim.tileFontSize)
   o.textLetter:setFillColor(unpack(_G.MUST_COLORS.black))
 
+  o.grp:addEventListener('tap', o)
   o.grp:addEventListener('touch', o)
 
   return o
@@ -49,9 +50,19 @@ end
 
 function Tile:refreshLetter()
   local dim = _G.DIMENSIONS
+  assert(self.grp)
   display.remove(self.textLetter)
   self.textLetter = display.newText(self.grp, self.letter, 0, 0, _G.TILE_FONT, dim.tileFontSize)
   self.textLetter:setFillColor(unpack(_G.MUST_COLORS.black))
+end
+
+-- function Tile:refreshEventListener()
+--   self.grp:removeEventListener('touch', self)
+--   self.grp:addEventListener('touch', self)
+-- end
+
+function Tile:tap()
+  trace('tap', self.letter)
 end
 
 function Tile:touch(event)
@@ -99,9 +110,35 @@ function Tile:deselect()
 end
 
 function Tile:delete()
-  self.grp:removeEventListener('touch', self)
+  -- When you remove a display object, event listeners that are attached to it — tap and touch listeners,
+  -- for example — are also freed from memory.
+  -- self.grp:removeEventListener('touch', self)
   display.remove(self.grp)
   self.grp = nil
+end
+
+function Tile:flyAway()
+--[[
+  local dim = _G.DIMENSIONS
+  self.grp:toFront()
+  -- self.rectBack:setFillColor(unpack(_G.MUST_COLORS.green))
+  transition.scaleTo(self.grp, {
+    xScale = 0.5,
+    yScale = 0.5,
+    time = _G.FLIGHT_TIME,
+    transition = easing.linear,
+    delay = 0,
+  })
+  transition.moveTo(self.grp, {
+    x = (display.contentWidth / 2),  -- + (n * (self.grp.width * 0.5)),
+    y = display.contentHeight + dim.statusBarHeight,
+    time = _G.FLIGHT_TIME,
+    transition = easing.linear,
+    delay = 0,
+    onComplete = function() self:delete() end,
+  })
+]]
+  self:delete()
 end
 
 return Tile
