@@ -33,13 +33,9 @@ function Slot.new(grid, x, y)
 end
 
 function Slot:reset()
-  if self.tile and self.tile:is() then
+  if self.tile then
     self.tile:reset()
   end
-end
-
-function Slot:hasTile()
-  return self.tile and self.tile:is()
 end
 
 function Slot:createTile(letter)
@@ -47,14 +43,14 @@ function Slot:createTile(letter)
   self.tile = Tile.new(self, letter)
 end
 
-function Slot:deselectAllTiles()
+function Slot:deselectAll()
   -- plural function goes up the chain to parent (Grid)
-  self.grid:deselectAllTiles()
+  self.grid:deselectAllSlots()
 end
 
-function Slot:deselectTile()
+function Slot:deselect()
   -- single function goes down the chain to child (Tile)
-  if self:hasTile() then
+  if self.tile then
     self.tile:deselect()
   end
 end
@@ -65,12 +61,14 @@ local function pointInCircle(x, y, cx, cy, radius)
 end
 
 function Slot:selectTile(x, y)
-  if self:hasTile() then
+  if self.tile then
     -- only select this tile if event x/y is within radius of tile center
     -- otherwise diagonal drags select adjacent tiles
     if pointInCircle(x, y, self.center.x, self.center.y, _G.DIMENSIONS.Q50) then
       self.tile:select()
-      self.grid:selectTile(self.tile)
+      self.grid:selectSlot(self)
+    -- else
+    --   trace('not in circle')
     end
   end
 end

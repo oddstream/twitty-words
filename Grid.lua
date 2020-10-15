@@ -2,7 +2,6 @@
 
 local composer = require('composer')
 
-local Tile = require 'Tile'
 local Slot = require 'Slot'
 
 local Grid = {
@@ -11,7 +10,7 @@ local Grid = {
   width = nil,      -- number of columns
   height = nil,      -- number of rows
 
-  selectedTiles = nil,  -- table of selected tiles, in order they were selected
+  selectedSlots = nil,  -- table of selected slots, in order they were selected
   score = nil,
 }
 Grid.__index = Grid
@@ -31,7 +30,7 @@ function Grid.new(width, height)
 
   o:createTiles()
 
-  o.selectedTiles = {}
+  o.selectedSlots = {}
 
   return o
 end
@@ -116,9 +115,10 @@ end
 function Grid:getSelectedWord()
   local word = ''
   local score = 0
-  for _,t in ipairs(self.selectedTiles) do
-    word = word .. t.letter
-    score = score + _G.SCRABBLE_SCORES[t.letter]
+  for _,slot in ipairs(self.selectedSlots) do
+    local letter = slot.tile.letter
+    word = word .. letter
+    score = score + _G.SCRABBLE_SCORES[letter]
   end
   return word, score * word:len()
 end
@@ -134,47 +134,49 @@ function Grid:createTiles()
   end)
 end
 
-function Grid:deselectAllTiles()
+function Grid:deselectAllSlots()
   self:iterator(function(s)
-    s:deselectTile()
+    s:deselect()
   end)
-  self.selectedTiles = {}
+  self.selectedSlots = {}
   _G.statusBar:setCenter(nil)
 end
 
-function Grid:selectTile(t)
-  -- if t ~= self.selectedTiles[#self.selectedTiles] then
-  -- TODO check that t's slot connects to the slot for self.selectedTiles[#self.selectedTiles]
-  if not table.contains(self.selectedTiles, t) then
-    table.insert(self.selectedTiles, t)
+function Grid:selectSlot(slot)
+  assert(slot.tile)
+  if not table.contains(self.selectedSlots, slot) then
+    table.insert(self.selectedSlots, slot)
     local word, score = self:getSelectedWord()
     _G.statusBar:setCenter(word)
   end
 end
 
 function Grid:testSelection()
-  if #self.selectedTiles == 2 then
-    local t1 = self.selectedTiles[1]
-    local t2 = self.selectedTiles[2]
+  if #self.selectedSlots == 2 then
+    local t1 = self.selectedSlots[1].tile
+    local t2 = self.selectedSlots[2].tile
     t1.letter, t2.letter = t2.letter, t1.letter
     t1:refreshLetter()
     t2:refreshLetter()
+    -- leaving slots selected?
     _G.statusBar:setCenter(nil)
-  elseif #self.selectedTiles > 2 then
+  elseif #self.selectedSlots > 2 then
     local word, score = self:getSelectedWord()
     if isWordInDictionary(word) then
       -- trace(word, 'in dictionary, score', score)
       self.score = self.score + score
       _G.statusBar:setRight(tonumber(self.score))
-      for _,t in ipairs(self.selectedTiles) do
-        t:flyAway()
+      for _,slot in ipairs(self.selectedSlots) do
+        -- t:flyAway()
+        slot.tile:delete()
+        slot.tile = nil
       end
-      self.selectedTiles = {}
+      self.selectedSlots = {}
       -- timer.performWithDelay(_G.FLIGHT_TIME, function() self:gravity() end)
       timer.performWithDelay(_G.FLIGHT_TIME, function() self:dropColumns() end)
     else
       -- trace(word, 'NOT in dictionary')
-      self:deselectAllTiles()
+      self:deselectAllSlots()
     end
   end
 end
@@ -200,18 +202,16 @@ end
 ]]
 function Grid:dropColumn(bottomSlot)
 
-  trace('dropping column', bottomSlot.tile.letter)
-
   -- make an array of contiguous (sharing a common border; touching) tiles
   local contigTiles = {}
   local slot = bottomSlot
   while slot do
-    if slot:hasTile() then
+    if slot.tile then
       table.insert(contigTiles, slot.tile) -- push
     end
     slot = slot.n
   end
-  trace('#contigTiles', #contigTiles)
+  -- trace('#contigTiles', #contigTiles)
 
   -- copy contigous tiles to original column of slots
   -- y is kept in two places: slot.center.y and slot.tile.grp.y
@@ -230,20 +230,17 @@ function Grid:dropColumn(bottomSlot)
 
     -- assert(src.center.x==dst.center.x)
     -- trace('transitioning')
---[[
-      transition.moveTo(tile.grp, {
-        x = dst.center.x,
-        y = dst.center.y,
-        time = _G.FLIGHT_TIME,
-        transition = easing.linear,
-      })
-]]
     assert(tile.grp)
 
     dst.tile = tile
-    dst.tile.grp.y = dst.center.y
+    tile.slot = dst
 
-    -- dst.tile:refreshEventListener()
+    -- dst.tile.grp.y = dst.center.y
+    transition.moveTo(tile.grp, {
+      y = dst.center.y,
+      time = _G.FLIGHT_TIME,
+      transition = easing.outQuart,
+    })
 
     dst = dst.n
   end
@@ -252,17 +249,34 @@ function Grid:dropColumn(bottomSlot)
   -- tile.grp may be cloned, in two slots at once
   -- so don't mess with it
 
+  -- do
+  --   print('pre pass')
+  --   local s = bottomSlot
+  --   while s do
+  --     print(s.tile)
+  --     s = s.n
+  --   end
+  -- end
+
   while dst do
     -- dst.tile:delete()
     -- dst.tile = Tile.new(dst, 'X')
-    if dst.tile.grp then
-      assert( dst.tile.grp.y ~= dst.center.y )
-      trace('removing cloned tile.grp at', dst.x, ',', dst.y, 'letter', dst.tile.letter)
-      dst.tile.grp = nil
+    if dst.tile then
+      -- assert( dst.tile.grp.y ~= dst.center.y )
+      -- trace('removing cloned tile.grp at', dst.x, ',', dst.y, 'letter', dst.tile.letter)
+      dst.tile = nil
     end
     dst = dst.n
   end
 
+  -- do
+  --   print('post pass')
+  --   local s = bottomSlot
+  --   while s do
+  --     print(s.tile)
+  --     s = s.n
+  --   end
+  -- end
 end
 
 function Grid:dropColumns()

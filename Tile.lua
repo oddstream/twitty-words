@@ -44,10 +44,6 @@ function Tile.new(slot, letter)
   return o
 end
 
-function Tile:is()
-  return self.grp ~= nil
-end
-
 function Tile:refreshLetter()
   local dim = _G.DIMENSIONS
   assert(self.grp)
@@ -71,7 +67,7 @@ function Tile:touch(event)
   if event.phase == 'began' then
     -- trace('touch began', event.x, event.y, self.letter)
     -- deselect any selected tiles
-    self.slot:deselectAllTiles()
+    self.slot:deselectAll()
 
   elseif event.phase == 'moved' then
     -- trace('touch moved', event.x, event.y, self.letter)
@@ -93,13 +89,14 @@ function Tile:touch(event)
 
   elseif event.phase == 'cancelled' then
     -- trace('touch cancelled', event.x, event.y, self.letter)
-    self.slot:deselectAllTiles()
+    self.slot:deselectAll()
   end
 
   return true
 end
 
 function Tile:select()
+  -- trace('selecting', self.letter)
   self.selected = true
   self.rectBack:setFillColor(unpack(_G.MUST_COLORS.gold))
 end
