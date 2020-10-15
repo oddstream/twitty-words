@@ -108,7 +108,7 @@ _G.SCRABBLE_SCORES = {
   Z = 10,
 }
 
-_G.FLIGHT_TIME = 500
+_G.FLIGHT_TIME = 1000
 
 _G.MUST_COLORS = {
   uiforeground = {1,1,1},

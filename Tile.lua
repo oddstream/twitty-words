@@ -73,14 +73,8 @@ function Tile:touch(event)
     -- trace('touch moved', event.x, event.y, self.letter)
     -- inform slot>grid to select tile under x,y
 
-    if self.grp == nil then
-      -- don't get touch events if no tile
-      -- TODO if slot doesn't have a tile then end the touch
-      trace('touch move over nil tile')
-    end
-
     -- adds to selected word/table of selected tiles if tile is not that previously selected
-    self.slot:selectTile(event.x, event.y)
+    self.slot:select(event.x, event.y)
 
   elseif event.phase == 'ended' then
     -- trace('touch ended', event.x, event.y, self.letter)
@@ -115,7 +109,6 @@ function Tile:delete()
 end
 
 function Tile:flyAway()
---[[
   local dim = _G.DIMENSIONS
   self.grp:toFront()
   -- self.rectBack:setFillColor(unpack(_G.MUST_COLORS.green))
@@ -134,8 +127,6 @@ function Tile:flyAway()
     delay = 0,
     onComplete = function() self:delete() end,
   })
-]]
-  self:delete()
 end
 
 return Tile

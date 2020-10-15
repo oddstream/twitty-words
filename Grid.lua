@@ -144,11 +144,54 @@ end
 
 function Grid:selectSlot(slot)
   assert(slot.tile)
-  if not table.contains(self.selectedSlots, slot) then
-    table.insert(self.selectedSlots, slot)
-    local word, score = self:getSelectedWord()
-    _G.statusBar:setCenter(word)
+
+  local function connected(a, b)
+    for _,dir in ipairs({'n','ne','e','se','s','sw','w','nw'}) do
+      if a[dir] == b then
+        return true
+      end
+    end
+    trace('not connected')
+    return false
   end
+
+  -- TODO check slot is connected to last selected slot
+  -- in case selection extends across nil tiles
+  if not table.contains(self.selectedSlots, slot) then
+    local last = self.selectedSlots[#self.selectedSlots]
+    if not last or connected(slot, last) then
+      table.insert(self.selectedSlots, slot)
+      local word, score = self:getSelectedWord()
+      _G.statusBar:setCenter(word)
+    end
+  end
+end
+
+function Grid:flyAwayScore(slot, score)
+  local dim = _G.DIMENSIONS
+  local text = display.newText(_G.MUST_GROUPS.grid,
+    string.format('+%u', score),
+    slot.center.x, slot.center.y,
+    _G.TILE_FONT, dim.tileFontSize)
+  text:toFront()
+  text:setFillColor(unpack(_G.MUST_COLORS.black))
+  transition.scaleTo(text, {
+    xScale = 0.5,
+    yScale = 0.5,
+    time = _G.FLIGHT_TIME,
+    transition = easing.linear,
+  })
+  transition.moveTo(text, {
+    x = display.contentWidth,
+    y = display.contentHeight,
+    time = _G.FLIGHT_TIME,
+    transition = easing.linear,
+    onComplete = function()
+      display.remove(text)
+      self.score = self.score + score
+      _G.statusBar:setRight(tonumber(self.score))
+    end,
+  })
 end
 
 function Grid:testSelection()
@@ -159,21 +202,21 @@ function Grid:testSelection()
     t1:refreshLetter()
     t2:refreshLetter()
     -- leaving slots selected?
-    _G.statusBar:setCenter(nil)
+    _G.statusBar:setCenter(string.format('%s ⇆ %s', t1.letter, t2.letter))
   elseif #self.selectedSlots > 2 then
     local word, score = self:getSelectedWord()
     if isWordInDictionary(word) then
       -- trace(word, 'in dictionary, score', score)
-      self.score = self.score + score
-      _G.statusBar:setRight(tonumber(self.score))
       for _,slot in ipairs(self.selectedSlots) do
-        -- t:flyAway()
-        slot.tile:delete()
+        slot.tile:flyAway()
+        -- slot.tile:delete()
         slot.tile = nil
       end
+      self:flyAwayScore(self.selectedSlots[1], score)
       self.selectedSlots = {}
       -- timer.performWithDelay(_G.FLIGHT_TIME, function() self:gravity() end)
-      timer.performWithDelay(_G.FLIGHT_TIME, function() self:dropColumns() end)
+      -- timer.performWithDelay(_G.FLIGHT_TIME, function() self:dropColumns() end)
+      self:dropColumns()
     else
       -- trace(word, 'NOT in dictionary')
       self:deselectAllSlots()

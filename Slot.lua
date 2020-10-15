@@ -60,7 +60,7 @@ local function pointInCircle(x, y, cx, cy, radius)
   return distanceSquared <= radius * radius
 end
 
-function Slot:selectTile(x, y)
+function Slot:select(x, y)
   if self.tile then
     -- only select this tile if event x/y is within radius of tile center
     -- otherwise diagonal drags select adjacent tiles
