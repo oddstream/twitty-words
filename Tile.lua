@@ -38,7 +38,7 @@ function Tile.new(slot, letter)
   o.textLetter = display.newText(o.grp, o.letter, 0, 0, _G.TILE_FONT, dim.tileFontSize)
   o.textLetter:setFillColor(unpack(_G.MUST_COLORS.black))
 
-  o.grp:addEventListener('tap', o)
+  -- o.grp:addEventListener('tap', o)
   o.grp:addEventListener('touch', o)
 
   return o
@@ -59,6 +59,8 @@ end
 
 function Tile:tap()
   trace('tap', self.letter)
+  self:select()
+  self.slot:tapped()
 end
 
 function Tile:touch(event)
@@ -90,7 +92,6 @@ function Tile:touch(event)
 end
 
 function Tile:select()
-  -- trace('selecting', self.letter)
   self.selected = true
   self.rectBack:setFillColor(unpack(_G.MUST_COLORS.gold))
 end

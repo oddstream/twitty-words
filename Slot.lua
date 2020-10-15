@@ -62,15 +62,20 @@ end
 
 function Slot:select(x, y)
   if self.tile then
-    -- only select this tile if event x/y is within radius of tile center
+    -- only select this slot if event x/y is within radius of center
     -- otherwise diagonal drags select adjacent tiles
     if pointInCircle(x, y, self.center.x, self.center.y, _G.DIMENSIONS.Q50) then
       self.tile:select()
       self.grid:selectSlot(self)
     -- else
-    --   trace('not in circle')
+      -- trace('not in circle')
     end
   end
+end
+
+function Slot:tapped()
+  -- bubbled up from Tile:tap event handler
+  self.grid:tapped(self)  -- bubble up to grid
 end
 
 function Slot:testSelection()
