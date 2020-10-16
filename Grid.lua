@@ -131,8 +131,9 @@ function Grid:getSelectedWord()
 end
 
 local function isWordInDictionary(word)
-  local first, last = string.find(_G.DICTIONARY, '[^%u]' .. word .. '[^%u]')
+  local first, _ = string.find(_G.DICTIONARY, '[^%u]' .. word .. '[^%u]')
   return first ~= nil
+  -- return true
 end
 
 function Grid:createTiles()
@@ -169,7 +170,7 @@ function Grid:selectSlot(slot)
     local last = self.selectedSlots[#self.selectedSlots]
     if not last or connected(slot, last) then
       table.insert(self.selectedSlots, slot)
-      local word, score = self:getSelectedWord()
+      local word, _ = self:getSelectedWord()
       _G.statusBar:setCenter(word)
     end
   end
@@ -249,6 +250,7 @@ function Grid:testSelection()
   elseif #self.selectedSlots > 2 then
     local word, score = self:getSelectedWord()
     if isWordInDictionary(word) then
+    -- if true then
       trace(score, word)
       table.insert(self.words, word)
 
@@ -264,7 +266,7 @@ function Grid:testSelection()
       self:flyAwayScore(self.selectedSlots[#self.selectedSlots], score)
       self.selectedSlots = {}
       self:dropColumns()
-      self:compactColumns()
+      self:compactColumns2()
       self.swaps = self.swaps + 1
       _G.statusBar:setLeft(string.format('⇆ %s', self.swaps))
     else
@@ -273,26 +275,7 @@ function Grid:testSelection()
     end
   end
 end
---[[
-function Grid:gravity()
 
-  repeat
-    local moved = 0
-    for _,src in ipairs(self.slots) do
-      if src.tile:is() then
-        local dst = src.s
-        if dst and not dst.tile:is() then
-          local letter = src.tile.letter
-          src.tile:delete()
-          dst:createTile(letter)
-          moved = moved + 1
-        end
-      end
-    end
-  until moved == 0
-
-end
-]]
 function Grid:dropColumn(bottomSlot)
 
   -- make an array of contiguous (sharing a common border; touching) tiles
@@ -342,15 +325,6 @@ function Grid:dropColumn(bottomSlot)
   -- tile.grp may be cloned, in two slots at once
   -- so don't mess with it
 
-  -- do
-  --   print('pre pass')
-  --   local s = bottomSlot
-  --   while s do
-  --     print(s.tile)
-  --     s = s.n
-  --   end
-  -- end
-
   while dst do
     -- dst.tile:delete()
     -- dst.tile = Tile.new(dst, 'X')
@@ -362,24 +336,9 @@ function Grid:dropColumn(bottomSlot)
     dst = dst.n
   end
 
-  -- do
-  --   print('post pass')
-  --   local s = bottomSlot
-  --   while s do
-  --     print(s.tile)
-  --     s = s.n
-  --   end
-  -- end
 end
 
 function Grid:dropColumns()
-  -- foreach column (find slots with no south link)
-  -- (could use slot.y == self.height)
-  -- for _,slot in ipairs(self.slots) do
-  --   if not slot.s then
-  --     self:dropColumn(slot)
-  --   end
-  -- end
   local slot = self:findSlot(1, self.height)
   while slot do
     self:dropColumn(slot)
@@ -387,27 +346,134 @@ function Grid:dropColumns()
   end
 end
 
+function Grid:slideColumn(col, dir)
+  -- trace('slide column', col, dir)
+  assert(dir=='e' or dir=='w')
+  local src = self:findSlot(col, 1)
+  while src do
+    if src.tile then
+      local dst = src[dir]
+      assert(not dst.tile)
+
+      transition.moveTo(src.tile.grp, {
+        x = dst.center.x,
+        time = _G.FLIGHT_TIME,
+        transition = easing.outQuart,
+      })
+      -- src.tile.grp.x = dst.center.x
+
+      dst.tile = src.tile
+      dst.tile.slot = dst
+
+      src.tile = nil
+    end
+    src = src.s
+  end
+end
+--[[
 function Grid:compactColumns()
   -- find empty column with a non-empty column to it's right (cols 1,2,3)
   -- or a non-empty column to it's left (cols 5,6,7)
-  -- what if center column is empty?
-  local heights = {}
-  for col = 1, self.width do
-    heights[col] = 0
+  -- check behaviour when center column is empty
+
+  local function _calcHeights()
+    local arr = {}
+    for col = 1, self.width do
+      arr[col] = 0
+      local slot = self:findSlot(col, 1)
+      while slot do
+        if slot.tile then
+          arr[col] = arr[col] + 1
+        end
+        slot = slot.s
+      end
+    end
+    return arr
+  end
+
+  local mid = math.floor(self.width / 2)
+  local heights = _calcHeights()
+  local moved
+  repeat
+    moved = false
+
+    for i = 1, mid-1 do -- eg 1,2,3
+      if heights[i] > 0 and heights[i+1] == 0 then
+        self:slideColumn(i, 'e')
+        heights[i+1] = heights[i]
+        heights[i] = 0
+        moved = true
+      end
+    end
+
+    for i = self.width, mid+1, -1 do  -- eg 7,6,5
+      if heights[i] > 0 and heights[i-1] == 0 then
+        self:slideColumn(i, 'w')
+        heights[i-1] = heights[i]
+        heights[i] = 0
+        moved = true
+      end
+    end
+
+  until moved == false
+
+end
+]]
+function Grid:compactColumns2()
+  local dim = _G.DIMENSIONS
+
+  local function _isColumnEmpty(col)
     local slot = self:findSlot(col, 1)
     while slot do
-      if slot.tile then
-        heights[col] = heights[col] + 1
-      end
+      if slot.tile then return false end
       slot = slot.s
+    end
+    return true
+  end
+
+  -- local oldCols = 0
+  -- for col=1, self.width do
+  --   if not _isColumnEmpty(col) then
+  --     oldCols = oldCols + 1
+  --   end
+  -- end
+
+  local moved
+  repeat
+    moved = false
+    for col=1, self.width-1 do
+      if _isColumnEmpty(col) and not _isColumnEmpty(col+1) then
+        self:slideColumn(col+1, 'w')
+        moved = true
+      end
+    end
+  until not moved
+
+  local newCols = 0
+  for col=1, self.width do
+    if not _isColumnEmpty(col) then
+      newCols = newCols + 1
     end
   end
 
-  -- local s = ''
-  -- for col = 1, self.width do
-  --   s = s .. tostring(heights[col]) .. ','
-  -- end
-  -- trace(s)
+  local widthCols = dim.Q * newCols
+  local newMargin = (display.actualContentWidth / 2) - (widthCols / 2)
+  for x=1, self.width do
+    for y=1, self.height do
+      -- TODO use iterator
+      local slot = self:findSlot(x,y)
+      slot.center.x = (x*dim.Q) - dim.Q + dim.Q50  -- copied from Slot.new()
+      slot.center.x = slot.center.x + newMargin
+      if slot.tile then
+        transition.moveTo(slot.tile.grp, {
+          x = slot.center.x,
+          time = _G.FLIGHT_TIME,
+          transition = easing.outQuart,
+        })
+      end
+    end
+  end
+
 end
 
 return Grid

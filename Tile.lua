@@ -121,7 +121,7 @@ function Tile:flyAway(n)
     x = (dim.Q * n) - dim.Q50,
     y = display.contentHeight - dim.Q50,
     time = _G.FLIGHT_TIME,
-    transition = easing.outCubic,
+    transition = easing.outQuart,
     delay = 0,
     onComplete = function() self:delete() end,
   })
