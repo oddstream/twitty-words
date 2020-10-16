@@ -45,7 +45,7 @@ settings =
 
   excludeFiles =
   {
-    all = {'.gitignore','*.txt','*.pdn','*.keystore','*.js','*.md','assets/junk/*','PlayStoreAssets/*'},
+    all = {'.gitignore','*.pdn','*.keystore','*.js','*.md','assets/junk/*','PlayStoreAssets/*'},
     android = {'*.ico'},
     win32 = {'AndroidResources/*'}
   },

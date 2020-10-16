@@ -29,7 +29,7 @@ local grid = nil
 function scene:create(event)
   local sceneGroup = self.view
 
-  display.setDefault('background', unpack(_G.MUST_COLORS.greenery))
+  display.setDefault('background', unpack(_G.MUST_COLORS.gray))
 
   _G.MUST_GROUPS.ui = display.newGroup()
   sceneGroup:insert(_G.MUST_GROUPS.ui)

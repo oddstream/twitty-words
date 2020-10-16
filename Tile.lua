@@ -32,7 +32,10 @@ function Tile.new(slot, letter)
   o.grp.y = slot.center.y
   _G.MUST_GROUPS.grid:insert(o.grp)
 
-  o.rectBack = display.newRoundedRect(o.grp, 0, 0, dim.Q - 10, dim.Q - 10, dim.Q / 20)  -- TODO magic numbers
+  o.rectShadow = display.newRoundedRect(o.grp, dim.Q * 0.05, dim.Q * 0.05, dim.Q * 0.95, dim.Q * 0.95, dim.Q / 20)  -- TODO magic numbers
+  o.rectShadow:setFillColor(0.2,0.2,0.2) -- if alpha == 0, we don't get tap events
+
+  o.rectBack = display.newRoundedRect(o.grp, 0, 0, dim.Q * 0.95, dim.Q * 0.95, dim.Q / 20)  -- TODO magic numbers
   o.rectBack:setFillColor(unpack(_G.MUST_COLORS.ivory)) -- if alpha == 0, we don't get tap events
 
   o.textLetter = display.newText(o.grp, o.letter, 0, 0, _G.TILE_FONT, dim.tileFontSize)
@@ -109,22 +112,16 @@ function Tile:delete()
   self.grp = nil
 end
 
-function Tile:flyAway()
+function Tile:flyAway(n)
   local dim = _G.DIMENSIONS
+
   self.grp:toFront()
-  -- self.rectBack:setFillColor(unpack(_G.MUST_COLORS.green))
-  transition.scaleTo(self.grp, {
-    xScale = 0.5,
-    yScale = 0.5,
-    time = _G.FLIGHT_TIME,
-    transition = easing.linear,
-    delay = 0,
-  })
+  self.rectBack:setFillColor(unpack(_G.MUST_COLORS.ivory))
   transition.moveTo(self.grp, {
-    x = (display.contentWidth / 2),  -- + (n * (self.grp.width * 0.5)),
-    y = display.contentHeight + dim.statusBarHeight,
+    x = (dim.Q * n) - dim.Q50,
+    y = display.contentHeight - dim.Q50,
     time = _G.FLIGHT_TIME,
-    transition = easing.linear,
+    transition = easing.outCubic,
     delay = 0,
     onComplete = function() self:delete() end,
   })

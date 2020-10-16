@@ -12,8 +12,7 @@ local Grid = {
 
   selectedSlots = nil,  -- table of selected slots, in order they were selected
   score = nil,
-  bestWord = nil,
-  bestWordScore = nil,
+  words = nil,
   swaps = nil,
 }
 Grid.__index = Grid
@@ -27,8 +26,7 @@ function Grid.new(width, height)
   o.height = height
 
   o.score = 0
-  o.bestWord = ''
-  o.bestWordScore = 0
+  o.words = {}
   o.swaps = 1
 
   o:createSlots()
@@ -38,7 +36,7 @@ function Grid.new(width, height)
 
   o.selectedSlots = {}
 
-  _G.statusBar:setLeft(string.format('%s ⇆', o.swaps))
+  _G.statusBar:setLeft(string.format('⇆ %s', o.swaps))
   _G.statusBar:setRight(string.format('%s', o.score))
 
   return o
@@ -176,7 +174,7 @@ function Grid:selectSlot(slot)
     end
   end
 end
-
+--[[
 function Grid:tapped(slot)
   if not table.contains(self.selectedSlots, slot) then
     table.insert(self.selectedSlots, slot)
@@ -192,71 +190,83 @@ trace('swapping', t1.letter, t2.letter)
       self:deselectAllSlots()
 
       self.swaps = self.swaps - 1
-      _G.statusBar:setLeft(string.format('%s ⇆', self.swaps))
+      _G.statusBar:setLeft(string.format('⇆ %s', self.swaps))
       _G.statusBar:setCenter(string.format('%s ⇆ %s', t1.letter, t2.letter))
     end
   end
 end
-
-function Grid:flyAwayScore(slot, score, word)
+]]
+function Grid:flyAwayScore(slot, score)
   local dim = _G.DIMENSIONS
-  local text = display.newText(_G.MUST_GROUPS.grid,
-    string.format('+%u', score),
-    slot.center.x, slot.center.y,
-    _G.TILE_FONT, dim.tileFontSize)
-  text:toFront()
-  text:setFillColor(unpack(_G.MUST_COLORS.black))
-  -- transition.scaleTo(text, {
+
+  local grp = display.newGroup()
+    grp.x = slot.center.x
+    grp.y = slot.center.y
+  _G.MUST_GROUPS.grid:insert(grp)
+  grp:toFront()
+
+  local rectBack = display.newRoundedRect(grp, 0, 0, dim.Q * 0.95, dim.Q * 0.95, dim.Q / 20)  -- TODO magic numbers
+    rectBack:setFillColor(unpack(_G.MUST_COLORS.ivory)) -- if alpha == 0, we don't get tap events
+
+  local textScore = display.newText(grp, string.format('+%u', score), 0, 0, _G.TILE_FONT, dim.tileFontSize * 0.75)
+    textScore:setFillColor(unpack(_G.MUST_COLORS.black))
+
+  -- transition.scaleTo(grp, {
   --   xScale = 0.5,
   --   yScale = 0.5,
   --   time = _G.FLIGHT_TIME,
   --   transition = easing.linear,
   -- })
-  transition.moveTo(text, {
-    x = display.contentWidth,
-    y = display.contentHeight,
+  transition.moveTo(grp, {
+    x = display.contentWidth - dim.Q50,
+    y = display.contentHeight - dim.Q50,
     time = _G.FLIGHT_TIME,
-    transition = easing.linear,
+    transition = easing.outQuad,
     onComplete = function()
-      display.remove(text)
+      display.remove(grp)
       self.score = self.score + score
       _G.statusBar:setRight(tonumber(self.score))
-
-      if score > self.bestWordScore then
-        self.bestWordScore = score
-        self.bestWord = word
-        trace('new best word', word)
-      end
     end,
   })
 end
 
 function Grid:testSelection()
-  if #self.selectedSlots == 2 and self.swaps > 0 then
-    local t1 = self.selectedSlots[1].tile
-    local t2 = self.selectedSlots[2].tile
-    t1.letter, t2.letter = t2.letter, t1.letter
-    t1:refreshLetter()
-    t2:refreshLetter()
+  if #self.selectedSlots == 2 then
+    if self.swaps > 0 then
+      local t1 = self.selectedSlots[1].tile
+      local t2 = self.selectedSlots[2].tile
+      if t1.letter ~= t2.letter then
+        t1.letter, t2.letter = t2.letter, t1.letter
+        t1:refreshLetter()
+        t2:refreshLetter()
 
+        self.swaps = self.swaps - 1
+        _G.statusBar:setLeft(string.format('⇆ %s', self.swaps))
+        _G.statusBar:setCenter(string.format('%s ⇆ %s', t1.letter, t2.letter))
+      end
+    end
     self:deselectAllSlots()
-
-    self.swaps = self.swaps - 1
-    _G.statusBar:setLeft(string.format('%s ⇆', self.swaps))
-    _G.statusBar:setCenter(string.format('%s ⇆ %s', t1.letter, t2.letter))
   elseif #self.selectedSlots > 2 then
     local word, score = self:getSelectedWord()
     if isWordInDictionary(word) then
-      -- trace(word, 'in dictionary, score', score)
-      for _,slot in ipairs(self.selectedSlots) do
-        slot.tile:flyAway() -- calls Tile:delete()
-        slot.tile = nil
+      trace(score, word)
+      table.insert(self.words, word)
+
+      do
+        local n = 1
+        for _,slot in ipairs(self.selectedSlots) do
+          slot.tile:flyAway(n) -- calls Tile:delete()
+          slot.tile = nil
+          n = n + 1
+        end
       end
-      self:flyAwayScore(self.selectedSlots[1], score, word)
+
+      self:flyAwayScore(self.selectedSlots[#self.selectedSlots], score)
       self.selectedSlots = {}
       self:dropColumns()
+      self:compactColumns()
       self.swaps = self.swaps + 1
-      _G.statusBar:setLeft(string.format('%s ⇆', self.swaps))
+      _G.statusBar:setLeft(string.format('⇆ %s', self.swaps))
     else
       -- trace(word, 'NOT in dictionary')
       self:deselectAllSlots()
@@ -365,11 +375,39 @@ end
 function Grid:dropColumns()
   -- foreach column (find slots with no south link)
   -- (could use slot.y == self.height)
-  for _,slot in ipairs(self.slots) do
-    if not slot.s then
-      self:dropColumn(slot)
+  -- for _,slot in ipairs(self.slots) do
+  --   if not slot.s then
+  --     self:dropColumn(slot)
+  --   end
+  -- end
+  local slot = self:findSlot(1, self.height)
+  while slot do
+    self:dropColumn(slot)
+    slot = slot.e
+  end
+end
+
+function Grid:compactColumns()
+  -- find empty column with a non-empty column to it's right (cols 1,2,3)
+  -- or a non-empty column to it's left (cols 5,6,7)
+  -- what if center column is empty?
+  local heights = {}
+  for col = 1, self.width do
+    heights[col] = 0
+    local slot = self:findSlot(col, 1)
+    while slot do
+      if slot.tile then
+        heights[col] = heights[col] + 1
+      end
+      slot = slot.s
     end
   end
+
+  -- local s = ''
+  -- for col = 1, self.width do
+  --   s = s .. tostring(heights[col]) .. ','
+  -- end
+  -- trace(s)
 end
 
 return Grid
