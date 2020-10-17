@@ -2,6 +2,7 @@
 
 local Dim = require 'Dim'
 local Grid = require 'Grid'
+local Titlebar = require 'Titlebar'
 local Statusbar = require 'Statusbar'
 
 local composer = require('composer')
@@ -41,6 +42,7 @@ function scene:create(event)
 
   _G.DIMENSIONS = Dim.new()
 
+  _G.titleBar = Titlebar.new({group=_G.MUST_GROUPS.ui})
   _G.statusBar = Statusbar.new({group=_G.MUST_GROUPS.ui})
 
   -- for debugging the gaps between cells problem

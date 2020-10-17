@@ -25,29 +25,31 @@ function Grid.new(width, height)
   o.width = width
   o.height = height
 
-  o.score = 0
-  o.words = {}
-  o.swaps = 1
-
   o:createSlots()
   o:linkSlots()
-
-  o:createTiles()
-
-  o.selectedSlots = {}
-
-  _G.statusBar:setLeft(string.format('⇆ %s', o.swaps))
-  _G.statusBar:setRight(string.format('%s', o.score))
 
   return o
 end
 
-function Grid:reset()
-  -- clear out the Tiles from the Slots
-  -- self:iterator(function(t)
-  --   t:reset()
-  -- end)
+function Grid:newLevel()
+  -- foreach remaining tile, add up letter scores and deduct from score
+  for _,slot in ipairs(self.slots) do
+    if slot.tile then
+      self.score = self.score - _G.SCRABBLE_SCORES[slot.tile.letter]
+    end
+  end
 
+  -- save score and words to high scores
+
+  -- delete all tiles
+  for _,slot in ipairs(self.slots) do
+    if slot.sile then
+      slot.tile:delete()
+      slot.tile = nil
+    end
+  end
+
+  -- run the garbage collector
   do
     local last_using = composer.getVariable('last_using')
     if not last_using then
@@ -60,26 +62,18 @@ function Grid:reset()
     composer.setVariable('last_using', after)
   end
 
-  -- self:newLevel()
-end
+  -- create tiles
+  self:createTiles()
 
-function Grid:newLevel()
-  -- self:placeCoins()
-  -- self:colorCoins()
-  -- self:jumbleCoins()
-  -- self:createGraphics()
+  -- reset our variables
+  self.score = 0
+  self.words = {}
+  self.swaps = 1
+  self.selectedSlots = {}
 
-  -- self.levelText.text = tostring(self.gameState.level)
-
-  -- self:fadeIn()
-end
-
-function Grid:advanceLevel()
-  -- assert(self.gameState)
-  -- assert(self.gameState.level)
-  -- self.gameState.level = self.gameState.level + 1
-  -- self.levelText.text = tostring(self.gameState.level)
-  -- self.gameState:write()
+  -- update ui
+  _G.statusBar:setLeft(string.format('⇆ %s', self.swaps))
+  _G.statusBar:setRight(string.format('%s', self.score))
 end
 
 function Grid:iterator(fn)
@@ -326,11 +320,7 @@ function Grid:dropColumn(bottomSlot)
   -- so don't mess with it
 
   while dst do
-    -- dst.tile:delete()
-    -- dst.tile = Tile.new(dst, 'X')
     if dst.tile then
-      -- assert( dst.tile.grp.y ~= dst.center.y )
-      -- trace('removing cloned tile.grp at', dst.x, ',', dst.y, 'letter', dst.tile.letter)
       dst.tile = nil
     end
     dst = dst.n
@@ -370,55 +360,7 @@ function Grid:slideColumn(col, dir)
     src = src.s
   end
 end
---[[
-function Grid:compactColumns()
-  -- find empty column with a non-empty column to it's right (cols 1,2,3)
-  -- or a non-empty column to it's left (cols 5,6,7)
-  -- check behaviour when center column is empty
 
-  local function _calcHeights()
-    local arr = {}
-    for col = 1, self.width do
-      arr[col] = 0
-      local slot = self:findSlot(col, 1)
-      while slot do
-        if slot.tile then
-          arr[col] = arr[col] + 1
-        end
-        slot = slot.s
-      end
-    end
-    return arr
-  end
-
-  local mid = math.floor(self.width / 2)
-  local heights = _calcHeights()
-  local moved
-  repeat
-    moved = false
-
-    for i = 1, mid-1 do -- eg 1,2,3
-      if heights[i] > 0 and heights[i+1] == 0 then
-        self:slideColumn(i, 'e')
-        heights[i+1] = heights[i]
-        heights[i] = 0
-        moved = true
-      end
-    end
-
-    for i = self.width, mid+1, -1 do  -- eg 7,6,5
-      if heights[i] > 0 and heights[i-1] == 0 then
-        self:slideColumn(i, 'w')
-        heights[i-1] = heights[i]
-        heights[i] = 0
-        moved = true
-      end
-    end
-
-  until moved == false
-
-end
-]]
 function Grid:compactColumns2()
   local dim = _G.DIMENSIONS
 

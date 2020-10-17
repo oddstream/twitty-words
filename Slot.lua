@@ -8,7 +8,7 @@ local Slot = {
   y = nil,  -- row index
   center = nil, -- point table, screen coords
 
-  tile = nil,
+  tile = nil, -- tile at this slot, can be nil
 }
 Slot.__index = Slot
 
@@ -25,22 +25,13 @@ function Slot.new(grid, x, y)
   -- calculate where the screen coords center point will be
   o.center = {x=(x*dim.Q) - dim.Q + dim.Q50, y=(y*dim.Q) - dim.Q + dim.Q50}
   o.center.x = o.center.x + dim.marginX
-  o.center.y = dim.statusBarHeight + dim.marginY + o.center.y
-
-  -- TODO title and status bar margins
+  o.center.y = dim.titleBarHeight + dim.marginY + o.center.y
 
   return o
 end
 
-function Slot:reset()
-  if self.tile then
-    self.tile:reset()
-  end
-end
-
-function Slot:createTile(letter)
-  self:reset()
-  self.tile = Tile.new(self, letter)
+function Slot:createTile()
+  self.tile = Tile.new(self)
 end
 
 function Slot:deselectAll()
@@ -73,25 +64,15 @@ function Slot:select(x, y)
   end
 end
 
+--[[
 function Slot:tapped()
   -- bubbled up from Tile:tap event handler
   self.grid:tapped(self)  -- bubble up to grid
 end
+]]
 
 function Slot:testSelection()
   self.grid:testSelection()
 end
 
---[[
-function Slot:transitionToThenDeleteThenCreate(dst, letter)
-  transition.moveTo(self.tile.grp, {
-    x = dst.center.x,
-    y = dst.center.y,
-    time = _G.FLIGHT_TIME,
-    transition = easing.linear,
-    delay = 0,
-    onComplete = function() self.tile:delete() dst:createTile(letter) end
-  })
-end
-]]
 return Slot

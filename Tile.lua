@@ -7,12 +7,13 @@ local Tile = {
   selected = nil, -- boolean (or a number, dunno yet)
 
   grp = nil,  -- group of graphic objects
+    rectShadow = nil,
     rectBack = nil,
     textLetter = nil,
 }
 Tile.__index = Tile
 
-function Tile.new(slot, letter)
+function Tile.new(slot)
   local dim = _G.DIMENSIONS
 
   local o = {}
@@ -20,11 +21,9 @@ function Tile.new(slot, letter)
 
   o.slot = slot
 
-  if letter == nil then
+  do
     local n = math.random(1, #_G.SCRABBLE_LETTERS)
     o.letter = string.sub(_G.SCRABBLE_LETTERS, n, n)
-  else
-    o.letter = letter
   end
 
   o.grp = display.newGroup()
@@ -49,22 +48,19 @@ end
 
 function Tile:refreshLetter()
   local dim = _G.DIMENSIONS
-  assert(self.grp)
+
   display.remove(self.textLetter)
   self.textLetter = display.newText(self.grp, self.letter, 0, 0, _G.TILE_FONT, dim.tileFontSize)
   self.textLetter:setFillColor(unpack(_G.MUST_COLORS.black))
 end
 
--- function Tile:refreshEventListener()
---   self.grp:removeEventListener('touch', self)
---   self.grp:addEventListener('touch', self)
--- end
-
+--[[
 function Tile:tap()
   trace('tap', self.letter)
   self:select()
   self.slot:tapped()
 end
+]]
 
 function Tile:touch(event)
   -- event.target is self.grp
