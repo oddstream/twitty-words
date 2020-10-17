@@ -458,22 +458,18 @@ function Grid:compactColumns2()
 
   local widthCols = dim.Q * newCols
   local newMargin = (display.actualContentWidth / 2) - (widthCols / 2)
-  for x=1, self.width do
-    for y=1, self.height do
-      -- TODO use iterator
-      local slot = self:findSlot(x,y)
-      slot.center.x = (x*dim.Q) - dim.Q + dim.Q50  -- copied from Slot.new()
-      slot.center.x = slot.center.x + newMargin
-      if slot.tile then
-        transition.moveTo(slot.tile.grp, {
-          x = slot.center.x,
-          time = _G.FLIGHT_TIME,
-          transition = easing.outQuart,
-        })
-      end
+
+  for _,slot in ipairs(self.slots) do
+    slot.center.x = (slot.x * dim.Q) - dim.Q + dim.Q50  -- copied from Slot.new()
+    slot.center.x = slot.center.x + newMargin
+    if slot.tile then
+      transition.moveTo(slot.tile.grp, {
+        x = slot.center.x,
+        time = _G.FLIGHT_TIME,
+        transition = easing.outQuart,
+      })
     end
   end
-
 end
 
 return Grid
