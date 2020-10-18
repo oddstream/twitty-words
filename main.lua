@@ -108,7 +108,7 @@ _G.SCRABBLE_SCORES = {
   Z = 10,
 }
 
-_G.FLIGHT_TIME = 1000
+_G.FLIGHT_TIME = 2000
 
 _G.MUST_COLORS = {
   uiforeground = {1,1,1},
@@ -178,8 +178,7 @@ if not table.filter then
 end
 -- trace('table filter', type(_G.table.filter))
 
-_G.gm = nil -- GameManager
-_G.tileMover = nil -- TileMover
+_G.grid = nil
 
 -- for k,v in pairs( _G ) do
 --   print( k , v )

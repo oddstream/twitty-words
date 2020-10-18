@@ -115,7 +115,7 @@ function Tile:flyAway(n)
   self.rectBack:setFillColor(unpack(_G.MUST_COLORS.ivory))
   transition.moveTo(self.grp, {
     x = (dim.Q * n) - dim.Q50,
-    y = display.contentHeight - dim.Q50,
+    y = display.contentHeight + dim.Q50,
     time = _G.FLIGHT_TIME,
     transition = easing.outQuart,
     delay = 0,

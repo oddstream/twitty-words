@@ -31,22 +31,29 @@ function Grid.new(width, height)
   return o
 end
 
-function Grid:newLevel()
+function Grid:gameOver()
   -- foreach remaining tile, add up letter scores and deduct from score
+  local deductions = 0
   for _,slot in ipairs(self.slots) do
     if slot.tile then
-      self.score = self.score - _G.SCRABBLE_SCORES[slot.tile.letter]
+      local score = _G.SCRABBLE_SCORES[slot.tile.letter]
+      deductions = deductions + score
+      self.score = self.score - score
     end
   end
+  -- self.slots[1]:flyAwayScore(-deductions)
 
   -- save score and words to high scores
+  trace('deductions', deductions, 'final score', self.score)
 
   -- delete all tiles
   for _,slot in ipairs(self.slots) do
-    if slot.sile then
+    if slot.tile then
       slot.tile:delete()
       slot.tile = nil
     end
+    -- restore position of slot in case it compacted
+    slot:position()
   end
 
   -- run the garbage collector
@@ -61,6 +68,10 @@ function Grid:newLevel()
     print('collected', math.floor(before - after), 'KBytes, using', math.floor(after), 'KBytes', 'leaked', after-last_using)
     composer.setVariable('last_using', after)
   end
+
+end
+
+function Grid:newGame()
 
   -- create tiles
   self:createTiles()
@@ -191,40 +202,6 @@ trace('swapping', t1.letter, t2.letter)
   end
 end
 ]]
-function Grid:flyAwayScore(slot, score)
-  local dim = _G.DIMENSIONS
-
-  local grp = display.newGroup()
-    grp.x = slot.center.x
-    grp.y = slot.center.y
-  _G.MUST_GROUPS.grid:insert(grp)
-  grp:toFront()
-
-  local rectBack = display.newRoundedRect(grp, 0, 0, dim.Q * 0.95, dim.Q * 0.95, dim.Q / 20)  -- TODO magic numbers
-    rectBack:setFillColor(unpack(_G.MUST_COLORS.ivory)) -- if alpha == 0, we don't get tap events
-
-  local textScore = display.newText(grp, string.format('+%u', score), 0, 0, _G.TILE_FONT, dim.tileFontSize * 0.75)
-    textScore:setFillColor(unpack(_G.MUST_COLORS.black))
-
-  -- transition.scaleTo(grp, {
-  --   xScale = 0.5,
-  --   yScale = 0.5,
-  --   time = _G.FLIGHT_TIME,
-  --   transition = easing.linear,
-  -- })
-  transition.moveTo(grp, {
-    x = display.contentWidth - dim.Q50,
-    y = display.contentHeight - dim.Q50,
-    time = _G.FLIGHT_TIME,
-    transition = easing.outQuad,
-    onComplete = function()
-      display.remove(grp)
-      self.score = self.score + score
-      _G.statusBar:setRight(tonumber(self.score))
-    end,
-  })
-end
-
 function Grid:testSelection()
   if #self.selectedSlots == 2 then
     if self.swaps > 0 then
@@ -257,12 +234,16 @@ function Grid:testSelection()
         end
       end
 
-      self:flyAwayScore(self.selectedSlots[#self.selectedSlots], score)
+      self.selectedSlots[#self.selectedSlots]:flyAwayScore(score)
+      self.score = self.score + score
+
       self.selectedSlots = {}
       self:dropColumns()
       self:compactColumns2()
       self.swaps = self.swaps + 1
+
       _G.statusBar:setLeft(string.format('⇆ %s', self.swaps))
+      _G.statusBar:setRight(tonumber(self.score))
     else
       -- trace(word, 'NOT in dictionary')
       self:deselectAllSlots()

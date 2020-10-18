@@ -25,8 +25,6 @@ local function loadDictionary()
   end
 end
 
-local grid = nil
-
 function scene:create(event)
   local sceneGroup = self.view
 
@@ -45,11 +43,8 @@ function scene:create(event)
   _G.titleBar = Titlebar.new({group=_G.MUST_GROUPS.ui})
   _G.statusBar = Statusbar.new({group=_G.MUST_GROUPS.ui})
 
-  -- for debugging the gaps between cells problem
-  -- display.setDefault('background', 0.5,0.5,0.5)
-
-  grid = Grid.new(_G.DIMENSIONS.numX, _G.DIMENSIONS.numY)
-  grid:newLevel()
+  _G.grid = Grid.new(_G.DIMENSIONS.numX, _G.DIMENSIONS.numY)
+  _G.grid:newGame()
 
 end
 
@@ -79,7 +74,7 @@ end
 function scene:destroy(event)
   local sceneGroup = self.view
 
-  grid:destroy()
+  _G.grid:destroy()
 
   -- Code here runs prior to the removal of scene's view
 end
