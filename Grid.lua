@@ -31,6 +31,10 @@ function Grid.new(width, height)
   return o
 end
 
+function Grid:destroy()
+  trace('Gird:destroy()')
+end
+
 function Grid:gameOver()
   -- foreach remaining tile, add up letter scores and deduct from score
   local deductions = 0
@@ -69,6 +73,7 @@ function Grid:gameOver()
     composer.setVariable('last_using', after)
   end
 
+  composer.gotoScene('HighScores', { params={score=self.score, words=self.words}, effect='fade' })
 end
 
 function Grid:newGame()

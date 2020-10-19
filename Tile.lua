@@ -7,14 +7,10 @@ local Tile = {
   selected = nil, -- boolean (or a number, dunno yet)
 
   grp = nil,  -- group of graphic objects
-    rectShadow = nil,
-    rectBack = nil,
-    textLetter = nil,
 }
 Tile.__index = Tile
 
 function Tile.new(slot)
-  local dim = _G.DIMENSIONS
 
   local o = {}
   setmetatable(o, Tile)
@@ -26,19 +22,8 @@ function Tile.new(slot)
     o.letter = string.sub(_G.SCRABBLE_LETTERS, n, n)
   end
 
-  o.grp = display.newGroup()
-  o.grp.x = slot.center.x
-  o.grp.y = slot.center.y
+  o.grp = o.createGraphics(slot.center.x, slot.center.y, o.letter)
   _G.MUST_GROUPS.grid:insert(o.grp)
-
-  o.rectShadow = display.newRoundedRect(o.grp, dim.Q * 0.05, dim.Q * 0.05, dim.Q * 0.95, dim.Q * 0.95, dim.Q / 20)  -- TODO magic numbers
-  o.rectShadow:setFillColor(0.2,0.2,0.2) -- if alpha == 0, we don't get tap events
-
-  o.rectBack = display.newRoundedRect(o.grp, 0, 0, dim.Q * 0.95, dim.Q * 0.95, dim.Q / 20)  -- TODO magic numbers
-  o.rectBack:setFillColor(unpack(_G.MUST_COLORS.ivory)) -- if alpha == 0, we don't get tap events
-
-  o.textLetter = display.newText(o.grp, o.letter, 0, 0, _G.TILE_FONT, dim.tileFontSize)
-  o.textLetter:setFillColor(unpack(_G.MUST_COLORS.black))
 
   -- o.grp:addEventListener('tap', o)
   o.grp:addEventListener('touch', o)
@@ -46,12 +31,39 @@ function Tile.new(slot)
   return o
 end
 
+function Tile.createGraphics(x, y, letter)
+  local dim = _G.DIMENSIONS
+
+  local grp = display.newGroup()
+  grp.x = x
+  grp.y = y
+
+  -- grp[1]
+  local rectShadow = display.newRoundedRect(grp, dim.Q * 0.05, dim.Q * 0.05, dim.Q * 0.95, dim.Q * 0.95, dim.Q / 20)  -- TODO magic numbers
+  rectShadow:setFillColor(0.2,0.2,0.2) -- if alpha == 0, we don't get tap events
+
+  -- grp[2]
+  local rectBack = display.newRoundedRect(grp, 0, 0, dim.Q * 0.95, dim.Q * 0.95, dim.Q / 20)  -- TODO magic numbers
+  rectBack:setFillColor(unpack(_G.MUST_COLORS.ivory)) -- if alpha == 0, we don't get tap events
+
+  -- grp[3]
+  local tileFontSize = dim.tileFontSize
+  if string.len(letter) > 1 then
+    tileFontSize = tileFontSize * 0.66
+  end
+  local textLetter = display.newText(grp, letter, 0, 0, _G.TILE_FONT, tileFontSize)
+  textLetter:setFillColor(unpack(_G.MUST_COLORS.black))
+
+  return grp
+end
+
 function Tile:refreshLetter()
   local dim = _G.DIMENSIONS
 
-  display.remove(self.textLetter)
-  self.textLetter = display.newText(self.grp, self.letter, 0, 0, _G.TILE_FONT, dim.tileFontSize)
-  self.textLetter:setFillColor(unpack(_G.MUST_COLORS.black))
+  local textLetter = self.grp[3]
+  display.remove(textLetter)
+  textLetter = display.newText(self.grp, self.letter, 0, 0, _G.TILE_FONT, dim.tileFontSize)
+  textLetter:setFillColor(unpack(_G.MUST_COLORS.black))
 end
 
 --[[
@@ -92,12 +104,12 @@ end
 
 function Tile:select()
   self.selected = true
-  self.rectBack:setFillColor(unpack(_G.MUST_COLORS.gold))
+  self.grp[2]:setFillColor(unpack(_G.MUST_COLORS.gold))
 end
 
 function Tile:deselect()
   self.selected = false
-  self.rectBack:setFillColor(unpack(_G.MUST_COLORS.ivory))
+  self.grp[2]:setFillColor(unpack(_G.MUST_COLORS.ivory))
 end
 
 function Tile:delete()
@@ -112,7 +124,7 @@ function Tile:flyAway(n)
   local dim = _G.DIMENSIONS
 
   self.grp:toFront()
-  self.rectBack:setFillColor(unpack(_G.MUST_COLORS.ivory))
+  self.grp[2]:setFillColor(unpack(_G.MUST_COLORS.ivory))
   transition.moveTo(self.grp, {
     x = (dim.Q * n) - dim.Q50,
     y = display.contentHeight + dim.Q50,

@@ -8,9 +8,7 @@ local scene = composer.newScene()
 local widget = require('widget')
 local json = require('json')
 
-local Util = require 'Util'
-
-local applauseSound = nil
+local Tile = require 'Tile'
 
 local scoresTable = {}
 
@@ -28,7 +26,19 @@ local function loadScores()
   end
 
   if scoresTable == nil or #scoresTable == 0 then
-    scoresTable = { 1000, 900, 800, 700, 600, 500, 400, 300, 200, 100 }
+    scoresTable = {
+      -- https://www.ef.com/wwen/blog/language/funniest-words-in-english/
+      {score=1000, words={'SHENANIGANS'}},
+      {score=900, words={'BAMBOOZLE'}},
+      {score=800, words={'BODACIOUS'}},
+      {score=700, words={'BROUHAHA'}},
+      {score=600, words={'CANOODLE'}},
+      {score=500, words={'GNARLY'}},
+      {score=400, words={'GOGGLE'}},
+      {score=300, words={'GUBBINS'}},
+      {score=200, words={'MALARKEY'}},
+      {score=100, words={'NIMCOMPOOP'}},
+    }
   end
 end
 
@@ -58,83 +68,109 @@ end
 -- create()
 function scene:create(event)
 
+  local dim = _G.DIMENSIONS
   local sceneGroup = self.view
   -- Code here runs when the scene is first created but has not yet appeared on screen
 
   loadScores()
 
   local score = nil
+  local words = nil
 
   if event.params then
     score = event.params.score
-    if score then
-      table.insert(scoresTable, score)
-      local function comp(a, b)
-        return a > b
-      end
-      table.sort(scoresTable, comp) -- default comp uses <
+    -- trace('score', score)
+    words = event.params.words
+    -- trace('words', words)
 
-      if score > scoresTable[#scoresTable] then
-        applauseSound = audio.loadSound('sound22.mp3')
-        -- print('writing scores')
+    if score and words then
+
+      -- sort the words once when they first arrive
+      -- TODO make a better version of this which uses _G.SCRABBLE_SCORES
+      table.sort(words, function(a,b) return string.len(a) > string.len(b) end)
+
+      table.insert(scoresTable, {score=score, words=words})
+
+      table.sort(scoresTable, function(a,b) return a.score > b.score end) -- default comp uses <
+
+      if score > scoresTable[#scoresTable].score then
+        trace('writing scores')
         saveScores()
       else
-        applauseSound = audio.loadSound('sound46.mp3')
-        -- print('not writing scores')
+        trace('worthless new score')
       end
 
     end
   end
 
-  local bannerText = 'HIGH SCORES'
-  if event.params and event.params.banner then
-    bannerText = event.params.banner
-  end
+  -- local bannerText = 'HIGH SCORES'
+  -- if event.params and event.params.banner then
+  --   bannerText = event.params.banner
+  -- end
 
-  local y = 120
-  local highScoresBanner = display.newText(sceneGroup, bannerText, display.contentCenterX, y, native.systemFontBold, 72)
-  y = y + 120
+  local y = dim.Q50
+  -- local highScoresBanner = display.newText(sceneGroup, bannerText, display.contentCenterX, y, native.systemFontBold, 72)
+  -- y = y + dim.Q50
 
-  if score then
-    local infoText1 = tostring(event.params.score)
-    local displayText1 = display.newText(sceneGroup, infoText1, display.contentCenterX, y, native.systemFontBold, 72)
-    displayText1:setFillColor(1,1,0)
-    y = y + 120
-  end
+  -- if score then
+  --   local infoText1 = string.format('SCORE %d', event.params.score)
+  --   local displayText1 = display.newText(sceneGroup, infoText1, display.contentCenterX, y, native.systemFontBold, 72)
+  --   displayText1:setFillColor(0,0,0)
+  --   y = y + dim.Q50
+  -- end
 
   for i = 1, 10 do
-    if ( scoresTable[i] ) then
-      local rankNum = display.newText(sceneGroup, i .. '.', display.contentCenterX-50, y, native.systemFont, 48)
-      rankNum.anchorX = 1
-
-      local thisScore = display.newText(sceneGroup, scoresTable[i], display.contentCenterX-30, y, native.systemFontBold, 48)
-      thisScore.anchorX = 0
-
-      if score and scoresTable[i] == score then
-        rankNum:setFillColor(1,1,0)
-        thisScore:setFillColor(1,1,0)
+    if scoresTable[i] then
+      local grpScore = Tile.createGraphics(dim.Q50, y, tonumber(scoresTable[i].score))
+      sceneGroup:insert(grpScore)
+      grpScore:scale(0.5, 0.5)
+      if scoresTable[i].score == score then
+        grpScore[2]:setFillColor(unpack(_G.MUST_COLORS.gold))
       end
 
-      y = y + 60
+      do
+        local x = dim.Q50 * 3
+        local word = scoresTable[i].words[1]
+        for j=1, string.len(word) do
+          local grpLetter = Tile.createGraphics(x, y, string.sub(word, j, j))
+          sceneGroup:insert(grpLetter)
+          grpLetter:scale(0.5, 0.5)
+          if scoresTable[i].score == score then
+            grpLetter[2]:setFillColor(unpack(_G.MUST_COLORS.gold))
+          end
+
+          x = x + dim.Q50
+        end
+      end
+
+      -- local bestWord = display.newText(sceneGroup, scoresTable[i].words[1], display.contentCenterX+100, y, _G.TILE_FONT, 72)
+      -- bestWord.anchorX = 0
+
+      -- if scoresTable[i].score == score then color tile back (grp[2]) to gold
+      y = y + dim.Q50
     end
   end
 
-  local exitButton = widget.newButton({
-    id = 'return',
+  local newButton = widget.newButton({
+    id = 'new',
+    label = '★',
+    labelColor = { default=_G.MUST_COLORS.black, over=_G.MUST_COLORS.black },
+    font = _G.TILE_FONT,
+    fontSize = dim.Q,
     x = display.contentCenterX,
-    y = display.contentHeight - 200,
+    y = display.contentHeight - dim.Q,
     onRelease = function()
-      composer.gotoScene('Menu', {effect='fade'})
+      composer.gotoScene('Must', {effect='fade'})
     end,
 
-    shape = 'circle',
-    radius = 60,
-    fillColor = { default={1,1,0}, over={0.5,0.5,0} }
+    shape = 'roundedrect',
+    width = dim.Q,
+    height = dim.Q,
+    cornerRadius = dim.Q / 20,
+    fillColor = { default=_G.MUST_COLORS.ivory, over=_G.MUST_COLORS.ivory },
+    -- strokeColor = { default=_G.MUST_COLORS.black, over=_G.MUST_COLORS.black }
   })
-  sceneGroup:insert(exitButton)
-
-  local exitTriangle = Util.newTriangleBack(sceneGroup, display.contentCenterX, display.contentHeight - 200, 40)
-  exitTriangle:setFillColor(0,0,0)
+  sceneGroup:insert(newButton)
 
 end
 
@@ -148,9 +184,6 @@ function scene:show(event)
     -- Code here runs when the scene is still off screen (but is about to come on screen)
   elseif phase == 'did' then
     -- Code here runs when the scene is entirely on screen
-    if applauseSound then
-      audio.play(applauseSound)
-    end
   end
 end
 
@@ -171,11 +204,6 @@ end
 function scene:destroy(event)
   local sceneGroup = self.view
   -- Code here runs prior to the removal of scene's view
-  if applauseSound then
-    audio.stop()
-    audio.dispose(applauseSound)
-    applauseSound = nil
-  end
   assert(Runtime:removeEventListener('key', scene))
 end
 
@@ -183,7 +211,7 @@ function scene:key(event)
   local phase = event.phase
   if phase == 'up' then
     if event.keyName == 'back' or event.keyName == 'deleteBack' then
-      composer.gotoScene('Menu', {effect='fade'})
+      composer.gotoScene('Must', {effect='fade'})
       return true -- override the key
     end
   end

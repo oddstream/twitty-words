@@ -28,9 +28,9 @@ function Titlebar.new(o)
     y = halfHeight,
     onRelease = function()
       _G.grid:gameOver()
-      _G.grid:newGame()
+      -- _G.grid:newGame()
     end,
-    label = '★',
+    label = 'FINISH',
     labelColor = { default=_G.MUST_COLORS.uiforeground, over=_G.MUST_COLORS.uicontrol },
     font = _G.BOLD_FONT,
     fontSize = fontSize,
