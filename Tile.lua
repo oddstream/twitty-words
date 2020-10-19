@@ -127,11 +127,13 @@ function Tile:flyAway(n)
   self.grp[2]:setFillColor(unpack(_G.MUST_COLORS.ivory))
   transition.moveTo(self.grp, {
     x = (dim.Q * n) - dim.Q50,
-    y = display.contentHeight + dim.Q50,
+    y = display.contentHeight - dim.Q50,
     time = _G.FLIGHT_TIME,
     transition = easing.outQuart,
     delay = 0,
-    onComplete = function() self:delete() end,
+    onComplete = function()
+      timer.performWithDelay(1000, function() self:delete() end)
+    end,
   })
 end
 

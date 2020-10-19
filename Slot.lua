@@ -59,7 +59,7 @@ function Slot:select(x, y)
   if self.tile then
     -- only select this slot if event x/y is within radius of center
     -- otherwise diagonal drags select adjacent tiles
-    if pointInCircle(x, y, self.center.x, self.center.y, _G.DIMENSIONS.Q50) then
+    if pointInCircle(x, y, self.center.x, self.center.y, _G.DIMENSIONS.Q / 3.33) then
       self.tile:select()
       self.grid:selectSlot(self)
     -- else
@@ -98,11 +98,11 @@ function Slot:flyAwayScore(score)
 
   transition.moveTo(grp, {
     x = display.contentWidth - dim.Q50,
-    y = display.contentHeight + dim.Q50,
+    y = display.contentHeight - dim.Q50,
     time = _G.FLIGHT_TIME,
     transition = easing.outQuad,
     onComplete = function()
-      display.remove(grp)
+      timer.performWithDelay(1000, function() display.remove(grp) end)
     end,
   })
 end

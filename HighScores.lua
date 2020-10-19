@@ -65,6 +65,17 @@ end
 -- Scene event functions
 -- -----------------------------------------------------------------------------------
 
+local function wordScoreComp(a, b)
+  local function calcScore(s)
+    local score = 0
+    for i=1, string.len(s) do
+      score = score + _G.SCRABBLE_SCORES[string.sub(s, i, i)]
+    end
+    return score * string.len(s)
+  end
+  return calcScore(a) > calcScore(b)
+end
+
 -- create()
 function scene:create(event)
 
@@ -72,7 +83,27 @@ function scene:create(event)
   local sceneGroup = self.view
   -- Code here runs when the scene is first created but has not yet appeared on screen
 
-  loadScores()
+  local function _createTile(x, y, txt, selected)
+    local xStart = math.random(0, display.contentWidth)
+    local yStart = math.random(0, display.contentHeight)
+    local grp = Tile.createGraphics(xStart, yStart, txt)
+    sceneGroup:insert(grp)
+    grp:scale(0.5, 0.5)
+    if selected then
+      grp[2]:setFillColor(unpack(_G.MUST_COLORS.gold))
+    end
+
+    transition.moveTo(grp, {
+      x = x,
+      y = y,
+      time = _G.FLIGHT_TIME,
+      transition = easing.outQuart,
+    })
+
+    return grp
+  end
+
+    loadScores()
 
   local score = nil
   local words = nil
@@ -87,7 +118,8 @@ function scene:create(event)
 
       -- sort the words once when they first arrive
       -- TODO make a better version of this which uses _G.SCRABBLE_SCORES
-      table.sort(words, function(a,b) return string.len(a) > string.len(b) end)
+      -- table.sort(words, function(a,b) return string.len(a) > string.len(b) end)
+      table.sort(words, wordScoreComp)
 
       table.insert(scoresTable, {score=score, words=words})
 
@@ -121,42 +153,43 @@ function scene:create(event)
 
   for i = 1, 10 do
     if scoresTable[i] then
-      local grpScore = Tile.createGraphics(dim.Q50, y, tonumber(scoresTable[i].score))
-      sceneGroup:insert(grpScore)
-      grpScore:scale(0.5, 0.5)
-      if scoresTable[i].score == score then
-        grpScore[2]:setFillColor(unpack(_G.MUST_COLORS.gold))
-      end
+      _createTile(dim.Q50, y, tostring(scoresTable[i].score), scoresTable[i].score == score)
 
       do
         local x = dim.Q50 * 3
         local word = scoresTable[i].words[1]
         for j=1, string.len(word) do
-          local grpLetter = Tile.createGraphics(x, y, string.sub(word, j, j))
-          sceneGroup:insert(grpLetter)
-          grpLetter:scale(0.5, 0.5)
-          if scoresTable[i].score == score then
-            grpLetter[2]:setFillColor(unpack(_G.MUST_COLORS.gold))
-          end
-
+          _createTile(x, y, string.sub(word, j, j), scoresTable[i].score == score)
           x = x + dim.Q50
         end
       end
 
-      -- local bestWord = display.newText(sceneGroup, scoresTable[i].words[1], display.contentCenterX+100, y, _G.TILE_FONT, 72)
-      -- bestWord.anchorX = 0
-
-      -- if scoresTable[i].score == score then color tile back (grp[2]) to gold
       y = y + dim.Q50
     end
   end
 
+  if score < scoresTable[10].score then
+    y = y + dim.Q50
+
+    _createTile(dim.Q50, y, tostring(score), true)
+
+    if words and #words > 1 then
+      local x = dim.Q50 * 3
+      local word = words[1]
+      for j=1, string.len(word) do
+        _createTile(x, y, string.sub(word, j, j), true)
+        x = x + dim.Q50
+      end
+    end
+  end
+
+--[[
   local newButton = widget.newButton({
     id = 'new',
     label = '★',
     labelColor = { default=_G.MUST_COLORS.black, over=_G.MUST_COLORS.black },
     font = _G.TILE_FONT,
-    fontSize = dim.Q,
+    fontSize = dim.Q50,
     x = display.contentCenterX,
     y = display.contentHeight - dim.Q,
     onRelease = function()
@@ -164,14 +197,16 @@ function scene:create(event)
     end,
 
     shape = 'roundedrect',
-    width = dim.Q,
-    height = dim.Q,
+    width = dim.Q50,
+    height = dim.Q50,
     cornerRadius = dim.Q / 20,
     fillColor = { default=_G.MUST_COLORS.ivory, over=_G.MUST_COLORS.ivory },
     -- strokeColor = { default=_G.MUST_COLORS.black, over=_G.MUST_COLORS.black }
   })
   sceneGroup:insert(newButton)
-
+]]
+  local newButton = _createTile(display.contentCenterX, display.contentHeight - dim.Q, '★', true)
+  newButton:addEventListener('tap', function() composer.gotoScene('Must', {effect='fade'}) end)
 end
 
 
