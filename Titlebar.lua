@@ -38,7 +38,7 @@ function Titlebar.new(o)
   })
   o.group:insert(o.left)
 
-  o.center = display.newText(o.group, 'Tiles', display.contentCenterX, halfHeight, _G.BOLD_FONT, fontSize)
+  o.center = display.newText(o.group, '', display.contentCenterX, halfHeight, _G.BOLD_FONT, fontSize)
   o.center:setFillColor(unpack(_G.MUST_COLORS.uiforeground))
 
   o.right = display.newText(o.group, '?', display.contentWidth - fontSize2, halfHeight, _G.BOLD_FONT, fontSize)

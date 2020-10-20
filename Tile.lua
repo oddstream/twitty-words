@@ -35,8 +35,8 @@ function Tile.createGraphics(x, y, letter)
   local dim = _G.DIMENSIONS
 
   local grp = display.newGroup()
-  grp.x = x
-  grp.y = y
+    grp.x = dim.Q50
+    grp.y = display.contentHeight - dim.Q50
 
   -- grp[1]
   local rectShadow = display.newRoundedRect(grp, dim.Q * 0.05, dim.Q * 0.05, dim.Q * 0.95, dim.Q * 0.95, dim.Q / 20)  -- TODO magic numbers
@@ -54,7 +54,16 @@ function Tile.createGraphics(x, y, letter)
   local textLetter = display.newText(grp, letter, 0, 0, _G.TILE_FONT, tileFontSize)
   textLetter:setFillColor(unpack(_G.MUST_COLORS.black))
 
-  return grp
+  timer.performWithDelay(_G.FLIGHT_TIME, function()
+      transition.moveTo(grp, {
+        x = x,
+        y = y,
+        time = _G.FLIGHT_TIME,
+        transition = easing.outQuart,
+      })
+    end)
+
+    return grp
 end
 
 function Tile:refreshLetter()
@@ -126,8 +135,8 @@ function Tile:flyAway(n)
   self.grp:toFront()
   self.grp[2]:setFillColor(unpack(_G.MUST_COLORS.ivory))
   transition.moveTo(self.grp, {
-    x = (dim.Q * n) - dim.Q50,
-    y = display.contentHeight - dim.Q50,
+    x = display.contentWidth + (dim.Q * n),
+    y = dim.Q50,
     time = _G.FLIGHT_TIME,
     transition = easing.outQuart,
     delay = 0,

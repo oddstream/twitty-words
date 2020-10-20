@@ -33,7 +33,7 @@ function Dim.new()
   o.tileFontSize = o.Q * 0.66
 
   o.titleBarHeight = display.actualContentHeight / 24
-  o.statusBarHeight = display.actualContentHeight / 24
+  o.statusBarHeight = o.Q
 
   local contentHeight = display.actualContentHeight - o.titleBarHeight - o.statusBarHeight
 

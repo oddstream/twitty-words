@@ -36,19 +36,7 @@ function Grid:destroy()
 end
 
 function Grid:gameOver()
-  -- foreach remaining tile, add up letter scores and deduct from score
-  local deductions = 0
-  for _,slot in ipairs(self.slots) do
-    if slot.tile then
-      local score = _G.SCRABBLE_SCORES[slot.tile.letter]
-      deductions = deductions + score
-      self.score = self.score - score
-    end
-  end
-  -- self.slots[1]:flyAwayScore(-deductions)
-
-  -- save score and words to high scores
-  trace('deductions', deductions, 'final score', self.score)
+  local deductions = self:calcResidualScore()
 
   -- delete all tiles
   for _,slot in ipairs(self.slots) do
@@ -73,7 +61,7 @@ function Grid:gameOver()
     composer.setVariable('last_using', after)
   end
 
-  composer.gotoScene('HighScores', { params={score=self.score, words=self.words}, effect='fade' })
+  composer.gotoScene('HighScores', { params={score=self.score - deductions, words=self.words}, effect='fade' })
 end
 
 function Grid:newGame()
@@ -88,8 +76,12 @@ function Grid:newGame()
   self.selectedSlots = {}
 
   -- update ui
+  self:updateUI()
+end
+
+function Grid:updateUI()
   _G.statusBar:setLeft(string.format('⇆ %s', self.swaps))
-  _G.statusBar:setRight(string.format('%s', self.score))
+  _G.statusBar:setRight(string.format('%+d', self.score - self:calcResidualScore()))
 end
 
 function Grid:iterator(fn)
@@ -127,6 +119,16 @@ function Grid:linkSlots()
     s.w = self:findSlot(s.x - 1, s.y)
     s.nw = self:findSlot(s.x - 1, s.y - 1)
   end
+end
+
+function Grid:calcResidualScore()
+  local score = 0
+  for _,slot in ipairs(self.slots) do
+    if slot.tile then
+      score = score + _G.SCRABBLE_SCORES[slot.tile.letter]
+    end
+  end
+  return score
 end
 
 function Grid:getSelectedWord()
@@ -239,16 +241,15 @@ function Grid:testSelection()
         end
       end
 
-      self.selectedSlots[#self.selectedSlots]:flyAwayScore(score)
-      self.score = self.score + score
+      self.selectedSlots[1]:flyAwayScore(score) -- this increments score
+      -- self.score = self.score + score
 
       self.selectedSlots = {}
       self:dropColumns()
       self:compactColumns2()
       self.swaps = self.swaps + 1
 
-      _G.statusBar:setLeft(string.format('⇆ %s', self.swaps))
-      _G.statusBar:setRight(tonumber(self.score))
+      -- self:updateUI()
     else
       -- trace(word, 'NOT in dictionary')
       self:deselectAllSlots()

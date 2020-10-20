@@ -97,12 +97,19 @@ function Slot:flyAwayScore(score)
     textScore:setFillColor(unpack(_G.MUST_COLORS.black))
 
   transition.moveTo(grp, {
-    x = display.contentWidth - dim.Q50,
+    x = display.contentWidth - dim.Q,
     y = display.contentHeight - dim.Q50,
     time = _G.FLIGHT_TIME,
     transition = easing.outQuad,
     onComplete = function()
-      timer.performWithDelay(1000, function() display.remove(grp) end)
+      self.grid.score = self.grid.score + score
+      self.grid:updateUI()
+      transition.scaleTo(grp, {
+        xScale = 0.1,
+        yScale = 0.1,
+        time = 1000,
+        onComplete = function() display.remove(grp) end
+      })
     end,
   })
 end

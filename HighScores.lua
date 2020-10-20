@@ -84,21 +84,21 @@ function scene:create(event)
   -- Code here runs when the scene is first created but has not yet appeared on screen
 
   local function _createTile(x, y, txt, selected)
-    local xStart = math.random(0, display.contentWidth)
-    local yStart = math.random(0, display.contentHeight)
-    local grp = Tile.createGraphics(xStart, yStart, txt)
+    -- local xStart = math.random(0, display.contentWidth)
+    -- local yStart = math.random(0, display.contentHeight)
+    local grp = Tile.createGraphics(x, y, txt)
     sceneGroup:insert(grp)
     grp:scale(0.5, 0.5)
     if selected then
       grp[2]:setFillColor(unpack(_G.MUST_COLORS.gold))
     end
 
-    transition.moveTo(grp, {
-      x = x,
-      y = y,
-      time = _G.FLIGHT_TIME,
-      transition = easing.outQuart,
-    })
+    -- transition.moveTo(grp, {
+    --   x = x,
+    --   y = y,
+    --   time = _G.FLIGHT_TIME,
+    --   transition = easing.outQuart,
+    -- })
 
     return grp
   end
