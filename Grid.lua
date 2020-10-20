@@ -154,6 +154,16 @@ function Grid:createTiles()
   end)
 end
 
+function Grid:countTiles()
+  local count = 0
+  for _,slot in ipairs(self.slots) do
+    if slot.tile then
+      count = count + 1
+    end
+  end
+  return count
+end
+
 function Grid:deselectAllSlots()
   self:iterator(function(slot)
     slot:deselect()
@@ -241,15 +251,20 @@ function Grid:testSelection()
         end
       end
 
-      self.selectedSlots[1]:flyAwayScore(score) -- this increments score
-      -- self.score = self.score + score
+      self.selectedSlots[1]:flyAwayScore(score) -- this increments score, updates UI
 
       self.selectedSlots = {}
-      self:dropColumns()
-      self:compactColumns2()
       self.swaps = self.swaps + 1
 
-      -- self:updateUI()
+      self:dropColumns()
+      self:compactColumns2()
+
+      -- wait for tile transitions to finish (and tiles be deleted) before checking
+      timer.performWithDelay(_G.FLIGHT_TIME, function()
+        if self:countTiles() < 2 then -- will end automatically with 0 or 1 tiles
+          self:gameOver()
+        end
+      end)
     else
       -- trace(word, 'NOT in dictionary')
       self:deselectAllSlots()

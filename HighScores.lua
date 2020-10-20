@@ -173,7 +173,7 @@ function scene:create(event)
 
     _createTile(dim.Q50, y, tostring(score), true)
 
-    if words and #words > 1 then
+    if words and #words > 0 then
       local x = dim.Q50 * 3
       local word = words[1]
       for j=1, string.len(word) do

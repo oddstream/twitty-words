@@ -35,7 +35,7 @@ function Tile.createGraphics(x, y, letter)
   local dim = _G.DIMENSIONS
 
   local grp = display.newGroup()
-    grp.x = dim.Q50
+    grp.x = display.contentWidth / 2
     grp.y = display.contentHeight - dim.Q50
 
   -- grp[1]
