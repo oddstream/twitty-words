@@ -1,5 +1,7 @@
 -- Statusbar.lua
 
+local widget = require 'widget'
+
 --[[
   varargs
   args count = 0
@@ -38,8 +40,22 @@ function Statusbar.new(o)
   o.rect = display.newRect(o.group, display.contentCenterX, display.contentHeight - halfHeight, display.contentWidth, height)
   o.rect:setFillColor(unpack(_G.MUST_COLORS.uibackground))
 
-  o.left = display.newText(o.group, '', fontSize2, display.contentHeight - halfHeight, _G.BOLD_FONT, fontSize)
-  o.left:setFillColor(unpack(_G.MUST_COLORS.uiforeground))
+  -- o.left = display.newText(o.group, '', fontSize2, display.contentHeight - halfHeight, _G.BOLD_FONT, fontSize)
+  -- o.left:setFillColor(unpack(_G.MUST_COLORS.uiforeground))
+
+  o.left = widget.newButton({
+    x = fontSize2,
+    y = display.contentHeight - halfHeight,
+    onRelease = function()
+      _G.grid:jumble()
+    end,
+    label = 'JUMBLE',
+    labelColor = { default=_G.MUST_COLORS.uiforeground, over=_G.MUST_COLORS.uicontrol },
+    font = _G.BOLD_FONT,
+    fontSize = fontSize,
+    textOnly = true,
+  })
+  o.group:insert(o.left)
 
   o.center = display.newText(o.group, '', display.contentCenterX, display.contentHeight - halfHeight, _G.BOLD_FONT, fontSize)
   o.center:setFillColor(unpack(_G.MUST_COLORS.uiforeground))
@@ -64,7 +80,8 @@ function Statusbar:set(pos, s)
 end
 
 function Statusbar:setLeft(s)
-  self:set('left', s)
+  -- self:set('left', s)
+  self.left:setLabel(s)
 end
 
 function Statusbar:setCenter(s)

@@ -416,4 +416,45 @@ function Grid:compactColumns2()
   end
 end
 
+function Grid:jumble()
+  if self.swaps > 0 then
+    local count = self:countTiles()
+    for n=1, count/2 do
+      -- find a random slot with a tile
+      local slot1
+      repeat
+        slot1 = self.slots[math.random(1, #self.slots)]
+      until slot1.tile
+
+      -- find a different random slot with a tile
+      local slot2
+      repeat
+        slot2 = self.slots[math.random(1, #self.slots)]
+      until slot2 ~= slot1 and slot2.tile
+
+      -- swap the tiles (with transition)
+      slot1.tile, slot2.tile = slot2.tile, slot1.tile
+
+      slot1.tile.slot = slot1
+      transition.moveTo(slot1.tile.grp, {
+        x = slot1.center.x,
+        y = slot1.center.y,
+        time = _G.FLIGHT_TIME,
+        transition = easing.outQuart,
+      })
+
+      slot2.tile.slot = slot2
+      transition.moveTo(slot2.tile.grp, {
+        x = slot2.center.x,
+        y = slot2.center.y,
+        time = _G.FLIGHT_TIME,
+        transition = easing.outQuart,
+      })
+    end
+    self.swaps = self.swaps - 1
+    _G.statusBar:setLeft(string.format('⇆ %s', self.swaps))
+    _G.statusBar:setCenter(nil)
+end
+end
+
 return Grid
