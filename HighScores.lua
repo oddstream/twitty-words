@@ -65,17 +65,6 @@ end
 -- Scene event functions
 -- -----------------------------------------------------------------------------------
 
-local function wordScoreComp(a, b)
-  local function calcScore(s)
-    local score = 0
-    for i=1, string.len(s) do
-      score = score + _G.SCRABBLE_SCORES[string.sub(s, i, i)]
-    end
-    return score * string.len(s)
-  end
-  return calcScore(a) > calcScore(b)
-end
-
 -- create()
 function scene:create(event)
 
@@ -115,11 +104,6 @@ function scene:create(event)
     -- trace('words', words)
 
     if score and words then
-
-      -- sort the words once when they first arrive
-      -- TODO make a better version of this which uses _G.SCRABBLE_SCORES
-      -- table.sort(words, function(a,b) return string.len(a) > string.len(b) end)
-      table.sort(words, wordScoreComp)
 
       table.insert(scoresTable, {score=score, words=words})
 

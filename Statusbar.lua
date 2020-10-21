@@ -1,5 +1,6 @@
 -- Statusbar.lua
 
+local composer = require 'composer'
 local widget = require 'widget'
 
 --[[
@@ -49,7 +50,7 @@ function Statusbar.new(o)
     onRelease = function()
       _G.grid:jumble()
     end,
-    label = 'JUMBLE',
+    label = '',
     labelColor = { default=_G.MUST_COLORS.uiforeground, over=_G.MUST_COLORS.uicontrol },
     font = _G.BOLD_FONT,
     fontSize = fontSize,
@@ -60,8 +61,22 @@ function Statusbar.new(o)
   o.center = display.newText(o.group, '', display.contentCenterX, display.contentHeight - halfHeight, _G.BOLD_FONT, fontSize)
   o.center:setFillColor(unpack(_G.MUST_COLORS.uiforeground))
 
-  o.right = display.newText(o.group, '', display.contentWidth - fontSize2, display.contentHeight - halfHeight, _G.BOLD_FONT, fontSize)
-  o.right:setFillColor(unpack(_G.MUST_COLORS.uiforeground))
+  -- o.right = display.newText(o.group, '', display.contentWidth - fontSize2, display.contentHeight - halfHeight, _G.BOLD_FONT, fontSize)
+  -- o.right:setFillColor(unpack(_G.MUST_COLORS.uiforeground))
+
+  o.right = widget.newButton({
+    x = display.contentWidth - fontSize2,
+    y = display.contentHeight - halfHeight,
+    onRelease = function()
+      composer.showOverlay('FoundWords')
+    end,
+    label = '',
+    labelColor = { default=_G.MUST_COLORS.uiforeground, over=_G.MUST_COLORS.uicontrol },
+    font = _G.BOLD_FONT,
+    fontSize = fontSize,
+    textOnly = true,
+  })
+  o.group:insert(o.right)
 
   return o
 end
@@ -89,7 +104,8 @@ function Statusbar:setCenter(s)
 end
 
 function Statusbar:setRight(s)
-  self:set('right', s)
+  -- self:set('right', s)
+  self.right:setLabel(s)
 end
 
 return Statusbar

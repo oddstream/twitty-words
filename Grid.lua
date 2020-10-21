@@ -84,6 +84,22 @@ function Grid:updateUI()
   _G.statusBar:setRight(string.format('%+d', self.score - self:calcResidualScore()))
 end
 
+function Grid:sortWords()
+
+  local function wordScoreComp(a, b)
+    local function calcScore(s)
+      local score = 0
+      for i=1, string.len(s) do
+        score = score + _G.SCRABBLE_SCORES[string.sub(s, i, i)]
+      end
+      return score * string.len(s)
+    end
+    return calcScore(a) > calcScore(b)
+  end
+
+  table.sort(self.words, wordScoreComp)
+end
+
 function Grid:iterator(fn)
   for _,s in ipairs(self.slots) do
     fn(s)
@@ -241,6 +257,7 @@ function Grid:testSelection()
     -- if true then
       trace(score, word)
       table.insert(self.words, word)
+      self:sortWords()
 
       do
         local n = 1
@@ -417,44 +434,53 @@ function Grid:compactColumns2()
 end
 
 function Grid:jumble()
-  if self.swaps > 0 then
-    local count = self:countTiles()
-    for n=1, count/2 do
-      -- find a random slot with a tile
-      local slot1
-      repeat
-        slot1 = self.slots[math.random(1, #self.slots)]
-      until slot1.tile
+  if self.swaps == 0 then
+    return
+  end
 
-      -- find a different random slot with a tile
-      local slot2
-      repeat
-        slot2 = self.slots[math.random(1, #self.slots)]
-      until slot2 ~= slot1 and slot2.tile
+  local count = self:countTiles()
+  if count < 3 then
+    return
+  end
 
-      -- swap the tiles (with transition)
-      slot1.tile, slot2.tile = slot2.tile, slot1.tile
+    -- could use Knuth Fisher Yates on an array of tiles, using tile.slot backlink
+  for i=1, count do
+    -- find a random slot with a tile
 
-      slot1.tile.slot = slot1
-      transition.moveTo(slot1.tile.grp, {
-        x = slot1.center.x,
-        y = slot1.center.y,
-        time = _G.FLIGHT_TIME,
-        transition = easing.outQuart,
-      })
+    local slot1
+    repeat
+      slot1 = self.slots[math.random(1, #self.slots)]
+    until slot1.tile
 
-      slot2.tile.slot = slot2
-      transition.moveTo(slot2.tile.grp, {
-        x = slot2.center.x,
-        y = slot2.center.y,
-        time = _G.FLIGHT_TIME,
-        transition = easing.outQuart,
-      })
-    end
-    self.swaps = self.swaps - 1
-    _G.statusBar:setLeft(string.format('⇆ %s', self.swaps))
-    _G.statusBar:setCenter(nil)
-end
+    -- find a different random slot with a tile
+    local slot2
+    repeat
+      slot2 = self.slots[math.random(1, #self.slots)]
+    until slot2 ~= slot1 and slot2.tile
+
+    -- swap the tiles (with transition)
+    slot1.tile, slot2.tile = slot2.tile, slot1.tile
+
+    slot1.tile.slot = slot1
+    transition.moveTo(slot1.tile.grp, {
+      x = slot1.center.x,
+      y = slot1.center.y,
+      time = _G.FLIGHT_TIME,
+      transition = easing.outQuart,
+    })
+
+    slot2.tile.slot = slot2
+    transition.moveTo(slot2.tile.grp, {
+      x = slot2.center.x,
+      y = slot2.center.y,
+      time = _G.FLIGHT_TIME,
+      transition = easing.outQuart,
+    })
+  end
+
+  self.swaps = self.swaps - 1
+  _G.statusBar:setLeft(string.format('⇆ %s', self.swaps))
+  _G.statusBar:setCenter(nil)
 end
 
 return Grid
