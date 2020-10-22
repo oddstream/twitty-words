@@ -33,11 +33,11 @@ local function loadScores()
       {score=800, words={'BODACIOUS'}},
       {score=700, words={'BROUHAHA'}},
       {score=600, words={'CANOODLE'}},
-      {score=500, words={'GNARLY'}},
+      {score=500, words={'NIMCOMPOOP'}},
       {score=400, words={'GOGGLE'}},
       {score=300, words={'GUBBINS'}},
       {score=200, words={'MALARKEY'}},
-      {score=100, words={'NIMCOMPOOP'}},
+      {score=100, words={'GNARLY'}},
     }
   end
 end
@@ -110,21 +110,40 @@ function scene:create(event)
       table.sort(scoresTable, function(a,b) return a.score > b.score end) -- default comp uses <
 
       if score > scoresTable[#scoresTable].score then
-        trace('writing scores')
+        -- trace('writing scores')
         saveScores()
-      else
-        trace('worthless new score')
+      -- else
+      --   trace('worthless new score')
       end
 
     end
   end
 
+  local height = _G.DIMENSIONS.toolBarHeight
+  local halfHeight = height / 2
+
+  local rect = display.newRect(sceneGroup, display.contentCenterX, halfHeight, display.contentWidth, height)
+  rect:setFillColor(unpack(_G.MUST_COLORS.uibackground))
+
+  local newButton = widget.newButton({
+    x = display.contentCenterX,
+    y = halfHeight,
+    onRelease = function()
+      composer.gotoScene('Must', {effect='fade'})
+    end,
+    label = 'NEW GAME',
+    labelColor = { default=_G.MUST_COLORS.uiforeground, over=_G.MUST_COLORS.uicontrol },
+    font = _G.TILE_FONT,
+    fontSize = dim.Q / 2,
+    textOnly = true,
+  })
+  sceneGroup:insert(newButton)
   -- local bannerText = 'HIGH SCORES'
   -- if event.params and event.params.banner then
   --   bannerText = event.params.banner
   -- end
 
-  local y = dim.Q50
+  local y = dim.toolBarHeight + dim.Q50
   -- local highScoresBanner = display.newText(sceneGroup, bannerText, display.contentCenterX, y, native.systemFontBold, 72)
   -- y = y + dim.Q50
 
@@ -167,30 +186,6 @@ function scene:create(event)
     end
   end
 
---[[
-  local newButton = widget.newButton({
-    id = 'new',
-    label = '★',
-    labelColor = { default=_G.MUST_COLORS.black, over=_G.MUST_COLORS.black },
-    font = _G.TILE_FONT,
-    fontSize = dim.Q50,
-    x = display.contentCenterX,
-    y = display.contentHeight - dim.Q,
-    onRelease = function()
-      composer.gotoScene('Must', {effect='fade'})
-    end,
-
-    shape = 'roundedrect',
-    width = dim.Q50,
-    height = dim.Q50,
-    cornerRadius = dim.Q / 20,
-    fillColor = { default=_G.MUST_COLORS.ivory, over=_G.MUST_COLORS.ivory },
-    -- strokeColor = { default=_G.MUST_COLORS.black, over=_G.MUST_COLORS.black }
-  })
-  sceneGroup:insert(newButton)
-]]
-  local newButton = _createTile(display.contentCenterX, display.contentHeight - dim.Q, '★', true)
-  newButton:addEventListener('tap', function() composer.gotoScene('Must', {effect='fade'}) end)
 end
 
 

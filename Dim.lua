@@ -13,8 +13,7 @@ local Dim = {
   marginX = nil,
   marginY = nil,
 
-  titleBarHeight = nil,
-  statusBarheight = nil,
+  toolBarheight = nil,
 }
 Dim.__index = Dim  -- failed table lookups on the instances should fallback to the class table, to get methods
 
@@ -32,16 +31,15 @@ function Dim.new()
 
   o.tileFontSize = o.Q * 0.66
 
-  o.titleBarHeight = display.actualContentHeight / 24
-  o.statusBarHeight = o.Q
+  o.toolBarHeight = o.Q
 
-  local contentHeight = display.actualContentHeight - o.titleBarHeight - o.statusBarHeight
+  local contentHeight = display.actualContentHeight - o.toolBarHeight
 
   o.numX = math.floor(display.actualContentWidth / o.Q)
   o.numY = math.floor(contentHeight / o.Q)
 
   o.marginX = (display.actualContentWidth - (o.numX * o.Q)) / 2
-  o.marginY = (contentHeight - (o.numY * o.Q)) / 2
+  o.marginY = o.toolBarHeight + ((contentHeight - (o.numY * o.Q)) / 2)
 
   return o
 end

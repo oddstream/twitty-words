@@ -39,7 +39,7 @@ function scene:create(event)
   rect:setFillColor(unpack(_G.MUST_COLORS.ivory))
   rect.alpha = 0.9
 
-  local y = dim.Q50
+  local y = dim.toolBarHeight + dim.Q50
 
   for _,word in ipairs(_G.grid.words) do
 
@@ -57,38 +57,40 @@ function scene:create(event)
     y = y + dim.Q50
   end
 
-  local height = _G.DIMENSIONS.statusBarHeight
+  local height = _G.DIMENSIONS.toolBarHeight
   local halfHeight = height / 2
 
-  rect = display.newRect(sceneGroup, display.contentCenterX, display.contentHeight - halfHeight, display.contentWidth, height)
+  rect = display.newRect(sceneGroup, display.contentCenterX, halfHeight, display.contentWidth, height)
   rect:setFillColor(unpack(_G.MUST_COLORS.uibackground))
 
   local backButton = widget.newButton({
     x = dim.Q,
-    y = display.contentHeight - dim.Q / 2,
+    y = halfHeight,
     onRelease = function()
       composer.hideOverlay()
     end,
     label = '< BACK',
     labelColor = { default=_G.MUST_COLORS.uiforeground, over=_G.MUST_COLORS.uicontrol },
-    font = _G.BOLD_FONT,
-    fontSize = dim.Q / 2,
-    -- textOnly = true,
+    labelAlign = 'left',
+    font = _G.TILE_FONT,
+    fontSize = dim.Q50,
+    textOnly = true,
   })
   sceneGroup:insert(backButton)
 
   local finishButton = widget.newButton({
     x = display.contentWidth - dim.Q,
-    y = display.contentHeight - dim.Q / 2,
+    y = halfHeight,
     onRelease = function()
       composer.hideOverlay()
       _G.grid:gameOver()
       end,
     label = 'FINISH >',
     labelColor = { default=_G.MUST_COLORS.uiforeground, over=_G.MUST_COLORS.uicontrol },
-    font = _G.BOLD_FONT,
-    fontSize = dim.Q / 2,
-    -- textOnly = true,
+    labelAlign = 'right',
+    font = _G.TILE_FONT,
+    fontSize = dim.Q50,
+    textOnly = true,
   })
   sceneGroup:insert(finishButton)
 end

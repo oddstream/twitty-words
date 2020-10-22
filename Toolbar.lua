@@ -1,4 +1,4 @@
--- Statusbar.lua
+-- Toolbar.lua
 
 local composer = require 'composer'
 local widget = require 'widget'
@@ -23,57 +23,59 @@ end
 
 ]]
 
-local Statusbar = {}
-Statusbar.__index = Statusbar
+local Toolbar = {}
+Toolbar.__index = Toolbar
 
-function Statusbar.new(o)
+function Toolbar.new(o)
   assert(o) -- need to be called with an initializing object
   assert(o.group)
 
-  -- assert(self==Statusbar)
-  setmetatable(o, Statusbar)
+  -- assert(self==Toolbar)
+  setmetatable(o, Toolbar)
 
-  local height = _G.DIMENSIONS.statusBarHeight
+  local dim = _G.DIMENSIONS
+
+  local height = dim.toolBarHeight
   local halfHeight = height / 2
-  local fontSize = halfHeight
-  local fontSize2 = height
 
-  o.rect = display.newRect(o.group, display.contentCenterX, display.contentHeight - halfHeight, display.contentWidth, height)
+  o.rect = display.newRect(o.group, display.contentCenterX, halfHeight, display.contentWidth, height)
   o.rect:setFillColor(unpack(_G.MUST_COLORS.uibackground))
 
   -- o.left = display.newText(o.group, '', fontSize2, display.contentHeight - halfHeight, _G.BOLD_FONT, fontSize)
   -- o.left:setFillColor(unpack(_G.MUST_COLORS.uiforeground))
 
   o.left = widget.newButton({
-    x = fontSize2,
-    y = display.contentHeight - halfHeight,
+    x = dim.Q50,
+    y = halfHeight,
     onRelease = function()
       _G.grid:jumble()
     end,
     label = '',
     labelColor = { default=_G.MUST_COLORS.uiforeground, over=_G.MUST_COLORS.uicontrol },
-    font = _G.BOLD_FONT,
-    fontSize = fontSize,
+    labelAlign = 'left',
+    font = _G.TILE_FONT,
+    fontSize = dim.Q50,
     textOnly = true,
   })
   o.group:insert(o.left)
 
-  o.center = display.newText(o.group, '', display.contentCenterX, display.contentHeight - halfHeight, _G.BOLD_FONT, fontSize)
+  o.center = display.newText(o.group, '', display.contentCenterX, halfHeight, _G.TILE_FONT, dim.Q50)
   o.center:setFillColor(unpack(_G.MUST_COLORS.uiforeground))
 
   -- o.right = display.newText(o.group, '', display.contentWidth - fontSize2, display.contentHeight - halfHeight, _G.BOLD_FONT, fontSize)
   -- o.right:setFillColor(unpack(_G.MUST_COLORS.uiforeground))
 
   o.right = widget.newButton({
-    x = display.contentWidth - fontSize2,
-    y = display.contentHeight - halfHeight,
+    x = display.contentWidth - dim.Q50,
+    y = halfHeight,
     onRelease = function()
       composer.showOverlay('FoundWords')
     end,
     label = '',
     labelColor = { default=_G.MUST_COLORS.uiforeground, over=_G.MUST_COLORS.uicontrol },
-    font = _G.BOLD_FONT,
-    fontSize = fontSize,
+    labelAlign = 'right',
+    font = _G.TILE_FONT,
+    fontSize = dim.Q50,
     textOnly = true,
   })
   o.group:insert(o.right)
@@ -82,7 +84,7 @@ function Statusbar.new(o)
 end
 
 --[[
-function Statusbar:destroy()
+function Toolbar:destroy()
   display.remove(self.rect)
   display.remove(self.left)
   display.remove(self.center)
@@ -90,22 +92,22 @@ function Statusbar:destroy()
 end
 ]]
 
-function Statusbar:set(pos, s)
+function Toolbar:set(pos, s)
   self[pos].text = s or ''
 end
 
-function Statusbar:setLeft(s)
+function Toolbar:setLeft(s)
   -- self:set('left', s)
   self.left:setLabel(s)
 end
 
-function Statusbar:setCenter(s)
+function Toolbar:setCenter(s)
   self:set('center', s)
 end
 
-function Statusbar:setRight(s)
+function Toolbar:setRight(s)
   -- self:set('right', s)
   self.right:setLabel(s)
 end
 
-return Statusbar
+return Toolbar

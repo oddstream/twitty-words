@@ -35,8 +35,20 @@ function Tile.createGraphics(x, y, letter)
   local dim = _G.DIMENSIONS
 
   local grp = display.newGroup()
-    grp.x = display.contentWidth / 2
-    grp.y = display.contentHeight - dim.Q50
+  local r = math.random(1,4)
+  if r == 1 then
+    grp.x = x
+    grp.y = -dim.Q
+  elseif r == 2 then
+    grp.x = display.contentWidth + dim.Q
+    grp.y = y
+  elseif r == 3 then
+    grp.x = x
+    grp.y = display.contentHeight + dim.Q
+  else
+    grp.x = -dim.Q
+    grp.y = y
+  end
 
   -- grp[1]
   local rectShadow = display.newRoundedRect(grp, dim.Q * 0.05, dim.Q * 0.05, dim.Q * 0.95, dim.Q * 0.95, dim.Q / 20)  -- TODO magic numbers

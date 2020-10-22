@@ -80,8 +80,8 @@ function Grid:newGame()
 end
 
 function Grid:updateUI()
-  _G.statusBar:setLeft(string.format('⇆ %s', self.swaps))
-  _G.statusBar:setRight(string.format('%+d', self.score - self:calcResidualScore()))
+  _G.toolBar:setLeft(string.format('⇆ %s', self.swaps))
+  _G.toolBar:setRight(string.format('%+d', self.score - self:calcResidualScore()))
 end
 
 function Grid:sortWords()
@@ -159,7 +159,7 @@ function Grid:getSelectedWord()
 end
 
 local function isWordInDictionary(word)
-  local first, _ = string.find(_G.DICTIONARY, '[^%u]' .. word .. '[^%u]')
+  local first,_ = string.find(_G.DICTIONARY, '[^%u]' .. word .. '[^%u]')
   return first ~= nil
   -- return true
 end
@@ -180,12 +180,22 @@ function Grid:countTiles()
   return count
 end
 
+function Grid:getTiles()
+  local tiles = {}
+  for _,slot in ipairs(self.slots) do
+    if slot.tile then
+      table.insert(tiles, slot.tile)  -- push
+    end
+  end
+  return tiles
+end
+
 function Grid:deselectAllSlots()
   self:iterator(function(slot)
     slot:deselect()
   end)
   self.selectedSlots = {}
-  _G.statusBar:setCenter(nil)
+  _G.toolBar:setCenter(nil)
 end
 
 function Grid:selectSlot(slot)
@@ -209,7 +219,7 @@ function Grid:selectSlot(slot)
     if not last or connected(slot, last) then
       table.insert(self.selectedSlots, slot)
       local word, _ = self:getSelectedWord()
-      _G.statusBar:setCenter(word)
+      _G.toolBar:setCenter(word)
     end
   end
 end
@@ -229,8 +239,8 @@ trace('swapping', t1.letter, t2.letter)
       self:deselectAllSlots()
 
       self.swaps = self.swaps - 1
-      _G.statusBar:setLeft(string.format('⇆ %s', self.swaps))
-      _G.statusBar:setCenter(string.format('%s ⇆ %s', t1.letter, t2.letter))
+      _G.toolBar:setLeft(string.format('⇆ %s', self.swaps))
+      _G.toolBar:setCenter(string.format('%s ⇆ %s', t1.letter, t2.letter))
     end
   end
 end
@@ -246,8 +256,8 @@ function Grid:testSelection()
         t2:refreshLetter()
 
         self.swaps = self.swaps - 1
-        _G.statusBar:setLeft(string.format('⇆ %s', self.swaps))
-        _G.statusBar:setCenter(string.format('%s ⇆ %s', t1.letter, t2.letter))
+        _G.toolBar:setLeft(string.format('⇆ %s', self.swaps))
+        _G.toolBar:setCenter(string.format('%s ⇆ %s', t1.letter, t2.letter))
       end
     end
     self:deselectAllSlots()
@@ -434,53 +444,46 @@ function Grid:compactColumns2()
 end
 
 function Grid:jumble()
+
   if self.swaps == 0 then
     return
   end
 
-  local count = self:countTiles()
-  if count < 3 then
+  local tiles = self:getTiles()
+  if #tiles < 3 then
     return
   end
 
-    -- could use Knuth Fisher Yates on an array of tiles, using tile.slot backlink
-  for i=1, count do
-    -- find a random slot with a tile
-
-    local slot1
-    repeat
-      slot1 = self.slots[math.random(1, #self.slots)]
-    until slot1.tile
-
-    -- find a different random slot with a tile
-    local slot2
-    repeat
-      slot2 = self.slots[math.random(1, #self.slots)]
-    until slot2 ~= slot1 and slot2.tile
-
-    -- swap the tiles (with transition)
-    slot1.tile, slot2.tile = slot2.tile, slot1.tile
-
-    slot1.tile.slot = slot1
-    transition.moveTo(slot1.tile.grp, {
-      x = slot1.center.x,
-      y = slot1.center.y,
-      time = _G.FLIGHT_TIME,
-      transition = easing.outQuart,
-    })
-
-    slot2.tile.slot = slot2
-    transition.moveTo(slot2.tile.grp, {
-      x = slot2.center.x,
-      y = slot2.center.y,
+  local function reslot(slot)
+    slot.tile.slot = slot
+    transition.moveTo(slot.tile.grp, {
+      x = slot.center.x,
+      y = slot.center.y,
       time = _G.FLIGHT_TIME,
       transition = easing.outQuart,
     })
   end
 
+  -- https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
+  -- https://stackoverflow.com/questions/35572435/how-do-you-do-the-fisher-yates-shuffle-in-lua
+
+  for i=#tiles, 1, -1 do
+
+    local j = math.random(i)
+    -- find a random slot with a tile
+
+    local slot1 = tiles[i].slot
+    local slot2 = tiles[j].slot
+
+    -- swap the tiles (with transition)
+    slot1.tile, slot2.tile = slot2.tile, slot1.tile
+    reslot(slot1)
+    reslot(slot2)
+  end
+
   self.swaps = self.swaps - 1
-  _G.statusBar:setLeft(string.format('⇆ %s', self.swaps))
-  _G.statusBar:setCenter(nil)
+  _G.toolBar:setLeft(string.format('⇆ %s', self.swaps))
+  _G.toolBar:setCenter(nil)
 end
 
 return Grid

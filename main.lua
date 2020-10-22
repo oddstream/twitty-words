@@ -75,8 +75,9 @@ if nil == _G.BOLDFONT then  _G.FONT = native.systemFontBold end
 _G.DIMENSIONS = {}
 
 _G.TILE_FONT = 'assets/Acme-Regular.ttf'
-_G.FONT = 'assets/Roboto-Medium.ttf'
-_G.BOLD_FONT = 'assets/Roboto-Bold.ttf'
+-- _G.FONT = 'assets/Roboto-Medium.ttf'
+-- _G.BOLD_FONT = 'assets/Roboto-Bold.ttf'
+
 -- https://en.wikipedia.org/wiki/Scrabble_letter_distributions
 _G.SCRABBLE_LETTERS = 'AAAAAAAAABBCCDDDDEEEEEEEEEEEEFFGGGHHIIIIIIIIIJKLLLLMMNNNNNNOOOOOOOOPPQRRRRRRSSSSTTTTTTUUUUVVWWXYYZ'
 _G.SCRABBLE_SCORES = {

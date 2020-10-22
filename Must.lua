@@ -2,8 +2,7 @@
 
 local Dim = require 'Dim'
 local Grid = require 'Grid'
-local Titlebar = require 'Titlebar'
-local Statusbar = require 'Statusbar'
+local Toolbar = require 'Toolbar'
 
 local composer = require('composer')
 local scene = composer.newScene()
@@ -40,8 +39,8 @@ function scene:create(event)
 
   _G.DIMENSIONS = Dim.new()
 
-  _G.titleBar = Titlebar.new({group=_G.MUST_GROUPS.ui})
-  _G.statusBar = Statusbar.new({group=_G.MUST_GROUPS.ui})
+  -- _G.titleBar = Titlebar.new({group=_G.MUST_GROUPS.ui})
+  _G.toolBar = Toolbar.new({group=_G.MUST_GROUPS.ui})
 
   _G.grid = Grid.new(_G.DIMENSIONS.numX, _G.DIMENSIONS.numY)
   _G.grid:newGame()
