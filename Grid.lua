@@ -61,7 +61,7 @@ function Grid:gameOver()
     composer.setVariable('last_using', after)
   end
 
-  composer.gotoScene('HighScores', { params={score=self.score - deductions, words=self.words}, effect='fade' })
+  composer.gotoScene('HighScores', { params={score=self.score - deductions, words=self.words} })
 end
 
 function Grid:newGame()

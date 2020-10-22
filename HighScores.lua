@@ -10,6 +10,8 @@ local json = require('json')
 
 local Tile = require 'Tile'
 
+local tiles = nil
+
 local scoresTable = {}
 
 local filePath = system.pathForFile('scores.json', system.DocumentsDirectory)
@@ -56,6 +58,32 @@ local function saveScores()
   end
 end
 
+local function flyAwayTiles()
+  local dim = _G.DIMENSIONS
+
+  for _,grp in ipairs(tiles) do
+    local x = grp.x
+    local y = grp.y
+    local r = math.random(1,4)
+    if r == 1 then
+      y = -dim.Q
+    elseif r == 2 then
+      x = display.contentWidth + dim.Q
+    elseif r == 3 then
+      y = display.contentHeight + dim.Q
+    else
+      x = -dim.Q
+    end
+
+    transition.moveTo(grp, {
+      x = x,
+      y = y,
+      time = _G.FLIGHT_TIME,
+      transition = easing.outQuart,
+    })
+  end
+end
+
 -- -----------------------------------------------------------------------------------
 -- Code outside of the scene event functions below will only be executed ONCE unless
 -- the scene is removed entirely (not recycled) via 'composer.removeScene()'
@@ -73,26 +101,18 @@ function scene:create(event)
   -- Code here runs when the scene is first created but has not yet appeared on screen
 
   local function _createTile(x, y, txt, selected)
-    -- local xStart = math.random(0, display.contentWidth)
-    -- local yStart = math.random(0, display.contentHeight)
     local grp = Tile.createGraphics(x, y, txt)
     sceneGroup:insert(grp)
     grp:scale(0.5, 0.5)
     if selected then
       grp[2]:setFillColor(unpack(_G.MUST_COLORS.gold))
     end
-
-    -- transition.moveTo(grp, {
-    --   x = x,
-    --   y = y,
-    --   time = _G.FLIGHT_TIME,
-    --   transition = easing.outQuart,
-    -- })
+    table.insert(tiles, grp)
 
     return grp
   end
 
-    loadScores()
+  loadScores()
 
   local score = nil
   local words = nil
@@ -129,12 +149,13 @@ function scene:create(event)
     x = display.contentCenterX,
     y = halfHeight,
     onRelease = function()
+      flyAwayTiles()
       composer.gotoScene('Must', {effect='fade'})
     end,
     label = 'NEW GAME',
     labelColor = { default=_G.MUST_COLORS.uiforeground, over=_G.MUST_COLORS.uicontrol },
     font = _G.TILE_FONT,
-    fontSize = dim.Q / 2,
+    fontSize = dim.Q50,
     textOnly = true,
   })
   sceneGroup:insert(newButton)
@@ -153,6 +174,8 @@ function scene:create(event)
   --   displayText1:setFillColor(0,0,0)
   --   y = y + dim.Q50
   -- end
+
+  tiles = {}
 
   for i = 1, 10 do
     if scoresTable[i] then

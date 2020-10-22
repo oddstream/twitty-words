@@ -27,7 +27,7 @@ end
 function scene:create(event)
   local sceneGroup = self.view
 
-  display.setDefault('background', unpack(_G.MUST_COLORS.gray))
+  display.setDefault('background', unpack(_G.MUST_COLORS.baize))
 
   _G.MUST_GROUPS.ui = display.newGroup()
   sceneGroup:insert(_G.MUST_GROUPS.ui)

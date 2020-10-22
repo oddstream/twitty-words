@@ -66,15 +66,22 @@ function Tile.createGraphics(x, y, letter)
   local textLetter = display.newText(grp, letter, 0, 0, _G.TILE_FONT, tileFontSize)
   textLetter:setFillColor(unpack(_G.MUST_COLORS.black))
 
-  timer.performWithDelay(_G.FLIGHT_TIME, function()
-      transition.moveTo(grp, {
-        x = x,
-        y = y,
-        time = _G.FLIGHT_TIME,
-        transition = easing.outQuart,
-      })
-    end)
+  -- timer.performWithDelay(_G.FLIGHT_TIME, function()
+  --     transition.moveTo(grp, {
+  --       x = x,
+  --       y = y,
+  --       time = _G.FLIGHT_TIME,
+  --       transition = easing.outQuart,
+  --     })
+  --   end)
 
+    transition.moveTo(grp, {
+      x = x,
+      y = y,
+      time = _G.FLIGHT_TIME,
+      transition = easing.outQuart,
+    })
+ 
     return grp
 end
 

@@ -116,10 +116,12 @@ _G.MUST_COLORS = {
   uibackground = {0.1,0.1,0.1},
   uicontrol = {51*4/1020,181*4/1020,229*4/1020}, -- color from widget_theme_android_holo_dark@4x.png
 
+  baize = {0.1, 0.33, 0.1},
+
   white = {1,1,1},
   offwhite = {0.91,0.9,0.9},
   -- selected = {1,0.8,0},
-  back = {100*4/1020,147*4/1020,237*4/1020}, -- CornFlowerBlue
+  -- back = {100*4/1020,147*4/1020,237*4/1020}, -- CornFlowerBlue
   border = {0.75,0.75,0.75},  -- Silver
   -- border = {0.5,0.5,0.5}, -- Gray
 
@@ -186,7 +188,7 @@ _G.grid = nil
 -- end
 
 if system.getInfo('environment') == 'simulator' then
-  composer.gotoScene('Must')
+  composer.gotoScene('Must', {effect='fade'})
 else
-  composer.gotoScene('Splash', {params={scene='Must'}})
+  composer.gotoScene('Splash', {params={scene='Must', {effect='fade'}}})
 end
