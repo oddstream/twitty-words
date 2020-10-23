@@ -2,10 +2,7 @@
 
 local Dim = {
   Q = nil,
-
-  Q50 = nil,
-  Q20 = nil,
-  Q10 = nil,
+  halfQ = nil,
 
   numX = nil,
   numY = nil,
@@ -23,23 +20,27 @@ function Dim.new()
   local o = {}
   setmetatable(o, Dim)
 
-  o.Q = math.floor(display.actualContentWidth/7)
+  o.numX = 7
+  o.numY = 10
 
-  o.Q50 = math.floor(o.Q/2)
-  o.Q20 = math.floor(o.Q/5)
-  o.Q10 = math.floor(o.Q/10)
+  local xQ = math.floor(display.actualContentWidth/o.numX)
+  local yQ = math.floor(display.actualContentHeight/o.numY)
+  trace('Dim reports Qx, Qy', xQ, yQ)
+
+  o.Q = math.min(xQ, yQ)
+  o.halfQ = math.floor(o.Q/2)
 
   o.tileFontSize = o.Q * 0.66
 
   o.toolBarHeight = o.Q
 
-  local contentHeight = display.actualContentHeight - o.toolBarHeight
+  -- local contentHeight = display.actualContentHeight - o.toolBarHeight
 
-  o.numX = math.floor(display.actualContentWidth / o.Q)
-  o.numY = math.floor(contentHeight / o.Q)
+  -- o.numX = math.floor(display.actualContentWidth / o.Q)
+  -- o.numY = math.floor(contentHeight / o.Q)
 
   o.marginX = (display.actualContentWidth - (o.numX * o.Q)) / 2
-  o.marginY = o.toolBarHeight + ((contentHeight - (o.numY * o.Q)) / 2)
+  o.marginY = (o.toolBarHeight / 2) + ((display.actualContentHeight - (o.numY * o.Q)) / 2)
 
   return o
 end

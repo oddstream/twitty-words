@@ -201,28 +201,50 @@ end
 function Grid:selectSlot(slot)
   assert(slot.tile)
 
-  local function connected(a, b)
+  local function _connected(a, b)
     for _,dir in ipairs({'n','ne','e','se','s','sw','w','nw'}) do
       if a[dir] == b then
         return true
       end
     end
     trace('not connected')
-    self:deselectAllSlots()
     return false
   end
 
-  -- TODO check slot is connected to last selected slot
-  -- in case selection extends across nil tiles
-  if not table.contains(self.selectedSlots, slot) then
+  local function _insert()
+    table.insert(self.selectedSlots, slot)
+    local word, _ = self:getSelectedWord()
+    _G.toolBar:setCenter(word)
+  end
+
+  -- TODO check slot is the previous but one slot; if so, deselect last selected slot (user is backtracking)
+
+  if #self.selectedSlots == 0 then
+    _insert()
+  else
     local last = self.selectedSlots[#self.selectedSlots]
-    if not last or connected(slot, last) then
-      table.insert(self.selectedSlots, slot)
-      local word, _ = self:getSelectedWord()
-      _G.toolBar:setCenter(word)
+    if slot ~= last then
+      if table.contains(self.selectedSlots, slot) then
+        local lastButOne = self.selectedSlots[#self.selectedSlots-1]
+        if slot == lastButOne then
+          trace('backtracking')
+          table.remove(self.selectedSlots)  -- remove last element
+          last:deselect()
+          local word, _ = self:getSelectedWord()
+          _G.toolBar:setCenter(word)
+        end
+      else
+        -- selecting a new/unselected tile
+        if not _connected(slot, last) then
+          self:deselectAllSlots()
+        else
+          _insert()
+        end
+      end
     end
   end
 end
+
 --[[
 function Grid:tapped(slot)
   if not table.contains(self.selectedSlots, slot) then
@@ -272,7 +294,7 @@ function Grid:testSelection()
       do
         local n = 1
         for _,slot in ipairs(self.selectedSlots) do
-          slot.tile:flyAway(n) -- calls Tile:delete()
+          slot.tile:flyAway(n, #self.selectedSlots) -- calls Tile:delete()
           slot.tile = nil
           n = n + 1
         end
@@ -431,7 +453,7 @@ function Grid:compactColumns2()
   local newMargin = (display.actualContentWidth / 2) - (widthCols / 2)
 
   for _,slot in ipairs(self.slots) do
-    slot.center.x = (slot.x * dim.Q) - dim.Q + dim.Q50  -- copied from Slot.new()
+    slot.center.x = (slot.x * dim.Q) - dim.Q + dim.halfQ  -- copied from Slot.new()
     slot.center.x = slot.center.x + newMargin
     if slot.tile then
       transition.moveTo(slot.tile.grp, {

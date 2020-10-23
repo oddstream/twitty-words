@@ -45,7 +45,7 @@ function Toolbar.new(o)
   -- o.left:setFillColor(unpack(_G.MUST_COLORS.uiforeground))
 
   o.left = widget.newButton({
-    x = dim.Q50,
+    x = dim.halfQ,
     y = halfHeight,
     onRelease = function()
       _G.grid:jumble()
@@ -54,19 +54,19 @@ function Toolbar.new(o)
     labelColor = { default=_G.MUST_COLORS.uiforeground, over=_G.MUST_COLORS.uicontrol },
     labelAlign = 'left',
     font = _G.TILE_FONT,
-    fontSize = dim.Q50,
+    fontSize = dim.halfQ,
     textOnly = true,
   })
   o.group:insert(o.left)
 
-  o.center = display.newText(o.group, '', display.contentCenterX, halfHeight, _G.TILE_FONT, dim.Q50)
+  o.center = display.newText(o.group, '', display.contentCenterX, halfHeight, _G.TILE_FONT, dim.halfQ)
   o.center:setFillColor(unpack(_G.MUST_COLORS.uiforeground))
 
   -- o.right = display.newText(o.group, '', display.contentWidth - fontSize2, display.contentHeight - halfHeight, _G.BOLD_FONT, fontSize)
   -- o.right:setFillColor(unpack(_G.MUST_COLORS.uiforeground))
 
   o.right = widget.newButton({
-    x = display.contentWidth - dim.Q50,
+    x = display.contentWidth - dim.halfQ,
     y = halfHeight,
     onRelease = function()
       composer.showOverlay('FoundWords')
@@ -75,7 +75,7 @@ function Toolbar.new(o)
     labelColor = { default=_G.MUST_COLORS.uiforeground, over=_G.MUST_COLORS.uicontrol },
     labelAlign = 'right',
     font = _G.TILE_FONT,
-    fontSize = dim.Q50,
+    fontSize = dim.halfQ,
     textOnly = true,
   })
   o.group:insert(o.right)

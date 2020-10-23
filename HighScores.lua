@@ -29,23 +29,32 @@ local function loadScores()
 
   if scoresTable == nil or #scoresTable == 0 then
     scoresTable = {
-      -- https://www.ef.com/wwen/blog/language/funniest-words-in-english/
       {score=1000, words={'SHENANIGANS'}},
-      {score=900, words={'BAMBOOZLE'}},
-      {score=800, words={'BODACIOUS'}},
-      {score=700, words={'BROUHAHA'}},
-      {score=600, words={'CANOODLE'}},
-      {score=500, words={'NIMCOMPOOP'}},
+      {score=950, words={'BAMBOOZLE'}},
+      {score=900, words={'SERENDIPITY'}},
+      {score=850, words={'BODACIOUS'}},
+      {score=800, words={'GOBBLEDYGOOK'}},
+      {score=750, words={'BROUHAHA'}},
+      {score=700, words={'SCRUMPTIOUS'}},
+      {score=650, words={'CANOODLE'}},
+      {score=600, words={'PETRICHOR'}},
+      {score=550, words={'NIMCOMPOOP'}},
+      {score=500, words={'EUPHORIA'}},
+      {score=450, words={'GOGGLES'}},
       {score=400, words={'GOGGLE'}},
       {score=300, words={'GUBBINS'}},
-      {score=200, words={'MALARKEY'}},
+      {score=350, words={'SUPINE'}},
+      {score=250, words={'MALARKEY'}},
+      {score=200, words={'IDYLLIC'}},
+      {score=150, words={'DAINTY'}},
       {score=100, words={'GNARLY'}},
+      {score=50, words={'GNOME'}},
     }
   end
 end
 
 local function saveScores()
-  for i = #scoresTable, 11, -1 do
+  for i = #scoresTable, 21, -1 do
     table.remove(scoresTable, i)
   end
 
@@ -155,7 +164,7 @@ function scene:create(event)
     label = 'NEW GAME',
     labelColor = { default=_G.MUST_COLORS.uiforeground, over=_G.MUST_COLORS.uicontrol },
     font = _G.TILE_FONT,
-    fontSize = dim.Q50,
+    fontSize = dim.halfQ,
     textOnly = true,
   })
   sceneGroup:insert(newButton)
@@ -164,47 +173,47 @@ function scene:create(event)
   --   bannerText = event.params.banner
   -- end
 
-  local y = dim.toolBarHeight + dim.Q50
+  local y = dim.toolBarHeight + dim.halfQ
   -- local highScoresBanner = display.newText(sceneGroup, bannerText, display.contentCenterX, y, native.systemFontBold, 72)
-  -- y = y + dim.Q50
+  -- y = y + dim.halfQ
 
   -- if score then
   --   local infoText1 = string.format('SCORE %d', event.params.score)
   --   local displayText1 = display.newText(sceneGroup, infoText1, display.contentCenterX, y, native.systemFontBold, 72)
   --   displayText1:setFillColor(0,0,0)
-  --   y = y + dim.Q50
+  --   y = y + dim.halfQ
   -- end
 
   tiles = {}
 
-  for i = 1, 10 do
+  for i = 1, 20 do
     if scoresTable[i] then
-      _createTile(dim.Q50, y, tostring(scoresTable[i].score), scoresTable[i].score == score)
+      _createTile(dim.halfQ, y, tostring(scoresTable[i].score), scoresTable[i].score == score)
 
       do
-        local x = dim.Q50 * 3
+        local x = dim.halfQ * 3
         local word = scoresTable[i].words[1]
         for j=1, string.len(word) do
           _createTile(x, y, string.sub(word, j, j), scoresTable[i].score == score)
-          x = x + dim.Q50
+          x = x + dim.halfQ
         end
       end
 
-      y = y + dim.Q50
+      y = y + dim.halfQ
     end
   end
 
-  if score < scoresTable[10].score then
-    y = y + dim.Q50
+  if score < scoresTable[20].score then
+    y = y + dim.halfQ
 
-    _createTile(dim.Q50, y, tostring(score), true)
+    _createTile(dim.halfQ, y, tostring(score), true)
 
     if words and #words > 0 then
-      local x = dim.Q50 * 3
+      local x = dim.halfQ * 3
       local word = words[1]
       for j=1, string.len(word) do
         _createTile(x, y, string.sub(word, j, j), true)
-        x = x + dim.Q50
+        x = x + dim.halfQ
       end
     end
   end

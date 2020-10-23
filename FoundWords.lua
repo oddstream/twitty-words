@@ -91,7 +91,7 @@ function scene:create(event)
     labelColor = { default=_G.MUST_COLORS.uiforeground, over=_G.MUST_COLORS.uicontrol },
     labelAlign = 'left',
     font = _G.TILE_FONT,
-    fontSize = dim.Q50,
+    fontSize = dim.halfQ,
     textOnly = true,
   })
   sceneGroup:insert(backButton)
@@ -113,29 +113,29 @@ function scene:create(event)
     labelColor = { default=_G.MUST_COLORS.uiforeground, over=_G.MUST_COLORS.uicontrol },
     labelAlign = 'right',
     font = _G.TILE_FONT,
-    fontSize = dim.Q50,
+    fontSize = dim.halfQ,
     textOnly = true,
   })
   sceneGroup:insert(finishButton)
 
   tiles = {}
 
-  local y = dim.toolBarHeight + dim.Q50
+  local y = dim.toolBarHeight + dim.halfQ
 
   for _,word in ipairs(_G.grid.words) do
 
     local score = 0
-    local x = dim.Q50 * 3
+    local x = dim.halfQ * 3
 
     for j=1, string.len(word) do
       local letter = string.sub(word, j, j)
       score = score + _G.SCRABBLE_SCORES[letter]
       _createTile(x, y, letter)
-      x = x + dim.Q50
+      x = x + dim.halfQ
     end
 
-    _createTile(dim.Q50, y, tostring(score * string.len(word)), false)
-    y = y + dim.Q50
+    _createTile(dim.halfQ, y, tostring(score * string.len(word)), false)
+    y = y + dim.halfQ
   end
 
 end

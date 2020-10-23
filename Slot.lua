@@ -29,7 +29,7 @@ end
 function Slot:position()
   local dim = _G.DIMENSIONS
   -- calculate where the screen coords center point will be
-  self.center = {x=(self.x * dim.Q) - dim.Q + dim.Q50, y=(self.y * dim.Q) - dim.Q + dim.Q50}
+  self.center = {x=(self.x * dim.Q) - dim.Q + dim.halfQ, y=(self.y * dim.Q) - dim.Q + dim.halfQ}
   self.center.x = self.center.x + dim.marginX
   -- self.center.y = dim.titleBarHeight + dim.marginY + self.center.y
   self.center.y = dim.marginY + self.center.y
@@ -98,7 +98,7 @@ function Slot:flyAwayScore(score)
     textScore:setFillColor(unpack(_G.MUST_COLORS.black))
 
   transition.moveTo(grp, {
-    x = display.contentWidth - dim.Q50,
+    x = display.contentWidth - dim.halfQ,
     y = dim.toolBarHeight / 2,
     time = _G.FLIGHT_TIME,
     transition = easing.outQuad,

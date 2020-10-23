@@ -116,7 +116,10 @@ _G.MUST_COLORS = {
   uibackground = {0.1,0.1,0.1},
   uicontrol = {51*4/1020,181*4/1020,229*4/1020}, -- color from widget_theme_android_holo_dark@4x.png
 
-  baize = {0.1, 0.33, 0.1},
+  -- baize = {240*4/1020, 1, 240*4/1020},  -- Honeydew
+  -- baize = {250*4/1020, 235*4/1020, 215*4/1020},  -- AntiqueWhite
+  -- baize = {255*4/1020, 245*4/1020, 238*4/1020},  -- SeaShell
+  baize = {248*4/1020, 248*4/1020, 255*4/1020},  -- GhostWhite
 
   white = {1,1,1},
   offwhite = {0.91,0.9,0.9},
@@ -142,8 +145,7 @@ _G.MUST_COLORS = {
 
 _G.MUST_GROUPS = {
   grid = nil,
-  tiles = nil,
-  ui = nil,     -- titlebar, toast
+  ui = nil,
 }
 
 if not _G.table.contains then
@@ -187,8 +189,8 @@ _G.grid = nil
 --   print( k , v )
 -- end
 
-if system.getInfo('environment') == 'simulator' then
-  composer.gotoScene('Must', {effect='fade'})
-else
+-- if system.getInfo('environment') == 'simulator' then
+  -- composer.gotoScene('Must', {effect='fade'})
+-- else
   composer.gotoScene('Splash', {params={scene='Must', {effect='fade'}}})
-end
+-- end

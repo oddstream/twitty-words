@@ -66,23 +66,14 @@ function Tile.createGraphics(x, y, letter)
   local textLetter = display.newText(grp, letter, 0, 0, _G.TILE_FONT, tileFontSize)
   textLetter:setFillColor(unpack(_G.MUST_COLORS.black))
 
-  -- timer.performWithDelay(_G.FLIGHT_TIME, function()
-  --     transition.moveTo(grp, {
-  --       x = x,
-  --       y = y,
-  --       time = _G.FLIGHT_TIME,
-  --       transition = easing.outQuart,
-  --     })
-  --   end)
+  transition.moveTo(grp, {
+    x = x,
+    y = y,
+    time = _G.FLIGHT_TIME,
+    transition = easing.outQuart,
+  })
 
-    transition.moveTo(grp, {
-      x = x,
-      y = y,
-      time = _G.FLIGHT_TIME,
-      transition = easing.outQuart,
-    })
- 
-    return grp
+  return grp
 end
 
 function Tile:refreshLetter()
@@ -109,6 +100,7 @@ function Tile:touch(event)
     -- trace('touch began', event.x, event.y, self.letter)
     -- deselect any selected tiles
     self.slot:deselectAll()
+    self.slot:select(event.x, event.y)
 
   elseif event.phase == 'moved' then
     -- trace('touch moved', event.x, event.y, self.letter)
@@ -148,19 +140,28 @@ function Tile:delete()
   self.grp = nil
 end
 
-function Tile:flyAway(n)
+function Tile:flyAway(n, wordLength)
   local dim = _G.DIMENSIONS
 
   self.grp:toFront()
-  self.grp[2]:setFillColor(unpack(_G.MUST_COLORS.ivory))
+
   transition.moveTo(self.grp, {
-    x = display.contentWidth + (dim.Q * n),
-    y = dim.Q50,
-    time = _G.FLIGHT_TIME,
-    transition = easing.outQuart,
-    delay = 0,
+    x = (dim.halfQ + (dim.Q * (n-1))) + ((display.contentWidth / 2) - ((dim.Q * wordLength) / 2)),
+    y = display.contentHeight * 0.666,
+    time = 500,
+    transition = easing.inQuad,
     onComplete = function()
-      timer.performWithDelay(1000, function() self:delete() end)
+      -- self.grp[2]:setFillColor(unpack(_G.MUST_COLORS.ivory))
+      transition.fadeOut(self.grp, {
+        time = _G.FLIGHT_TIME,
+        transition = easing.inQuad,
+      })
+      transition.moveTo(self.grp, {
+        y = display.contentHeight + dim.Q,
+        time = _G.FLIGHT_TIME,
+        transition = easing.inQuad,
+        onComplete = function() self:delete() end,
+      })
     end,
   })
 end
