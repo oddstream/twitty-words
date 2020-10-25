@@ -269,9 +269,9 @@ end
 ]]
 function Grid:testSelection()
   if #self.selectedSlots == 2 then
+    local t1 = self.selectedSlots[1].tile
+    local t2 = self.selectedSlots[2].tile
     if self.swaps > 0 then
-      local t1 = self.selectedSlots[1].tile
-      local t2 = self.selectedSlots[2].tile
       if t1.letter ~= t2.letter then
         t1.letter, t2.letter = t2.letter, t1.letter
         t1:refreshLetter()
@@ -281,6 +281,9 @@ function Grid:testSelection()
         _G.toolBar:setLeft(string.format('⇆ %s', self.swaps))
         _G.toolBar:setCenter(string.format('%s ⇆ %s', t1.letter, t2.letter))
       end
+    else
+      t1:shake()
+      t2:shake()
     end
     self:deselectAllSlots()
   elseif #self.selectedSlots > 2 then
@@ -315,7 +318,9 @@ function Grid:testSelection()
         end
       end)
     else
-      -- trace(word, 'NOT in dictionary')
+      for _,slot in ipairs(self.selectedSlots) do
+        slot.tile:shake()
+      end
       self:deselectAllSlots()
     end
   end

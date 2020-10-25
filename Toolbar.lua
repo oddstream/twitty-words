@@ -41,9 +41,6 @@ function Toolbar.new(o)
   o.rect = display.newRect(o.group, display.contentCenterX, halfHeight, display.contentWidth, height)
   o.rect:setFillColor(unpack(_G.MUST_COLORS.uibackground))
 
-  -- o.left = display.newText(o.group, '', fontSize2, display.contentHeight - halfHeight, _G.BOLD_FONT, fontSize)
-  -- o.left:setFillColor(unpack(_G.MUST_COLORS.uiforeground))
-
   o.left = widget.newButton({
     x = dim.halfQ,
     y = halfHeight,
@@ -55,15 +52,18 @@ function Toolbar.new(o)
     labelAlign = 'left',
     font = _G.TILE_FONT,
     fontSize = dim.halfQ,
-    textOnly = true,
+    -- textOnly = true,
+    shape = 'roundedRect',
+    cornerRadius = dim.Q / 20,
+    fillColor = { default=_G.MUST_COLORS.gray, over=_G.MUST_COLORS.purple },
+    strokeColor = { default={ 0, 0, 0 }, over={ 0.4, 0.1, 0.2 } },
+    width = dim.Q * 0.95,
+    height = dim.Q * 0.95,
   })
   o.group:insert(o.left)
 
   o.center = display.newText(o.group, '', display.contentCenterX, halfHeight, _G.TILE_FONT, dim.halfQ)
   o.center:setFillColor(unpack(_G.MUST_COLORS.uiforeground))
-
-  -- o.right = display.newText(o.group, '', display.contentWidth - fontSize2, display.contentHeight - halfHeight, _G.BOLD_FONT, fontSize)
-  -- o.right:setFillColor(unpack(_G.MUST_COLORS.uiforeground))
 
   o.right = widget.newButton({
     x = display.contentWidth - dim.halfQ,
@@ -76,7 +76,13 @@ function Toolbar.new(o)
     labelAlign = 'right',
     font = _G.TILE_FONT,
     fontSize = dim.halfQ,
-    textOnly = true,
+    -- textOnly = true,
+    shape = 'roundedRect',
+    cornerRadius = dim.Q / 20,
+    fillColor = { default=_G.MUST_COLORS.gray, over=_G.MUST_COLORS.purple },
+    strokeColor = { default={ 0, 0, 0 }, over={ 0.4, 0.1, 0.2 } },
+    width = dim.Q * 0.95,
+    height = dim.Q * 0.95,
   })
   o.group:insert(o.right)
 

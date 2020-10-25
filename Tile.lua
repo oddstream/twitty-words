@@ -1,5 +1,7 @@
 -- Tile.lua
 
+local Util = require 'Util'
+
 local Tile = {
   slot = nil,
 
@@ -35,20 +37,7 @@ function Tile.createGraphics(x, y, letter)
   local dim = _G.DIMENSIONS
 
   local grp = display.newGroup()
-  local r = math.random(1,4)
-  if r == 1 then
-    grp.x = x
-    grp.y = -dim.Q
-  elseif r == 2 then
-    grp.x = display.contentWidth + dim.Q
-    grp.y = y
-  elseif r == 3 then
-    grp.x = x
-    grp.y = display.contentHeight + dim.Q
-  else
-    grp.x = -dim.Q
-    grp.y = y
-  end
+  grp.x, grp.y = Util.randomDirections()
 
   -- grp[1]
   local rectShadow = display.newRoundedRect(grp, dim.Q * 0.05, dim.Q * 0.05, dim.Q * 0.95, dim.Q * 0.95, dim.Q / 20)  -- TODO magic numbers
@@ -140,6 +129,12 @@ function Tile:delete()
   self.grp = nil
 end
 
+function Tile:shake()
+  -- trace('shaking', tostring(self))
+  transition.to(self.grp, {time=50, transition=easing.continuousLoop, x=self.grp.x + 10})
+  transition.to(self.grp, {delay=50, time=50, transition=easing.continuousLoop, x=self.grp.x - 10})
+end
+
 function Tile:flyAway(n, wordLength)
   local dim = _G.DIMENSIONS
 
@@ -147,7 +142,7 @@ function Tile:flyAway(n, wordLength)
 
   transition.moveTo(self.grp, {
     x = (dim.halfQ + (dim.Q * (n-1))) + ((display.contentWidth / 2) - ((dim.Q * wordLength) / 2)),
-    y = display.contentHeight * 0.666,
+    y = display.contentHeight * 0.5,
     time = 500,
     transition = easing.inQuad,
     onComplete = function()
@@ -156,8 +151,10 @@ function Tile:flyAway(n, wordLength)
         time = _G.FLIGHT_TIME,
         transition = easing.inQuad,
       })
+      local dx, dy = Util.randomDirections()
       transition.moveTo(self.grp, {
-        y = display.contentHeight + dim.Q,
+        x = dx,
+        y = dy,
         time = _G.FLIGHT_TIME,
         transition = easing.inQuad,
         onComplete = function() self:delete() end,

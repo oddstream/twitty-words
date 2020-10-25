@@ -9,6 +9,7 @@ local widget = require('widget')
 local json = require('json')
 
 local Tile = require 'Tile'
+local Util = require 'Util'
 
 local tiles = nil
 
@@ -33,7 +34,7 @@ local function loadScores()
       {score=950, words={'BAMBOOZLE'}},
       {score=900, words={'SERENDIPITY'}},
       {score=850, words={'BODACIOUS'}},
-      {score=800, words={'GOBBLEDYGOOK'}},
+      {score=800, words={'VIXENS'}},
       {score=750, words={'BROUHAHA'}},
       {score=700, words={'SCRUMPTIOUS'}},
       {score=650, words={'CANOODLE'}},
@@ -61,32 +62,19 @@ local function saveScores()
   local file = io.open(filePath, 'w')
 
   if file then
-    trace('write', filePath, json.encode(scoresTable))
+    -- trace('write', filePath, json.encode(scoresTable))
     file:write(json.encode(scoresTable))
     io.close(file )
   end
 end
 
 local function flyAwayTiles()
-  local dim = _G.DIMENSIONS
 
   for _,grp in ipairs(tiles) do
-    local x = grp.x
-    local y = grp.y
-    local r = math.random(1,4)
-    if r == 1 then
-      y = -dim.Q
-    elseif r == 2 then
-      x = display.contentWidth + dim.Q
-    elseif r == 3 then
-      y = display.contentHeight + dim.Q
-    else
-      x = -dim.Q
-    end
-
+    local dx, dy = Util.randomDirections()
     transition.moveTo(grp, {
-      x = x,
-      y = y,
+      x = dx,
+      y = dy,
       time = _G.FLIGHT_TIME,
       transition = easing.outQuart,
     })
