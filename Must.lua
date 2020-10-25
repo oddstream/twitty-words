@@ -55,6 +55,8 @@ function scene:show(event)
     -- Code here runs when the scene is still off screen (but is about to come on screen)
   elseif phase == 'did' then
     -- Code here runs when the scene is entirely on screen
+    Runtime:addEventListener('key', scene)
+    Runtime:addEventListener('system', scene)
   end
 end
 
@@ -64,6 +66,12 @@ function scene:hide(event)
 
   if phase == 'will' then
     -- Code here runs when the scene is on screen (but is about to go off screen)
+    if not Runtime:removeEventListener('key', scene) then
+      trace('could not removeEventListener key in scene:hide')
+    end
+    if not Runtime:removeEventListener('system', scene) then
+      trace('could not removeEventListener system in scene:hide')
+    end
   elseif phase == 'did' then
     -- Code here runs immediately after the scene goes entirely off screen
     composer.removeScene('Must')
@@ -76,6 +84,28 @@ function scene:destroy(event)
   _G.grid:destroy()
 
   -- Code here runs prior to the removal of scene's view
+end
+
+function scene:key(event)
+  local phase = event.phase
+
+  if phase == 'up' then
+    if event.keyName == 'j' then
+      _G.grid:jumble()
+    elseif event.keyName == 'r' then
+      _G.grid:addRowAtTop()
+    elseif event.keyName == 'w' then
+      composer.showOverlay('FoundWords', {effect='slideRight'})
+    end
+  end
+end
+
+function scene:system(event)
+  -- print( "System event name and type: " .. event.name, event.type )
+  -- if event.type == 'applicationExit' then
+  -- elseif event.type == 'applicationSuspend' then
+  -- elseif event.type == 'applicationResume' then
+  -- end
 end
 
 -- -----------------------------------------------------------------------------------

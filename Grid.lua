@@ -513,4 +513,33 @@ function Grid:jumble()
   _G.toolBar:setCenter(nil)
 end
 
+function Grid:addRowAtTop()
+
+  if self.swaps == 0 then
+    return
+  end
+
+  local tilesAdded = 0
+  local topSlot = self:findSlot(1,1)
+  while topSlot do
+    if topSlot.tile == nil then
+      local bottomSlot = topSlot
+      while bottomSlot.s do bottomSlot = bottomSlot.s end
+      if bottomSlot.tile then
+        topSlot:createTile()
+        tilesAdded = tilesAdded + 1
+      end
+    end
+    topSlot = topSlot.e
+  end
+
+  if tilesAdded > 0 then
+    self:dropColumns()
+    self.swaps = self.swaps - 1
+    _G.toolBar:setLeft(string.format('⇆ %s', self.swaps))
+    _G.toolBar:setCenter(nil)
+  end
+
+end
+
 return Grid

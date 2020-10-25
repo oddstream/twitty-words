@@ -37,6 +37,7 @@ end
 
 function Slot:createTile()
   self.tile = Tile.new(self)
+  self.tile:addEventListener()
 end
 
 function Slot:deselectAll()

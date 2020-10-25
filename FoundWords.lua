@@ -53,10 +53,10 @@ function scene:create(event)
 
   local rectBackground = display.newRect(sceneGroup, display.contentWidth / 2, display.contentHeight / 2, display.contentWidth, display.contentHeight)
   rectBackground:setFillColor(unpack(_G.MUST_COLORS.baize))
-  rectBackground.alpha = 0
-  transition.fadeIn(rectBackground, {
-    time = _G.FLIGHT_TIME
-  })
+  -- rectBackground.alpha = 0
+  -- transition.fadeIn(rectBackground, {
+  --   time = _G.FLIGHT_TIME
+  -- })
 
   local height = _G.DIMENSIONS.toolBarHeight
   local halfHeight = height / 2
@@ -65,46 +65,48 @@ function scene:create(event)
   rect:setFillColor(unpack(_G.MUST_COLORS.uibackground))
 
   local backButton = widget.newButton({
-    x = dim.Q,
+    x = 0,
     y = halfHeight,
     onRelease = function()
-      flyAwayTiles()
-      transition.fadeOut(rectBackground, {
-        time = _G.FLIGHT_TIME,
-        onComplete = function()
-          composer.hideOverlay()
-        end
-      })
+      -- flyAwayTiles()
+      -- transition.fadeOut(rectBackground, {
+        -- time = _G.FLIGHT_TIME,
+        -- onComplete = function()
+          composer.hideOverlay('slideLeft')
+        -- end
+      -- })
     end,
-    label = '< BACK',
+    label = ' < BACK',
     labelColor = { default=_G.MUST_COLORS.uiforeground, over=_G.MUST_COLORS.uicontrol },
     labelAlign = 'left',
     font = _G.TILE_FONT,
     fontSize = dim.halfQ,
     textOnly = true,
   })
+  backButton.anchorX = 0
   sceneGroup:insert(backButton)
 
   local finishButton = widget.newButton({
-    x = display.contentWidth - dim.Q,
+    x = display.contentWidth,
     y = halfHeight,
     onRelease = function()
-      flyAwayTiles()
-      transition.fadeOut(rectBackground, {
-        time = _G.FLIGHT_TIME / 2,
-        onComplete = function()
+      -- flyAwayTiles()
+      -- transition.fadeOut(rectBackground, {
+        -- time = _G.FLIGHT_TIME / 2,
+        -- onComplete = function()
           composer.hideOverlay()
           _G.grid:gameOver()
-        end
-      })
+        -- end
+      -- })
     end,
-    label = 'FINISH >',
+    label = 'FINISH > ',
     labelColor = { default=_G.MUST_COLORS.uiforeground, over=_G.MUST_COLORS.uicontrol },
     labelAlign = 'right',
     font = _G.TILE_FONT,
     fontSize = dim.halfQ,
     textOnly = true,
   })
+  finishButton.anchorX = 1
   sceneGroup:insert(finishButton)
 
   tiles = {}
@@ -123,7 +125,7 @@ function scene:create(event)
       x = x + dim.halfQ
     end
 
-    _createTile(dim.halfQ, y, tostring(score * string.len(word)), false)
+    _createTile(dim.halfQ, y, tostring(score * string.len(word)))
     y = y + dim.halfQ
   end
 

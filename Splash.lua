@@ -8,7 +8,7 @@ local logo = nil
 local destination = nil
 
 local function gotoDestination(event)
-  composer.gotoScene(destination, {effect='fade'})
+  composer.gotoScene(destination, {effect='slideRight'})
   return true -- we handled tap event
 end
 

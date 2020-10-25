@@ -190,7 +190,7 @@ _G.grid = nil
 -- end
 
 -- if system.getInfo('environment') == 'simulator' then
-  -- composer.gotoScene('Must', {effect='fade'})
+  -- composer.gotoScene('Must')
 -- else
-  composer.gotoScene('Splash', {params={scene='Must', {effect='fade'}}})
+  composer.gotoScene('Splash', {params={scene='Must'}})
 -- end

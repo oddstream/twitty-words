@@ -27,17 +27,24 @@ function Tile.new(slot)
   o.grp = o.createGraphics(slot.center.x, slot.center.y, o.letter)
   _G.MUST_GROUPS.grid:insert(o.grp)
 
+  -- don't add event listers here, as tiles are also used for displaying found words and high scores
   -- o.grp:addEventListener('tap', o)
-  o.grp:addEventListener('touch', o)
+  -- o.grp:addEventListener('touch', o)
 
   return o
+end
+
+function Tile:addEventListener()
+  self.grp:addEventListener('touch', self)
 end
 
 function Tile.createGraphics(x, y, letter)
   local dim = _G.DIMENSIONS
 
   local grp = display.newGroup()
-  grp.x, grp.y = Util.randomDirections()
+  -- grp.x, grp.y = Util.randomDirections()
+  grp.x = x
+  grp.y = y
 
   -- grp[1]
   local rectShadow = display.newRoundedRect(grp, dim.Q * 0.05, dim.Q * 0.05, dim.Q * 0.95, dim.Q * 0.95, dim.Q / 20)  -- TODO magic numbers
@@ -55,12 +62,12 @@ function Tile.createGraphics(x, y, letter)
   local textLetter = display.newText(grp, letter, 0, 0, _G.TILE_FONT, tileFontSize)
   textLetter:setFillColor(unpack(_G.MUST_COLORS.black))
 
-  transition.moveTo(grp, {
-    x = x,
-    y = y,
-    time = _G.FLIGHT_TIME,
-    transition = easing.outQuart,
-  })
+  -- transition.moveTo(grp, {
+  --   x = x,
+  --   y = y,
+  --   time = _G.FLIGHT_TIME,
+  --   transition = easing.outQuart,
+  -- })
 
   return grp
 end
@@ -142,24 +149,14 @@ function Tile:flyAway(n, wordLength)
 
   transition.moveTo(self.grp, {
     x = (dim.halfQ + (dim.Q * (n-1))) + ((display.contentWidth / 2) - ((dim.Q * wordLength) / 2)),
-    y = display.contentHeight * 0.5,
-    time = 500,
-    transition = easing.inQuad,
-    onComplete = function()
-      -- self.grp[2]:setFillColor(unpack(_G.MUST_COLORS.ivory))
-      transition.fadeOut(self.grp, {
-        time = _G.FLIGHT_TIME,
-        transition = easing.inQuad,
-      })
-      local dx, dy = Util.randomDirections()
-      transition.moveTo(self.grp, {
-        x = dx,
-        y = dy,
-        time = _G.FLIGHT_TIME,
-        transition = easing.inQuad,
-        onComplete = function() self:delete() end,
-      })
-    end,
+    y = dim.halfQ,
+    time = _G.FLIGHT_TIME,
+    transition = easing.outQuad,
+  })
+  transition.fadeOut(self.grp, {
+    time = _G.FLIGHT_TIME,
+    transition = easing.linear,
+    onComplete = function() self:delete() end,
   })
 end
 

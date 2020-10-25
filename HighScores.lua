@@ -68,6 +68,7 @@ local function saveScores()
   end
 end
 
+--[[
 local function flyAwayTiles()
 
   for _,grp in ipairs(tiles) do
@@ -80,6 +81,7 @@ local function flyAwayTiles()
     })
   end
 end
+]]
 
 -- -----------------------------------------------------------------------------------
 -- Code outside of the scene event functions below will only be executed ONCE unless
@@ -143,18 +145,20 @@ function scene:create(event)
   rect:setFillColor(unpack(_G.MUST_COLORS.uibackground))
 
   local newButton = widget.newButton({
-    x = display.contentCenterX,
+    x = 0,
     y = halfHeight,
     onRelease = function()
-      flyAwayTiles()
-      composer.gotoScene('Must', {effect='fade'})
+      -- flyAwayTiles()
+      composer.gotoScene('Must', {effect='slideLeft'})
     end,
-    label = 'NEW GAME',
+    label = ' < NEW GAME',
     labelColor = { default=_G.MUST_COLORS.uiforeground, over=_G.MUST_COLORS.uicontrol },
+    labelAlign = 'left',
     font = _G.TILE_FONT,
     fontSize = dim.halfQ,
     textOnly = true,
   })
+  newButton.anchorX = 0
   sceneGroup:insert(newButton)
   -- local bannerText = 'HIGH SCORES'
   -- if event.params and event.params.banner then
@@ -245,7 +249,7 @@ function scene:key(event)
   local phase = event.phase
   if phase == 'up' then
     if event.keyName == 'back' or event.keyName == 'deleteBack' then
-      composer.gotoScene('Must', {effect='fade'})
+      composer.gotoScene('Must')
       return true -- override the key
     end
   end
