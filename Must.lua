@@ -39,8 +39,7 @@ function scene:create(event)
 
   _G.DIMENSIONS = Dim.new()
 
-  -- _G.titleBar = Titlebar.new({group=_G.MUST_GROUPS.ui})
-  _G.toolBar = Toolbar.new({group=_G.MUST_GROUPS.ui})
+  _G.toolBar = Toolbar.new()
 
   _G.grid = Grid.new(_G.DIMENSIONS.numX, _G.DIMENSIONS.numY)
   _G.grid:newGame()

@@ -9,7 +9,7 @@ local widget = require('widget')
 local json = require('json')
 
 local Tile = require 'Tile'
-local Util = require 'Util'
+-- local Util = require 'Util'
 
 local tiles = nil
 

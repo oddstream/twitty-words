@@ -9,7 +9,7 @@ local scene = composer.newScene()
 -- local widget = require('widget')
 
 local Tile = require 'Tile'
-local Util = require 'Util'
+-- local Util = require 'Util'
 
 local tiles = nil
 
@@ -22,6 +22,7 @@ local tiles = nil
 -- Scene event functions
 -- -----------------------------------------------------------------------------------
 
+--[[
 local function flyAwayTiles()
 
   for _,grp in ipairs(tiles) do
@@ -35,6 +36,34 @@ local function flyAwayTiles()
   end
 
 end
+]]
+
+local function backTouch(event)
+
+  local grp = event.target
+
+  if event.phase == 'began' then
+    -- trace('touch began', event.x, event.y)
+
+  elseif event.phase == 'moved' then
+    -- trace('touch moved, start', event.xStart, event.yStart, 'now', event.x, event.y)
+
+    grp.y = event.y - event.yStart
+  elseif event.phase == 'ended' then
+    -- trace('touch ended', event.x, event.y)
+
+    transition.moveTo(grp, {
+      y = 0,
+      transition = easing.outQuart,
+    })
+  elseif event.phase == 'cancelled' then
+    -- trace('touch cancelled', event.x, event.yet)
+
+  end
+
+  return true
+
+end
 
 -- create()
 function scene:create(event)
@@ -43,15 +72,24 @@ function scene:create(event)
   local sceneGroup = self.view
   -- Code here runs when the scene is first created but has not yet appeared on screen
 
+  -- create a group to hold the baize and tiles, so they can be vscrolled
+  local backGroup = display.newGroup()
+  sceneGroup:insert(backGroup)
+  backGroup:addEventListener('touch', backTouch)
+
   local function _createTile(x, y, txt)
     local grp = Tile.createGraphics(x, y, txt)
-    sceneGroup:insert(grp)
+    backGroup:insert(grp)
     grp:scale(0.5, 0.5)
     table.insert(tiles, grp)
     return grp
   end
 
-  local rectBackground = display.newRect(sceneGroup, display.contentWidth / 2, display.contentHeight / 2, display.contentWidth, display.contentHeight)
+
+  -- the background needs to be tall enough to display #_G.grid.words
+  local backHeight = (#_G.grid.words * dim.halfQ) + display.contentHeight
+
+  local rectBackground = display.newRect(backGroup, display.contentWidth / 2, display.contentHeight / 2, display.contentWidth, backHeight)
   rectBackground:setFillColor(unpack(_G.MUST_COLORS.baize))
   -- rectBackground.alpha = 0
   -- transition.fadeIn(rectBackground, {

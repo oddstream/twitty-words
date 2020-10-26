@@ -23,12 +23,17 @@ end
 
 ]]
 
-local Toolbar = {}
+local Toolbar = {
+  group = nil,
+  rect = nil,
+  left = nil,
+  center = nil,
+  right = nil,
+}
 Toolbar.__index = Toolbar
 
-function Toolbar.new(o)
-  assert(o) -- need to be called with an initializing object
-  assert(o.group)
+function Toolbar.new()
+  local o = {}
 
   -- assert(self==Toolbar)
   setmetatable(o, Toolbar)
@@ -37,6 +42,8 @@ function Toolbar.new(o)
 
   local height = dim.toolBarHeight
   local halfHeight = height / 2
+
+  o.group = _G.MUST_GROUPS.ui
 
   o.rect = display.newRect(o.group, display.contentCenterX, halfHeight, display.contentWidth, height)
   o.rect:setFillColor(unpack(_G.MUST_COLORS.uibackground))
@@ -106,7 +113,7 @@ end
 
 function Toolbar:setLeft(s)
   -- self:set('left', s)
-  self.left:setLabel(' ' .. s)
+  self.left:setLabel(s)
 end
 
 function Toolbar:setCenter(s)
@@ -115,7 +122,7 @@ end
 
 function Toolbar:setRight(s)
   -- self:set('right', s)
-  self.right:setLabel(s .. ' ')
+  self.right:setLabel(s)
 end
 
 return Toolbar

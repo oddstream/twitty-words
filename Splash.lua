@@ -24,15 +24,15 @@ function scene:show(event)
     -- Code here runs when the scene is still off screen (but is about to come on screen)
     logo = display.newImage(sceneGroup, 'assets/splashlogo.png', system.ResourceDirectory, display.contentCenterX, display.contentCenterY)
     -- png is 420x420 pixels
-    -- scale so it occupies one third of screen width
-    local scale = display.contentWidth / 3 / 420
+    -- scale so it occupies one half of screen width
+    local scale = display.contentWidth / 2 / 420
     logo:scale(scale, scale)
     assert(logo:addEventListener('tap', gotoDestination))
 
   elseif phase == 'did' then
     destination = event.params.scene
     -- Code here runs when the scene is entirely on screen
-    tim = timer.performWithDelay(1500, gotoDestination, 1)
+    tim = timer.performWithDelay(1000, gotoDestination, 1)
   end
 end
 

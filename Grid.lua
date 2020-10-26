@@ -14,6 +14,8 @@ local Grid = {
   score = nil,
   words = nil,
   swaps = nil,
+
+  mode = nil, -- 'solitaire' | 'timed' | '10words'
 }
 Grid.__index = Grid
 
@@ -79,9 +81,10 @@ function Grid:newGame()
   self:updateUI()
 end
 
-function Grid:updateUI()
-  _G.toolBar:setLeft(string.format('⇆ %s', self.swaps))
-  _G.toolBar:setRight(string.format('%+d', self.score - self:calcResidualScore()))
+function Grid:updateUI(s)
+  _G.toolBar:setLeft(string.format(' ⇆ %s', self.swaps))
+  _G.toolBar:setCenter(s)
+  _G.toolBar:setRight(string.format('%+d ', self.score - self:calcResidualScore()))
 end
 
 function Grid:sortWords()
@@ -261,8 +264,7 @@ trace('swapping', t1.letter, t2.letter)
       self:deselectAllSlots()
 
       self.swaps = self.swaps - 1
-      _G.toolBar:setLeft(string.format('⇆ %s', self.swaps))
-      _G.toolBar:setCenter(string.format('%s ⇆ %s', t1.letter, t2.letter))
+      _self:updateUI()
     end
   end
 end
@@ -278,8 +280,7 @@ function Grid:testSelection()
         t2:refreshLetter()
 
         self.swaps = self.swaps - 1
-        _G.toolBar:setLeft(string.format('⇆ %s', self.swaps))
-        _G.toolBar:setCenter(string.format('%s ⇆ %s', t1.letter, t2.letter))
+        self:updateUI(string.format('%s ⇆ %s', t1.letter, t2.letter))
       end
     else
       t1:shake()
@@ -509,8 +510,7 @@ function Grid:jumble()
   end
 
   self.swaps = self.swaps - 1
-  _G.toolBar:setLeft(string.format('⇆ %s', self.swaps))
-  _G.toolBar:setCenter(nil)
+  self:updateUI(nil)
 end
 
 function Grid:addRowAtTop()
@@ -536,8 +536,7 @@ function Grid:addRowAtTop()
   if tilesAdded > 0 then
     self:dropColumns()
     self.swaps = self.swaps - 1
-    _G.toolBar:setLeft(string.format('⇆ %s', self.swaps))
-    _G.toolBar:setCenter(nil)
+    self:updateUI(nil)
   end
 
 end
