@@ -17,7 +17,8 @@ local Grid = {
   words = nil,
   swaps = nil,
 
-  mode = nil, -- 'solitaire' | 'timed' | '10words'
+  countdownTimer = nil,  -- timer
+  secondsLeft = nil,
 }
 Grid.__index = Grid
 
@@ -35,12 +36,39 @@ function Grid.new(width, height)
   return o
 end
 
+function Grid:timer(event)
+  -- event.source (Grid table)
+  -- event.count
+  if self.secondsLeft > 0 then
+    self.secondsLeft = self.secondsLeft - 1
+  end
+  if #self.selectedSlots == 0 then
+    _G.toolBar:setCenter(string.format('%u:%02u',
+      math.floor(self.secondsLeft / 60),
+      math.floor(self.secondsLeft % 60)))
+  end
+  if self.secondsLeft == 0 then
+    self:gameOver()
+  end
+end
+
+function Grid:pauseCountdown()
+  timer.pause(self.countdownTimer)
+end
+
+function Grid:resumeCountdown()
+  timer.resume(self.countdownTimer)
+end
+
 function Grid:destroy()
   trace('Gird:destroy()')
 end
 
 function Grid:gameOver()
   local deductions = self:calcResidualScore()
+
+  timer.cancel(self.countdownTimer)
+  -- self.countdownTimer = nil
 
   -- delete all tiles
   for _,slot in ipairs(self.slots) do
@@ -81,6 +109,9 @@ function Grid:newGame()
   self.swaps = 1
   self.selectedSlots = {}
 
+  self.secondsLeft = 60 * 5
+  self.countdownTimer = timer.performWithDelay(1000, self, 0)
+
   -- update ui
   self:updateUI()
 end
@@ -103,7 +134,7 @@ function Grid:createLetterPool()
   -- https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
   -- https://stackoverflow.com/questions/35572435/how-do-you-do-the-fisher-yates-shuffle-in-lua
 
-  assert(#self.letterPool==98)
+  assert(#self.letterPool==100)
 
   for i=#self.letterPool, 1, -1 do
     local j = math.random(i)
@@ -187,7 +218,11 @@ function Grid:getSelectedWord()
 end
 
 local function isWordInDictionary(word)
-  local first,_ = string.find(_G.DICTIONARY, '[^%u]' .. word .. '[^%u]')
+  word = string.gsub(word, ' ', '%%u')
+  local first,last = string.find(_G.DICTIONARY, '[^%u]' .. word .. '[^%u]')
+  -- if first then
+  --   trace('found', string.sub(_G.DICTIONARY, first+1, last-1))
+  -- end
   return first ~= nil
   -- return true
 end
@@ -559,7 +594,7 @@ function Grid:addTiles()
   local slot = self:findSlot(1,1)
   while slot do
     local count = _tilesInColumn(slot)
-    if count > 0 and count < 7 then
+    if count > 0 and count < 8 then
       if slot:createTile() then
         tilesAdded = tilesAdded + 1
       end

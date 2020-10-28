@@ -11,8 +11,6 @@ local json = require('json')
 local Tile = require 'Tile'
 -- local Util = require 'Util'
 
-local tiles = nil
-
 local scoresTable = {}
 
 local filePath = system.pathForFile('scores.json', system.DocumentsDirectory)
@@ -68,20 +66,32 @@ local function saveScores()
   end
 end
 
---[[
-local function flyAwayTiles()
+local function backTouch(event)
 
-  for _,grp in ipairs(tiles) do
-    local dx, dy = Util.randomDirections()
+  local grp = event.target
+
+  if event.phase == 'began' then
+    -- trace('touch began', event.x, event.y)
+
+  elseif event.phase == 'moved' then
+    -- trace('touch moved, start', event.xStart, event.yStart, 'now', event.x, event.y)
+
+    grp.y = event.y - event.yStart
+  elseif event.phase == 'ended' then
+    -- trace('touch ended', event.x, event.y)
+
     transition.moveTo(grp, {
-      x = dx,
-      y = dy,
-      time = _G.FLIGHT_TIME,
+      y = 0,
       transition = easing.outQuart,
     })
+  elseif event.phase == 'cancelled' then
+    -- trace('touch cancelled', event.x, event.yet)
+
   end
+
+  return true
+
 end
-]]
 
 -- -----------------------------------------------------------------------------------
 -- Code outside of the scene event functions below will only be executed ONCE unless
@@ -99,17 +109,10 @@ function scene:create(event)
   local sceneGroup = self.view
   -- Code here runs when the scene is first created but has not yet appeared on screen
 
-  local function _createTile(x, y, txt, selected)
-    local grp = Tile.createGraphics(x, y, txt)
-    sceneGroup:insert(grp)
-    grp:scale(0.5, 0.5)
-    if selected then
-      grp[2]:setFillColor(unpack(_G.MUST_COLORS.gold))
-    end
-    table.insert(tiles, grp)
-
-    return grp
-  end
+  -- create a group to hold the baize and tiles, so they can be vscrolled
+  local backGroup = display.newGroup()
+  sceneGroup:insert(backGroup)
+  backGroup:addEventListener('touch', backTouch)
 
   loadScores()
 
@@ -138,76 +141,67 @@ function scene:create(event)
     end
   end
 
-  local height = _G.DIMENSIONS.toolBarHeight
+  local backHeight = (20 * dim.halfQ) + display.contentHeight
+  -- need a background rect for the touch to work when touching the, er, background (otherwise can only touch/vscroll tiles)
+  local rectBackground = display.newRect(backGroup, display.contentWidth / 2, display.contentHeight / 2, display.contentWidth, backHeight)
+  rectBackground:setFillColor(unpack(_G.MUST_COLORS.baize))
+
+  -- a rect for the tool bar
+  local height = dim.toolBarHeight
   local halfHeight = height / 2
 
-  local rect = display.newRect(sceneGroup, display.contentCenterX, halfHeight, display.contentWidth, height)
-  rect:setFillColor(unpack(_G.MUST_COLORS.uibackground))
+  local rectToolbar = display.newRect(sceneGroup, display.contentCenterX, halfHeight, display.contentWidth, height)
+  rectToolbar:setFillColor(unpack(_G.MUST_COLORS.uibackground))
 
   local newButton = widget.newButton({
-    x = 0,
+    x = display.contentWidth - dim.halfQ,
     y = halfHeight,
     onRelease = function()
-      -- flyAwayTiles()
       composer.gotoScene('Must', {effect='slideLeft'})
     end,
-    label = ' < NEW GAME',
+    label = 'NEW GAME >',
     labelColor = { default=_G.MUST_COLORS.uiforeground, over=_G.MUST_COLORS.uicontrol },
-    labelAlign = 'left',
+    labelAlign = 'right',
     font = _G.TILE_FONT,
     fontSize = dim.halfQ,
     textOnly = true,
   })
-  newButton.anchorX = 0
+  newButton.anchorX = 1
   sceneGroup:insert(newButton)
-  -- local bannerText = 'HIGH SCORES'
-  -- if event.params and event.params.banner then
-  --   bannerText = event.params.banner
-  -- end
+
+  local function _createTile(x, y, txt, selected)
+    local grp = Tile.createGraphics(x, y, txt)
+    backGroup:insert(grp)
+    grp:scale(0.5, 0.5)
+    if selected then
+      grp[2]:setFillColor(unpack(_G.MUST_COLORS.gold))
+    end
+    return grp
+  end
+
+  local function _showScoreAndWord(thisScore, thisWord, yPos, gold)
+    _createTile(dim.halfQ, yPos, tostring(thisScore), gold)
+    local x = dim.halfQ * 3
+    for j=1, string.len(thisWord) do
+      _createTile(x, yPos, string.sub(thisWord, j, j), gold)
+      x = x + dim.halfQ
+    end
+  end
 
   local y = dim.toolBarHeight + dim.halfQ
-  -- local highScoresBanner = display.newText(sceneGroup, bannerText, display.contentCenterX, y, native.systemFontBold, 72)
-  -- y = y + dim.halfQ
-
-  -- if score then
-  --   local infoText1 = string.format('SCORE %d', event.params.score)
-  --   local displayText1 = display.newText(sceneGroup, infoText1, display.contentCenterX, y, native.systemFontBold, 72)
-  --   displayText1:setFillColor(0,0,0)
-  --   y = y + dim.halfQ
-  -- end
-
-  tiles = {}
 
   for i = 1, 20 do
     if scoresTable[i] then
-      _createTile(dim.halfQ, y, tostring(scoresTable[i].score), scoresTable[i].score == score)
-
-      do
-        local x = dim.halfQ * 3
-        local word = scoresTable[i].words[1]
-        for j=1, string.len(word) do
-          _createTile(x, y, string.sub(word, j, j), scoresTable[i].score == score)
-          x = x + dim.halfQ
-        end
-      end
-
+      -- show the highest scoring word, which has been sorted (when inserted) to the front
+      _showScoreAndWord(scoresTable[i].score, scoresTable[i].words[1], y, scoresTable[i].score == score)
       y = y + dim.halfQ
     end
   end
 
-  if score < scoresTable[20].score then
+  -- show the user's pathetic effort if it's not in the top 20
+  if score < scoresTable[20].score and #words > 0 then
     y = y + dim.halfQ
-
-    _createTile(dim.halfQ, y, tostring(score), true)
-
-    if words and #words > 0 then
-      local x = dim.halfQ * 3
-      local word = words[1]
-      for j=1, string.len(word) do
-        _createTile(x, y, string.sub(word, j, j), true)
-        x = x + dim.halfQ
-      end
-    end
+    _showScoreAndWord(score, words[1], y, true)
   end
 
 end

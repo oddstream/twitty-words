@@ -103,7 +103,7 @@ function scene:create(event)
   rect:setFillColor(unpack(_G.MUST_COLORS.uibackground))
 
   local backButton = widget.newButton({
-    x = 0,
+    x = dim.halfQ,
     y = halfHeight,
     onRelease = function()
       -- flyAwayTiles()
@@ -111,10 +111,11 @@ function scene:create(event)
         -- time = _G.FLIGHT_TIME,
         -- onComplete = function()
           composer.hideOverlay('slideLeft')
+          _G.grid:resumeCountdown()
         -- end
       -- })
     end,
-    label = ' < BACK',
+    label = '< BACK',
     labelColor = { default=_G.MUST_COLORS.uiforeground, over=_G.MUST_COLORS.uicontrol },
     labelAlign = 'left',
     font = _G.TILE_FONT,
@@ -125,7 +126,7 @@ function scene:create(event)
   sceneGroup:insert(backButton)
 
   local finishButton = widget.newButton({
-    x = display.contentWidth,
+    x = display.contentWidth - dim.halfQ,
     y = halfHeight,
     onRelease = function()
       -- flyAwayTiles()
@@ -137,7 +138,7 @@ function scene:create(event)
         -- end
       -- })
     end,
-    label = 'FINISH > ',
+    label = 'FINISH >',
     labelColor = { default=_G.MUST_COLORS.uiforeground, over=_G.MUST_COLORS.uicontrol },
     labelAlign = 'right',
     font = _G.TILE_FONT,

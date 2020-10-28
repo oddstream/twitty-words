@@ -77,6 +77,7 @@ function Toolbar.new()
     x = display.actualContentWidth - dim.halfQ,
     y = halfHeight,
     onRelease = function()
+      _G.grid:pauseCountdown()
       composer.showOverlay('FoundWords', {effect='slideRight'})
     end,
     label = '',

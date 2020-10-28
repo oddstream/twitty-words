@@ -57,6 +57,10 @@ function Tile.createGraphics(x, y, letter)
   if string.len(letter) > 1 then
     tileFontSize = tileFontSize * 0.66
   end
+  -- tried a highlight on the letter; can't see it against ivory background
+  -- local textHighlight = display.newText(grp, letter, -(dim.Q / 30), -(dim.Q / 30), _G.TILE_FONT, tileFontSize)
+  -- textHighlight:setFillColor(unpack(_G.MUST_COLORS.white))
+
   local textLetter = display.newText(grp, letter, 0, 0, _G.TILE_FONT, tileFontSize)
   textLetter:setFillColor(unpack(_G.MUST_COLORS.black))
 
