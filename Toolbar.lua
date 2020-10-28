@@ -49,7 +49,7 @@ function Toolbar.new()
   o.rect:setFillColor(unpack(_G.MUST_COLORS.uibackground))
 
   o.left = widget.newButton({
-    x = 0,
+    x = dim.halfQ,
     y = halfHeight,
     onRelease = function()
       _G.grid:jumble()
@@ -74,7 +74,7 @@ function Toolbar.new()
   o.center:setFillColor(unpack(_G.MUST_COLORS.uiforeground))
 
   o.right = widget.newButton({
-    x = display.contentWidth,
+    x = display.actualContentWidth - dim.halfQ,
     y = halfHeight,
     onRelease = function()
       composer.showOverlay('FoundWords', {effect='slideRight'})

@@ -1,7 +1,5 @@
 -- Tile.lua
 
-local Util = require 'Util'
-
 local Tile = {
   slot = nil,
 
@@ -12,17 +10,18 @@ local Tile = {
 }
 Tile.__index = Tile
 
-function Tile.new(slot)
+function Tile.new(slot, letter)
 
   local o = {}
   setmetatable(o, Tile)
 
   o.slot = slot
 
-  do
-    local n = math.random(1, #_G.SCRABBLE_LETTERS)
-    o.letter = string.sub(_G.SCRABBLE_LETTERS, n, n)
-  end
+  -- do
+  --   local n = math.random(1, #_G.SCRABBLE_LETTERS)
+  --   o.letter = string.sub(_G.SCRABBLE_LETTERS, n, n)
+  -- end
+  o.letter = letter
 
   o.grp = o.createGraphics(slot.center.x, slot.center.y, o.letter)
   _G.MUST_GROUPS.grid:insert(o.grp)
@@ -42,7 +41,6 @@ function Tile.createGraphics(x, y, letter)
   local dim = _G.DIMENSIONS
 
   local grp = display.newGroup()
-  -- grp.x, grp.y = Util.randomDirections()
   grp.x = x
   grp.y = y
 

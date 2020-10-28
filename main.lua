@@ -192,5 +192,5 @@ _G.grid = nil
 -- if system.getInfo('environment') == 'simulator' then
   -- composer.gotoScene('Must')
 -- else
-  composer.gotoScene('Splash', {params={scene='Must'}, effect='slideRight'})
+  composer.gotoScene('Splash', {params={scene='Must'}})
 -- end

@@ -10,6 +10,8 @@ local Grid = {
   width = nil,      -- number of columns
   height = nil,      -- number of rows
 
+  letterPool = nil,
+
   selectedSlots = nil,  -- table of selected slots, in order they were selected
   score = nil,
   words = nil,
@@ -68,6 +70,8 @@ end
 
 function Grid:newGame()
 
+  self:createLetterPool()
+
   -- create tiles
   self:createTiles()
 
@@ -82,9 +86,30 @@ function Grid:newGame()
 end
 
 function Grid:updateUI(s)
-  _G.toolBar:setLeft(string.format(' ⇆ %s', self.swaps))
+  _G.toolBar:setLeft(string.format('⇆ %s', self.swaps))
   _G.toolBar:setCenter(s)
-  _G.toolBar:setRight(string.format('%+d ', self.score - self:calcResidualScore()))
+  -- _G.toolBar:setRight(string.format('%+d', self.score))
+  _G.toolBar:setRight(string.format('%u', self.score))
+end
+
+function Grid:createLetterPool()
+
+  self.letterPool = {}
+
+  for i=1, string.len(_G.SCRABBLE_LETTERS) do
+    local letter = string.sub(_G.SCRABBLE_LETTERS, i, i)
+    table.insert(self.letterPool, letter)
+  end
+  -- https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
+  -- https://stackoverflow.com/questions/35572435/how-do-you-do-the-fisher-yates-shuffle-in-lua
+
+  assert(#self.letterPool==98)
+
+  for i=#self.letterPool, 1, -1 do
+    local j = math.random(i)
+    self.letterPool[i], self.letterPool[j] = self.letterPool[j], self.letterPool[i]
+  end
+
 end
 
 function Grid:sortWords()
@@ -291,7 +316,7 @@ function Grid:testSelection()
     local word, score = self:getSelectedWord()
     if isWordInDictionary(word) then
     -- if true then
-      trace(score, word)
+      -- trace(score, word)
       table.insert(self.words, word)
       self:sortWords()
 
@@ -304,21 +329,25 @@ function Grid:testSelection()
         end
       end
 
-      self.selectedSlots[1]:flyAwayScore(score) -- this increments score, updates UI
+      self.selectedSlots[1]:flyAwaySwaps() -- this increments swaps
+      self.selectedSlots[1]:flyAwayScore(score) -- this increments score
 
       self.selectedSlots = {}
-      self.swaps = self.swaps + 1
 
       self:dropColumns()
-      self:compactColumns2()
+      self:compactColumns()
+      if #self.letterPool > 0 then
+        self:addTiles()
+      end
 
-      -- wait for tile transitions to finish (and tiles be deleted) before checking
+      -- wait for tile transitions to finish (and tiles be deleted) before updating UI and checking for end of game
       timer.performWithDelay(_G.FLIGHT_TIME, function()
+        self:updateUI(word)
         if self:countTiles() < 2 then -- will end automatically with 0 or 1 tiles
           self:gameOver()
         end
       end)
-    else
+    else  -- word not in dictionary
       for _,slot in ipairs(self.selectedSlots) do
         slot.tile:shake()
       end
@@ -418,7 +447,7 @@ function Grid:slideColumn(col, dir)
   end
 end
 
-function Grid:compactColumns2()
+function Grid:compactColumns()
   local dim = _G.DIMENSIONS
 
   local function _isColumnEmpty(col)
@@ -513,30 +542,33 @@ function Grid:jumble()
   self:updateUI(nil)
 end
 
-function Grid:addRowAtTop()
+function Grid:addTiles()
+  -- add a tile at top of column
+  -- if column has 1 .. 4 tiles
 
-  if self.swaps == 0 then
-    return
+  local function _tilesInColumn(slot)
+    local count = 0
+    while slot do
+      if slot.tile then count = count + 1 end
+      slot = slot.s
+    end
+    return count
   end
 
   local tilesAdded = 0
-  local topSlot = self:findSlot(1,1)
-  while topSlot do
-    if topSlot.tile == nil then
-      local bottomSlot = topSlot
-      while bottomSlot.s do bottomSlot = bottomSlot.s end
-      if bottomSlot.tile then
-        topSlot:createTile()
+  local slot = self:findSlot(1,1)
+  while slot do
+    local count = _tilesInColumn(slot)
+    if count > 0 and count < 7 then
+      if slot:createTile() then
         tilesAdded = tilesAdded + 1
       end
     end
-    topSlot = topSlot.e
+    slot = slot.e
   end
 
   if tilesAdded > 0 then
     self:dropColumns()
-    self.swaps = self.swaps - 1
-    self:updateUI(nil)
   end
 
 end

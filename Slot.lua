@@ -36,8 +36,12 @@ function Slot:position()
 end
 
 function Slot:createTile()
-  self.tile = Tile.new(self)
-  self.tile:addEventListener()
+  local letter = table.remove(self.grid.letterPool)
+  if letter then
+    self.tile = Tile.new(self, letter)
+    self.tile:addEventListener()
+  end
+  return letter ~= nil
 end
 
 function Slot:deselectAll()
@@ -81,6 +85,40 @@ function Slot:testSelection()
   self.grid:testSelection()
 end
 
+function Slot:flyAwaySwaps()
+  local dim = _G.DIMENSIONS
+
+  local grp = display.newGroup()
+    grp.x = self.center.x
+    grp.y = self.center.y
+  _G.MUST_GROUPS.grid:insert(grp)
+  grp:toFront()
+
+  local rectBack = display.newRoundedRect(grp, 0, 0, dim.Q * 0.95, dim.Q * 0.95, dim.Q / 20)  -- TODO magic numbers
+    rectBack:setFillColor(unpack(_G.MUST_COLORS.ivory)) -- if alpha == 0, we don't get tap events
+
+  -- force display of sign, in case score is negative
+  -- http://www.cplusplus.com/reference/cstdio/printf/
+  local textSwaps = display.newText(grp, string.format('+1'), 0, 0, _G.TILE_FONT, dim.tileFontSize * 0.75)
+    textSwaps:setFillColor(unpack(_G.MUST_COLORS.black))
+
+  transition.moveTo(grp, {
+    x = dim.halfQ,
+    y = dim.toolBarHeight / 2,
+    time = _G.FLIGHT_TIME,
+    transition = easing.outQuad,
+    onComplete = function()
+      self.grid.swaps = self.grid.swaps + 1
+      transition.scaleTo(grp, {
+        xScale = 0.1,
+        yScale = 0.1,
+        time = 500,
+        onComplete = function() display.remove(grp) end
+      })
+    end,
+  })
+end
+
 function Slot:flyAwayScore(score)
   local dim = _G.DIMENSIONS
 
@@ -105,11 +143,10 @@ function Slot:flyAwayScore(score)
     transition = easing.outQuad,
     onComplete = function()
       self.grid.score = self.grid.score + score
-      self.grid:updateUI()
       transition.scaleTo(grp, {
         xScale = 0.1,
         yScale = 0.1,
-        time = 1000,
+        time = 500,
         onComplete = function() display.remove(grp) end
       })
     end,
