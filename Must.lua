@@ -41,7 +41,9 @@ function scene:create(event)
 
   _G.toolBar = Toolbar.new()
 
-  _G.grid = Grid.new(_G.DIMENSIONS.numX, _G.DIMENSIONS.numY)
+  -- _G.grid = Grid.new(6, _G.DIMENSIONS.numX, _G.DIMENSIONS.numY)
+  -- _G.grid = Grid.new('timed', _G.DIMENSIONS.numX, _G.DIMENSIONS.numY)
+  _G.grid = Grid.new('untimed', _G.DIMENSIONS.numX, _G.DIMENSIONS.numY)
   _G.grid:newGame()
 
 end

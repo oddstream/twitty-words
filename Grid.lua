@@ -19,16 +19,19 @@ local Grid = {
 
   countdownTimer = nil,  -- timer
   secondsLeft = nil,
+
+  gameMode = nil, -- 'timed' | 'untimed' | <number>
 }
 Grid.__index = Grid
 
-function Grid.new(width, height)
+function Grid.new(mode, width, height)
   local o = {}
   setmetatable(o, Grid)
 
   o.slots = {}
   o.width = width
   o.height = height
+  o.gameMode = mode
 
   o:createSlots()
   o:linkSlots()
@@ -43,7 +46,7 @@ function Grid:timer(event)
     self.secondsLeft = self.secondsLeft - 1
   end
   if #self.selectedSlots == 0 then
-    _G.toolBar:setCenter(string.format('%u:%02u',
+    self:updateUI(string.format('%u:%02u',
       math.floor(self.secondsLeft / 60),
       math.floor(self.secondsLeft % 60)))
   end
@@ -53,11 +56,15 @@ function Grid:timer(event)
 end
 
 function Grid:pauseCountdown()
-  timer.pause(self.countdownTimer)
+  if self.countdownTimer then
+    timer.pause(self.countdownTimer)
+  end
 end
 
 function Grid:resumeCountdown()
-  timer.resume(self.countdownTimer)
+  if self.countdownTimer then
+    timer.resume(self.countdownTimer)
+  end
 end
 
 function Grid:destroy()
@@ -67,7 +74,10 @@ end
 function Grid:gameOver()
   local deductions = self:calcResidualScore()
 
-  timer.cancel(self.countdownTimer)
+  if self.countdownTimer then
+    timer.cancel(self.countdownTimer)
+  end
+  -- the following produced runtime error, not sure why
   -- self.countdownTimer = nil
 
   -- delete all tiles
@@ -109,8 +119,10 @@ function Grid:newGame()
   self.swaps = 1
   self.selectedSlots = {}
 
-  self.secondsLeft = 60 * 5
-  self.countdownTimer = timer.performWithDelay(1000, self, 0)
+  if self.gameMode == 'timed' then
+    self.secondsLeft = 60 * 5
+    self.countdownTimer = timer.performWithDelay(1000, self, 0)
+  end
 
   -- update ui
   self:updateUI()
@@ -258,7 +270,6 @@ function Grid:deselectAllSlots()
     slot:deselect()
   end)
   self.selectedSlots = {}
-  _G.toolBar:setCenter(nil)
 end
 
 function Grid:selectSlot(slot)
@@ -274,16 +285,8 @@ function Grid:selectSlot(slot)
     return false
   end
 
-  local function _insert()
-    table.insert(self.selectedSlots, slot)
-    local word, _ = self:getSelectedWord()
-    _G.toolBar:setCenter(word)
-  end
-
-  -- TODO check slot is the previous but one slot; if so, deselect last selected slot (user is backtracking)
-
   if #self.selectedSlots == 0 then
-    _insert()
+    table.insert(self.selectedSlots, slot)
   else
     local last = self.selectedSlots[#self.selectedSlots]
     if slot ~= last then
@@ -293,19 +296,19 @@ function Grid:selectSlot(slot)
           trace('backtracking')
           table.remove(self.selectedSlots)  -- remove last element
           last:deselect()
-          local word, _ = self:getSelectedWord()
-          _G.toolBar:setCenter(word)
         end
       else
         -- selecting a new/unselected tile
         if not _connected(slot, last) then
           self:deselectAllSlots()
         else
-          _insert()
+          table.insert(self.selectedSlots, slot)
         end
       end
     end
   end
+
+  self:updateUI(self:getSelectedWord())
 end
 
 --[[
@@ -353,6 +356,7 @@ function Grid:testSelection()
     -- if true then
       -- trace(score, word)
       table.insert(self.words, word)
+      -- updateUI later when score has transitioned
       self:sortWords()
 
       do
@@ -378,7 +382,9 @@ function Grid:testSelection()
       -- wait for tile transitions to finish (and tiles be deleted) before updating UI and checking for end of game
       timer.performWithDelay(_G.FLIGHT_TIME, function()
         self:updateUI(word)
-        if self:countTiles() < 2 then -- will end automatically with 0 or 1 tiles
+        if self:countTiles() < 3 then -- will end automatically with 0, 1 or 2 tiles
+          self:gameOver()
+        elseif type(self.gameMode) == 'number' and #self.words == self.gameMode then
           self:gameOver()
         end
       end)
@@ -387,6 +393,7 @@ function Grid:testSelection()
         slot.tile:shake()
       end
       self:deselectAllSlots()
+      self:updateUI(nil)
     end
   end
 end
@@ -578,8 +585,7 @@ function Grid:jumble()
 end
 
 function Grid:addTiles()
-  -- add a tile at top of column
-  -- if column has 1 .. 4 tiles
+  -- TODO add tile to top of any column, that has no tile(s) at the top and a tile at the bottom
 
   local function _tilesInColumn(slot)
     local count = 0
@@ -590,19 +596,19 @@ function Grid:addTiles()
     return count
   end
 
-  local tilesAdded = 0
+  local tilesAdded = false
   local slot = self:findSlot(1,1)
   while slot do
     local count = _tilesInColumn(slot)
-    if count > 0 and count < 8 then
+    if count > 0 and count < (self.height - 1) then
       if slot:createTile() then
-        tilesAdded = tilesAdded + 1
+        tilesAdded = true
       end
     end
     slot = slot.e
   end
 
-  if tilesAdded > 0 then
+  if tilesAdded then
     self:dropColumns()
   end
 
