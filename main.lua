@@ -187,6 +187,7 @@ end
 -- trace('table filter', type(_G.table.filter))
 
 _G.grid = nil
+_G.GAME_MODE = 'timed'  -- 'untimed' | 'timed' | <number>
 
 -- for k,v in pairs( _G ) do
 --   print( k , v )

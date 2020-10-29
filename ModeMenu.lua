@@ -1,6 +1,5 @@
 
 -- ModeMenu.lua
--- https://docs.coronalabs.com/guide/programming/06/index.html
 
 local composer = require('composer')
 local scene = composer.newScene()
@@ -12,9 +11,46 @@ local Tile = require 'Tile'
 -- the scene is removed entirely (not recycled) via 'composer.removeScene()'
 -- -----------------------------------------------------------------------------------
 
+local function touchHandler(event)
+  -- event.target is self.grp
+
+  local grp = event.target
+
+  local function _select()
+    grp[2]:setFillColor(unpack(_G.MUST_COLORS.gold))
+  end
+
+  local function _deselect()
+    grp[2]:setFillColor(unpack(_G.MUST_COLORS.ivory))
+  end
+
+  if event.phase == 'began' then
+    -- trace('touch began', event.x, event.y, self.letter)
+    -- deselect any selected tiles
+    _select(event.x, event.y)
+
+  elseif event.phase == 'moved' then
+    -- trace('touch moved', event.x, event.y, self.letter)
+    _select(event.x, event.y)
+
+  elseif event.phase == 'ended' then
+    -- trace('touch ended', event.x, event.y, self.letter)
+    -- _deselect(event.x, event.y)
+
+  elseif event.phase == 'cancelled' then
+    -- trace('touch cancelled', event.x, event.y, self.letter)
+    -- _deselect(event.x, event.y)
+  end
+
+  return true
+end
+
 -- -----------------------------------------------------------------------------------
 -- Scene event functions
 -- -----------------------------------------------------------------------------------
+
+-- TODO add a titlebar
+-- TODO make tiles do something when touched
 
 -- create()
 function scene:create(event)
@@ -34,7 +70,12 @@ function scene:create(event)
     local x = dim.Q
     for i=1, string.len(title) do
       local grp = _createTile(x, y, string.sub(title, i, i))
-      grp:addEventListener('tap', function() composer.gotoScene('Must', {effect='slideLeft', params={mode=mode}}) end)
+        grp:addEventListener('touch', touchHandler)
+        grp:addEventListener('tap', function()
+          grp[2]:setFillColor(unpack(_G.MUST_COLORS.gold))
+          _G.GAME_MODE = mode
+        composer.gotoScene('Must', {effect='slideLeft'})
+      end)
       x = x + dim.Q
     end
   end
@@ -47,8 +88,6 @@ function scene:create(event)
   y = (display.contentHeight / 2)
   _createRow(y, 'TIMED', 'timed')
   y = (display.contentHeight / 2) + dim.Q + dim.Q
-  _createRow(y, 'TEN', 10)
-  y = (display.contentHeight / 2) + dim.Q + dim.Q + dim.Q + dim.Q
   _createRow(y, 'TWENTY', 20)
 
 end

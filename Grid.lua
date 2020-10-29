@@ -19,19 +19,16 @@ local Grid = {
 
   countdownTimer = nil,  -- timer
   secondsLeft = nil,
-
-  gameMode = nil, -- 'timed' | 'untimed' | <number>
 }
 Grid.__index = Grid
 
-function Grid.new(mode, width, height)
+function Grid.new(width, height)
   local o = {}
   setmetatable(o, Grid)
 
   o.slots = {}
   o.width = width
   o.height = height
-  o.gameMode = mode
 
   o:createSlots()
   o:linkSlots()
@@ -72,6 +69,9 @@ function Grid:destroy()
 end
 
 function Grid:gameOver()
+
+  self:updateUI('GAME OVER')
+
   local deductions = self:calcResidualScore()
 
   if self.countdownTimer then
@@ -119,7 +119,7 @@ function Grid:newGame()
   self.swaps = 1
   self.selectedSlots = {}
 
-  if self.gameMode == 'timed' then
+  if _G.GAME_MODE == 'timed' then
     self.secondsLeft = 60 * 5
     self.countdownTimer = timer.performWithDelay(1000, self, 0)
   end
@@ -210,9 +210,11 @@ end
 
 function Grid:calcResidualScore()
   local score = 0
-  for _,slot in ipairs(self.slots) do
-    if slot.tile then
-      score = score + _G.SCRABBLE_SCORES[slot.tile.letter]
+  if type(_G.GAME_MODE) ~= 'number' then
+    for _,slot in ipairs(self.slots) do
+      if slot.tile then
+        score = score + _G.SCRABBLE_SCORES[slot.tile.letter]
+      end
     end
   end
   return score
@@ -384,7 +386,7 @@ function Grid:testSelection()
         self:updateUI(word)
         if self:countTiles() < 3 then -- will end automatically with 0, 1 or 2 tiles
           self:gameOver()
-        elseif type(self.gameMode) == 'number' and #self.words == self.gameMode then
+        elseif type(_G.GAME_MODE) == 'number' and #self.words == _G.GAME_MODE then
           self:gameOver()
         end
       end)
@@ -563,6 +565,8 @@ function Grid:jumble()
     })
   end
 
+  -- TODO maybe toast 'SHUFFLING'
+
   -- https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
   -- https://stackoverflow.com/questions/35572435/how-do-you-do-the-fisher-yates-shuffle-in-lua
 
@@ -582,6 +586,7 @@ function Grid:jumble()
 
   self.swaps = self.swaps - 1
   self:updateUI(nil)
+
 end
 
 function Grid:addTiles()

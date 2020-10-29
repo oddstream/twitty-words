@@ -35,8 +35,6 @@ function scene:create(event)
   _G.MUST_GROUPS.grid = display.newGroup()
   sceneGroup:insert(_G.MUST_GROUPS.grid)
 
-  trace('mode', event.params.mode)
-
   loadDictionary()
 
 end
@@ -49,7 +47,7 @@ function scene:show(event)
     -- Code here runs when the scene is still off screen (but is about to come on screen)
     _G.toolBar = Toolbar.new()
 
-    _G.grid = Grid.new(event.params.mode, _G.DIMENSIONS.numX, _G.DIMENSIONS.numY)
+    _G.grid = Grid.new(_G.DIMENSIONS.numX, _G.DIMENSIONS.numY)
     _G.grid:newGame()
 
   elseif phase == 'did' then

@@ -9,11 +9,10 @@ local widget = require('widget')
 local json = require('json')
 
 local Tile = require 'Tile'
--- local Util = require 'Util'
 
 local scoresTable = {}
 
-local filePath = system.pathForFile('scores.json', system.DocumentsDirectory)
+local filePath = system.pathForFile(_G.GAME_MODE .. '_scores.json', system.DocumentsDirectory)
 -- win32 c:\Users\oddst\AppData\Roaming\Wychwood Paddocks\Must\Documents
 -- print(filePath)
 

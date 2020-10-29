@@ -23,12 +23,15 @@ function scene:show(event)
 
   if phase == 'will' then
     -- Code here runs when the scene is still off screen (but is about to come on screen)
+
     logo = display.newImage(sceneGroup, 'assets/splashlogo.png', system.ResourceDirectory, display.contentCenterX, display.contentCenterY)
     -- png is 420x420 pixels
     -- scale so it occupies one half of screen width
-    local scale = display.contentWidth / 2 / 420
-    logo:scale(scale, scale)
+    local scale = display.contentWidth / 420 / 2
+    logo:scale(scale,scale)
     assert(logo:addEventListener('tap', gotoDestination))
+
+    transition.fadeOut(logo, {time=1000})
 
   elseif phase == 'did' then
     destination = event.params.scene
