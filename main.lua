@@ -3,6 +3,8 @@
 local pprint = require 'pprint'
 local composer = require 'composer'
 
+local Dim = require 'Dim'
+
 -- build for Win32 to test the sound, because playing sounds in the simulator crashes the sound driver
 _G.MUTE_AUDIO = system.getInfo('environment') == 'simulator'
 
@@ -190,8 +192,10 @@ _G.grid = nil
 --   print( k , v )
 -- end
 
+_G.DIMENSIONS = Dim.new()
+
 -- if system.getInfo('environment') == 'simulator' then
   -- composer.gotoScene('Must')
 -- else
-  composer.gotoScene('Splash', {params={scene='Must'}})
+  composer.gotoScene('Splash', {params={scene='ModeMenu'}})
 -- end

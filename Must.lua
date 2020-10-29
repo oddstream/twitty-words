@@ -35,16 +35,9 @@ function scene:create(event)
   _G.MUST_GROUPS.grid = display.newGroup()
   sceneGroup:insert(_G.MUST_GROUPS.grid)
 
+  trace('mode', event.params.mode)
+
   loadDictionary()
-
-  _G.DIMENSIONS = Dim.new()
-
-  _G.toolBar = Toolbar.new()
-
-  -- _G.grid = Grid.new(6, _G.DIMENSIONS.numX, _G.DIMENSIONS.numY)
-  -- _G.grid = Grid.new('timed', _G.DIMENSIONS.numX, _G.DIMENSIONS.numY)
-  _G.grid = Grid.new('untimed', _G.DIMENSIONS.numX, _G.DIMENSIONS.numY)
-  _G.grid:newGame()
 
 end
 
@@ -54,6 +47,11 @@ function scene:show(event)
 
   if phase == 'will' then
     -- Code here runs when the scene is still off screen (but is about to come on screen)
+    _G.toolBar = Toolbar.new()
+
+    _G.grid = Grid.new(event.params.mode, _G.DIMENSIONS.numX, _G.DIMENSIONS.numY)
+    _G.grid:newGame()
+
   elseif phase == 'did' then
     -- Code here runs when the scene is entirely on screen
     Runtime:addEventListener('key', scene)

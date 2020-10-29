@@ -14,6 +14,7 @@ end
 
 function scene:create(event)
   local sceneGroup = self.view
+  display.setDefault('background', unpack(_G.MUST_COLORS.baize))
 end
 
 function scene:show(event)
