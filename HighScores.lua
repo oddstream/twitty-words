@@ -173,16 +173,16 @@ function scene:create(event)
     backGroup:insert(grp)
     grp:scale(0.5, 0.5)
     if selected then
-      grp[2]:setFillColor(unpack(_G.MUST_COLORS.gold))
+      grp[2]:setFillColor(unpack(_G.MUST_COLORS.moccasin))
     end
     return grp
   end
 
-  local function _showScoreAndWord(thisScore, thisWord, yPos, gold)
-    _createTile(dim.halfQ, yPos, tostring(thisScore), gold)
+  local function _showScoreAndWord(thisScore, thisWord, yPos, hilite)
+    _createTile(dim.halfQ, yPos, tostring(thisScore), hilite)
     local x = dim.halfQ * 3
     for j=1, string.len(thisWord) do
-      _createTile(x, yPos, string.sub(thisWord, j, j), gold)
+      _createTile(x, yPos, string.sub(thisWord, j, j), hilite)
       x = x + dim.halfQ
     end
   end

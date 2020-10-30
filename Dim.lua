@@ -29,6 +29,7 @@ function Dim.new()
 
   o.Q = math.min(xQ, yQ)
   o.halfQ = math.floor(o.Q/2)
+  o.Q3D = o.Q * 0.025
 
   o.tileFontSize = o.Q * 0.66
 

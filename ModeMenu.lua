@@ -17,11 +17,12 @@ local function touchHandler(event)
   local grp = event.target
 
   local function _select()
-    grp[2]:setFillColor(unpack(_G.MUST_COLORS.gold))
+    grp[2]:setFillColor(unpack(_G.MUST_COLORS.moccasin))
   end
 
   local function _deselect()
-    grp[2]:setFillColor(unpack(_G.MUST_COLORS.ivory))
+    -- grp[2]:setFillColor(unpack(_G.MUST_COLORS.ivory))
+    -- grp[2]:setFillColor(1,1,1)
   end
 
   if event.phase == 'began' then
@@ -72,7 +73,7 @@ function scene:create(event)
       local grp = _createTile(x, y, string.sub(title, i, i))
         grp:addEventListener('touch', touchHandler)
         grp:addEventListener('tap', function()
-          grp[2]:setFillColor(unpack(_G.MUST_COLORS.gold))
+          grp[2]:setFillColor(unpack(_G.MUST_COLORS.moccasin))
           _G.GAME_MODE = mode
         composer.gotoScene('Must', {effect='slideLeft'})
       end)

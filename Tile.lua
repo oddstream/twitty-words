@@ -45,12 +45,21 @@ function Tile.createGraphics(x, y, letter)
   grp.y = y
 
   -- grp[1]
-  local rectShadow = display.newRoundedRect(grp, dim.Q * 0.05, dim.Q * 0.05, dim.Q * 0.95, dim.Q * 0.95, dim.Q / 20)  -- TODO magic numbers
+  local rectShadow = display.newRoundedRect(grp, dim.Q3D, dim.Q3D, dim.Q * 0.95, dim.Q * 0.95, dim.Q / 20)  -- TODO magic numbers
   rectShadow:setFillColor(0.2,0.2,0.2) -- if alpha == 0, we don't get tap events
 
   -- grp[2]
   local rectBack = display.newRoundedRect(grp, 0, 0, dim.Q * 0.95, dim.Q * 0.95, dim.Q / 20)  -- TODO magic numbers
-  rectBack:setFillColor(unpack(_G.MUST_COLORS.ivory)) -- if alpha == 0, we don't get tap events
+
+  -- rectBack:setFillColor(unpack(_G.MUST_COLORS.ivory)) -- if alpha == 0, we don't get tap events
+  rectBack:setFillColor(1,1,1) -- if alpha == 0, we don't get tap events
+  local paint = {
+    type = 'image',
+    -- filename = 'assets/Light-Wood-Background-Texture-1536x1024.jpg',
+    filename = 'assets/tile' .. tostring(math.random(1,4) .. '.png'),
+    baseDir = system.ResourceDirectory,
+  }
+  rectBack.fill = paint
 
   -- grp[3]
   local tileFontSize = dim.tileFontSize
@@ -83,6 +92,34 @@ function Tile:refreshLetter()
   textLetter:setFillColor(unpack(_G.MUST_COLORS.black))
 end
 
+function Tile:depress()
+  local dim = _G.DIMENSIONS
+
+  local rectShadow = self.grp[1]
+  rectShadow.x = 0
+  rectShadow.y = 0
+  local rectBack = self.grp[2]
+  rectBack.x = dim.Q3D
+  rectBack.y = dim.Q3D
+  local textLetter = self.grp[3]
+  textLetter.x = dim.Q3D
+  textLetter.y = dim.Q3D
+end
+
+function Tile:undepress()
+  local dim = _G.DIMENSIONS
+
+  local rectShadow = self.grp[1]
+  rectShadow.x = dim.Q3D
+  rectShadow.y = dim.Q3D
+  local rectBack = self.grp[2]
+  rectBack.x = 0
+  rectBack.y = 0
+  local textLetter = self.grp[3]
+  textLetter.x = 0
+  textLetter.y = 0
+end
+
 --[[
 function Tile:tap()
   trace('tap', self.letter)
@@ -98,22 +135,25 @@ function Tile:touch(event)
     -- trace('touch began', event.x, event.y, self.letter)
     -- deselect any selected tiles
     self.slot:deselectAll()
+    -- self:depress()
     self.slot:select(event.x, event.y)
 
   elseif event.phase == 'moved' then
     -- trace('touch moved', event.x, event.y, self.letter)
     -- inform slot>grid to select tile under x,y
-
+    -- self:depress()
     -- adds to selected word/table of selected tiles if tile is not that previously selected
     self.slot:select(event.x, event.y)
 
   elseif event.phase == 'ended' then
     -- trace('touch ended', event.x, event.y, self.letter)
     -- inform slot>grid to test selected tiles (in the order they were selected)
+    -- self:undepress()
     self.slot:testSelection()
 
   elseif event.phase == 'cancelled' then
     -- trace('touch cancelled', event.x, event.y, self.letter)
+    -- self:undepress()
     self.slot:deselectAll()
   end
 
@@ -122,12 +162,15 @@ end
 
 function Tile:select()
   self.selected = true
-  self.grp[2]:setFillColor(unpack(_G.MUST_COLORS.gold))
+  self.grp[2]:setFillColor(unpack(_G.MUST_COLORS.moccasin))
+  self:depress()
 end
 
 function Tile:deselect()
   self.selected = false
-  self.grp[2]:setFillColor(unpack(_G.MUST_COLORS.ivory))
+  -- self.grp[2]:setFillColor(unpack(_G.MUST_COLORS.ivory))
+  self.grp[2]:setFillColor(1,1,1)
+  self:undepress()
 end
 
 function Tile:delete()

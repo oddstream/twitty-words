@@ -95,7 +95,8 @@ function Slot:flyAwaySwaps()
   grp:toFront()
 
   local rectBack = display.newRoundedRect(grp, 0, 0, dim.Q * 0.95, dim.Q * 0.95, dim.Q / 20)  -- TODO magic numbers
-    rectBack:setFillColor(unpack(_G.MUST_COLORS.ivory)) -- if alpha == 0, we don't get tap events
+    -- rectBack:setFillColor(unpack(_G.MUST_COLORS.ivory)) -- if alpha == 0, we don't get tap events
+    rectBack:setFillColor(1,1,1) -- if alpha == 0, we don't get tap events
 
   -- force display of sign, in case score is negative
   -- http://www.cplusplus.com/reference/cstdio/printf/
@@ -129,7 +130,8 @@ function Slot:flyAwayScore(score)
   grp:toFront()
 
   local rectBack = display.newRoundedRect(grp, 0, 0, dim.Q * 0.95, dim.Q * 0.95, dim.Q / 20)  -- TODO magic numbers
-    rectBack:setFillColor(unpack(_G.MUST_COLORS.ivory)) -- if alpha == 0, we don't get tap events
+    -- rectBack:setFillColor(unpack(_G.MUST_COLORS.ivory)) -- if alpha == 0, we don't get tap events
+    rectBack:setFillColor(1,1,1) -- if alpha == 0, we don't get tap events
 
   -- force display of sign, in case score is negative
   -- http://www.cplusplus.com/reference/cstdio/printf/

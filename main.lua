@@ -134,6 +134,7 @@ _G.MUST_COLORS = {
   ivory = {1, 1, 0.94}, -- normal tile background
   gold = {1, 0.84, 0},  -- selected tile background
   greenery = {0x88*4/1020, 0xB0*4/1020, 0x4b*4/1020},
+  moccasin = {1, 228*4/1020, 181*4/1020},
 
   aqua = {0,1,1},
   red = {1,0,0},
