@@ -1,7 +1,6 @@
 -- Toolbar.lua
 
 local composer = require 'composer'
--- local widget = require 'widget'
 
 local Tappy = require 'Tappy'
 
@@ -47,59 +46,11 @@ function Toolbar.new()
   o.rect = display.newRect(_G.MUST_GROUPS.ui, display.contentCenterX, halfHeight, display.contentWidth, height)
   o.rect:setFillColor(unpack(_G.MUST_COLORS.uibackground))
 
---[[
-  o.left = widget.newButton({
-    x = dim.halfQ,
-    y = halfHeight,
-    onRelease = function()
-      _G.grid:jumble()
-    end,
-    label = '',
-    labelColor = { default=_G.MUST_COLORS.black, over=_G.MUST_COLORS.uicontrol },
-    labelAlign = 'center',
-    font = _G.TILE_FONT,
-    fontSize = dim.halfQ,
-    -- textOnly = true,
-    -- shape = 'roundedRect',
-    -- cornerRadius = dim.Q / 20,
-    -- fillColor = { default=_G.MUST_COLORS.gray, over=_G.MUST_COLORS.purple },
-    -- strokeColor = { default={ 0, 0, 0 }, over={ 0.4, 0.1, 0.2 } },
-    width = dim.Q * 0.95,
-    height = dim.Q * 0.95,
-    baseDir = system.ResourceDirectory,
-    defaultFile = 'assets/tile1.png',
-    overFile = 'assets/tile2.png',
-  })
-  o.left.anchorX = 0
-]]
   o.left = Tappy.new(_G.MUST_GROUPS.ui, dim.halfQ, halfHeight, function() _G.grid:jumble() end)
 
   o.center = display.newText(_G.MUST_GROUPS.ui, '', display.contentCenterX, halfHeight, _G.TILE_FONT, dim.halfQ)
   o.center:setFillColor(unpack(_G.MUST_COLORS.uiforeground))
 
---[[
-  o.right = widget.newButton({
-    x = display.actualContentWidth - dim.halfQ,
-    y = halfHeight,
-    onRelease = function()
-      _G.grid:pauseCountdown()
-      composer.showOverlay('FoundWords', {effect='slideRight'})
-    end,
-    label = '',
-    labelColor = { default=_G.MUST_COLORS.uiforeground, over=_G.MUST_COLORS.uicontrol },
-    labelAlign = 'right',
-    font = _G.TILE_FONT,
-    fontSize = dim.halfQ,
-    textOnly = true,
-    -- shape = 'roundedRect',
-    -- cornerRadius = dim.Q / 20,
-    -- fillColor = { default=_G.MUST_COLORS.gray, over=_G.MUST_COLORS.purple },
-    -- strokeColor = { default={ 0, 0, 0 }, over={ 0.4, 0.1, 0.2 } },
-    -- width = dim.Q * 0.95,
-    -- height = dim.Q * 0.95,
-  })
-  o.right.anchorX = 1
-]]
   o.right = Tappy.new(_G.MUST_GROUPS.ui, display.actualContentWidth - dim.halfQ, halfHeight, function()
     _G.grid:pauseCountdown()
     composer.showOverlay('FoundWords', {effect='slideRight'})

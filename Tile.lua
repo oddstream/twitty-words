@@ -27,8 +27,6 @@ function Tile.new(slot, letter)
   _G.MUST_GROUPS.grid:insert(o.grp)
 
   -- don't add event listers here, as tiles are also used for displaying found words and high scores
-  -- o.grp:addEventListener('tap', o)
-  -- o.grp:addEventListener('touch', o)
 
   return o
 end
@@ -56,6 +54,7 @@ function Tile.createGraphics(x, y, letter)
     baseDir = system.ResourceDirectory,
   }
   rectBack.fill = paint
+  -- tried rotating 90, 270 degrees; it looked messy
   if math.random() < 0.5 then
     rectBack.rotation = 180
   end
@@ -74,13 +73,6 @@ function Tile.createGraphics(x, y, letter)
 
   local textLetter = display.newText(grp, letter, 0, 0, _G.TILE_FONT, tileFontSize)
   textLetter:setFillColor(unpack(_G.MUST_COLORS.black))
-
-  -- transition.moveTo(grp, {
-  --   x = x,
-  --   y = y,
-  --   time = _G.FLIGHT_TIME,
-  --   transition = easing.outQuart,
-  -- })
 
   return grp
 end
@@ -122,31 +114,34 @@ end
 ]]
 
 function Tile:touch(event)
+  -- event.id
   -- event.target is self.grp
+  -- event.name is 'touch'
+  -- event.phase
+  -- event.pressure
+  -- event.time
+  -- event.x / event.y
+  -- event.xStart / event.yStart
 
   if event.phase == 'began' then
     -- trace('touch began', event.x, event.y, self.letter)
     -- deselect any selected tiles
     self.slot:deselectAll()
-    -- self:depress()
     self.slot:select(event.x, event.y)
 
   elseif event.phase == 'moved' then
     -- trace('touch moved', event.x, event.y, self.letter)
     -- inform slot>grid to select tile under x,y
-    -- self:depress()
     -- adds to selected word/table of selected tiles if tile is not that previously selected
     self.slot:select(event.x, event.y)
 
   elseif event.phase == 'ended' then
     -- trace('touch ended', event.x, event.y, self.letter)
     -- inform slot>grid to test selected tiles (in the order they were selected)
-    -- self:undepress()
     self.slot:testSelection()
 
   elseif event.phase == 'cancelled' then
     -- trace('touch cancelled', event.x, event.y, self.letter)
-    -- self:undepress()
     self.slot:deselectAll()
   end
 

@@ -22,7 +22,8 @@ function Tappy.new(group, x, y, cmd)
   o.grp = o.createGraphics(x, y, o.label)
   o.group:insert(o.grp)
 
-  o.grp:addEventListener('tap', o)
+  -- removed the tap listener below; creates false hit when coming back from FoundWords
+  -- o.grp:addEventListener('tap', o)
   o.grp:addEventListener('touch', o)
 
   return o
@@ -35,18 +36,21 @@ end
 function Tappy:setLabel(label)
   local dim = _G.DIMENSIONS
 
-  self.grp[3].text = label
-  if label then
-    -- To change the font size of a text object after it has been created, set the object.size property, not object.fontSize.
-    if string.len(label) == 1 then
-      self.grp[3].size = dim.tileFontSize
-    else
-      self.grp[3].size = dim.tileFontSize * 0.666
+  if self.grp then  -- timer may have elapsed
+    self.grp[3].text = label
+    if label then
+      -- To change the font size of a text object after it has been created, set the object.size property, not object.fontSize.
+      if string.len(label) == 1 then
+        self.grp[3].size = dim.tileFontSize
+      else
+        self.grp[3].size = dim.tileFontSize * 0.666
+      end
     end
   end
 end
 
 function Tappy:depress()
+  -- TODO this is the same as Tile:depress
   local dim = _G.DIMENSIONS
 
   local rectShadow = self.grp[1]
@@ -61,6 +65,7 @@ function Tappy:depress()
 end
 
 function Tappy:undepress()
+  -- TODO this is the same as Tile:undepress
   local dim = _G.DIMENSIONS
 
   local rectShadow = self.grp[1]
@@ -74,26 +79,31 @@ function Tappy:undepress()
   textLetter.y = 0
 end
 
-function Tappy:tap(event)
-  self.cmd()
-end
+-- function Tappy:tap(event)
+--   self.cmd()
+--   return true
+-- end
 
 function Tappy:touch(event)
   -- event.target is self.grp
 
   if event.phase == 'began' then
     -- trace('touch began', event.x, event.y, self.letter)
-    self:depress(event.x, event.y)
+    display.getCurrentStage():setFocus(event.target)
+    self:depress()
 
   elseif event.phase == 'moved' then
     -- trace('touch moved', event.x, event.y, self.letter)
 
   elseif event.phase == 'ended' then
     -- trace('touch ended', event.x, event.y, self.letter)
+    display.getCurrentStage():setFocus(nil)
     self:undepress()
+    self.cmd()
 
   elseif event.phase == 'cancelled' then
     -- trace('touch cancelled', event.x, event.y, self.letter)
+    display.getCurrentStage():setFocus(nil)
     self:undepress()
   end
 

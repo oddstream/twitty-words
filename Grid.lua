@@ -70,7 +70,7 @@ end
 
 function Grid:gameOver()
 
-  self:updateUI('GAME OVER')
+  self:updateUI('GAME OVER')  -- TODO toast/bubble?
 
   local deductions = self:calcResidualScore()
 
@@ -129,7 +129,7 @@ function Grid:newGame()
 end
 
 function Grid:updateUI(s)
-  _G.toolBar:setLeft(string.format('⇆ %s', self.swaps))
+  _G.toolBar:setLeft(string.format('⇆%s', self.swaps))
   if s == nil and type(_G.GAME_MODE) == 'number' then
     _G.toolBar:setCenter(string.format('%u of %u', #self.words, _G.GAME_MODE))
   else
@@ -572,7 +572,7 @@ function Grid:jumble()
     })
   end
 
-  -- TODO maybe toast 'SHUFFLING'
+  -- TODO maybe toast/bubble 'SHUFFLING', nah it's kind of obvious
 
   -- https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
   -- https://stackoverflow.com/questions/35572435/how-do-you-do-the-fisher-yates-shuffle-in-lua
@@ -597,7 +597,7 @@ function Grid:jumble()
 end
 
 function Grid:addTiles()
-  -- TODO add tile to top of any column, that has no tile(s) at the top and a tile at the bottom
+  -- add tile to top of any column, that has no tile(s) at the top and a tile at the bottom
 
   local function _tilesInColumn(slot)
     local count = 0

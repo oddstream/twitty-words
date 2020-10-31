@@ -16,7 +16,6 @@ local Tappy = require 'Tappy'
 -- -----------------------------------------------------------------------------------
 
 -- TODO add a titlebar
--- TODO make tiles do something when touched
 
 -- create()
 function scene:create(event)
@@ -68,7 +67,6 @@ function scene:hide(event)
 
   if phase == 'will' then
     -- Code here runs when the scene is on screen (but is about to go off screen)
-    -- TODO put flyAwayTiles() here?
   elseif phase == 'did' then
     -- Code here runs immediately after the scene goes entirely off screen
     -- composer.removeScene('FoundWords')

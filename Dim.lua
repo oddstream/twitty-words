@@ -25,7 +25,7 @@ function Dim.new()
 
   local xQ = math.floor(display.actualContentWidth/o.numX)
   local yQ = math.floor(display.actualContentHeight/o.numY)
-  trace('Dim reports Qx, Qy', xQ, yQ)
+  -- trace('Dim reports Qx, Qy', xQ, yQ)
 
   o.Q = math.min(xQ, yQ)
   o.halfQ = math.floor(o.Q/2)
