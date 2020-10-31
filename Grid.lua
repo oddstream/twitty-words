@@ -130,7 +130,11 @@ end
 
 function Grid:updateUI(s)
   _G.toolBar:setLeft(string.format('⇆ %s', self.swaps))
-  _G.toolBar:setCenter(s)
+  if s == nil and type(_G.GAME_MODE) == 'number' then
+    _G.toolBar:setCenter(string.format('%u of %u', #self.words, _G.GAME_MODE))
+  else
+    _G.toolBar:setCenter(s)
+  end
   -- _G.toolBar:setRight(string.format('%+d', self.score))
   _G.toolBar:setRight(string.format('%u', self.score))
 end
@@ -322,9 +326,6 @@ trace('added', slot.tile.letter, '#self.selectedSlots now', #self.selectedSlots)
       local t1 = self.selectedSlots[1].tile
       local t2 = self.selectedSlots[2].tile
 trace('swapping', t1.letter, t2.letter)
-      t1.letter, t2.letter = t2.letter, t1.letter
-      t1:refreshLetter()
-      t2:refreshLetter()
 
       self:deselectAllSlots()
 
@@ -334,18 +335,24 @@ trace('swapping', t1.letter, t2.letter)
   end
 end
 ]]
+
 function Grid:testSelection()
   if #self.selectedSlots == 2 then
-    local t1 = self.selectedSlots[1].tile
-    local t2 = self.selectedSlots[2].tile
+    local s1 = self.selectedSlots[1]
+    local s2 = self.selectedSlots[2]
+    local t1 = s1.tile
+    local t2 = s2.tile
     if self.swaps > 0 then
       if t1.letter ~= t2.letter then
-        t1.letter, t2.letter = t2.letter, t1.letter
-        t1:refreshLetter()
-        t2:refreshLetter()
+
+          s1.tile, s2.tile = s2.tile, s1.tile
+          t1.slot = s2
+          t1:settle()
+          t2.slot = s1
+          t2:settle()
 
         self.swaps = self.swaps - 1
-        self:updateUI(string.format('%s ⇆ %s', t1.letter, t2.letter))
+        self:updateUI(nil)
       end
     else
       t1:shake()

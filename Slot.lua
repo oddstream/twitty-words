@@ -88,20 +88,7 @@ end
 function Slot:flyAwaySwaps()
   local dim = _G.DIMENSIONS
 
-  local grp = display.newGroup()
-    grp.x = self.center.x
-    grp.y = self.center.y
-  _G.MUST_GROUPS.grid:insert(grp)
-  grp:toFront()
-
-  local rectBack = display.newRoundedRect(grp, 0, 0, dim.Q * 0.95, dim.Q * 0.95, dim.Q / 20)  -- TODO magic numbers
-    -- rectBack:setFillColor(unpack(_G.MUST_COLORS.ivory)) -- if alpha == 0, we don't get tap events
-    rectBack:setFillColor(1,1,1) -- if alpha == 0, we don't get tap events
-
-  -- force display of sign, in case score is negative
-  -- http://www.cplusplus.com/reference/cstdio/printf/
-  local textSwaps = display.newText(grp, string.format('+1'), 0, 0, _G.TILE_FONT, dim.tileFontSize * 0.75)
-    textSwaps:setFillColor(unpack(_G.MUST_COLORS.black))
+  local grp = Tile.createGraphics(self.center.x, self.center.y, '+1')
 
   transition.moveTo(grp, {
     x = dim.halfQ,
@@ -123,20 +110,9 @@ end
 function Slot:flyAwayScore(score)
   local dim = _G.DIMENSIONS
 
-  local grp = display.newGroup()
-    grp.x = self.center.x
-    grp.y = self.center.y
-  _G.MUST_GROUPS.grid:insert(grp)
-  grp:toFront()
-
-  local rectBack = display.newRoundedRect(grp, 0, 0, dim.Q * 0.95, dim.Q * 0.95, dim.Q / 20)  -- TODO magic numbers
-    -- rectBack:setFillColor(unpack(_G.MUST_COLORS.ivory)) -- if alpha == 0, we don't get tap events
-    rectBack:setFillColor(1,1,1) -- if alpha == 0, we don't get tap events
-
   -- force display of sign, in case score is negative
   -- http://www.cplusplus.com/reference/cstdio/printf/
-  local textScore = display.newText(grp, string.format('%+d', score), 0, 0, _G.TILE_FONT, dim.tileFontSize * 0.75)
-    textScore:setFillColor(unpack(_G.MUST_COLORS.black))
+  local grp = Tile.createGraphics(self.center.x, self.center.y, string.format('%+d', score))
 
   transition.moveTo(grp, {
     x = display.contentWidth - dim.halfQ,

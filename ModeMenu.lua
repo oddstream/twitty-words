@@ -4,47 +4,12 @@
 local composer = require('composer')
 local scene = composer.newScene()
 
-local Tile = require 'Tile'
+local Tappy = require 'Tappy'
 
 -- -----------------------------------------------------------------------------------
 -- Code outside of the scene event functions below will only be executed ONCE unless
 -- the scene is removed entirely (not recycled) via 'composer.removeScene()'
 -- -----------------------------------------------------------------------------------
-
-local function touchHandler(event)
-  -- event.target is self.grp
-
-  local grp = event.target
-
-  local function _select()
-    grp[2]:setFillColor(unpack(_G.MUST_COLORS.moccasin))
-  end
-
-  local function _deselect()
-    -- grp[2]:setFillColor(unpack(_G.MUST_COLORS.ivory))
-    -- grp[2]:setFillColor(1,1,1)
-  end
-
-  if event.phase == 'began' then
-    -- trace('touch began', event.x, event.y, self.letter)
-    -- deselect any selected tiles
-    _select(event.x, event.y)
-
-  elseif event.phase == 'moved' then
-    -- trace('touch moved', event.x, event.y, self.letter)
-    _select(event.x, event.y)
-
-  elseif event.phase == 'ended' then
-    -- trace('touch ended', event.x, event.y, self.letter)
-    -- _deselect(event.x, event.y)
-
-  elseif event.phase == 'cancelled' then
-    -- trace('touch cancelled', event.x, event.y, self.letter)
-    -- _deselect(event.x, event.y)
-  end
-
-  return true
-end
 
 -- -----------------------------------------------------------------------------------
 -- Scene event functions
@@ -60,23 +25,14 @@ function scene:create(event)
   local sceneGroup = self.view
   -- Code here runs when the scene is first created but has not yet appeared on screen
 
-  local function _createTile(x, y, txt)
-    local grp = Tile.createGraphics(x, y, txt)
-    sceneGroup:insert(grp)
-    -- grp:scale(0.5, 0.5)
-    return grp
-  end
-
   local function _createRow(y, title, mode)
     local x = dim.Q
     for i=1, string.len(title) do
-      local grp = _createTile(x, y, string.sub(title, i, i))
-        grp:addEventListener('touch', touchHandler)
-        grp:addEventListener('tap', function()
-          grp[2]:setFillColor(unpack(_G.MUST_COLORS.moccasin))
-          _G.GAME_MODE = mode
+      local tappy = Tappy.new(sceneGroup, x, y, function()
+        _G.GAME_MODE = mode
         composer.gotoScene('Must', {effect='slideLeft'})
       end)
+      tappy:setLabel(string.sub(title, i, i))
       x = x + dim.Q
     end
   end
@@ -85,11 +41,11 @@ function scene:create(event)
 
   local y
   y = (display.contentHeight / 2) - dim.Q - dim.Q
-  _createRow(y, 'NORMAL', 'untimed')
+  _createRow(y, 'CASUAL', 'untimed')
   y = (display.contentHeight / 2)
-  _createRow(y, 'TIMED', 'timed')
+  _createRow(y, 'URGENT', 'timed')
   y = (display.contentHeight / 2) + dim.Q + dim.Q
-  _createRow(y, 'TWENTY', 20)
+  _createRow(y, 'TWELVE', 12)
 
 end
 

@@ -46,20 +46,22 @@ function Tile.createGraphics(x, y, letter)
 
   -- grp[1]
   local rectShadow = display.newRoundedRect(grp, dim.Q3D, dim.Q3D, dim.Q * 0.95, dim.Q * 0.95, dim.Q / 20)  -- TODO magic numbers
-  rectShadow:setFillColor(0.2,0.2,0.2) -- if alpha == 0, we don't get tap events
+  rectShadow:setFillColor(0.2,0.2,0.2)
 
   -- grp[2]
   local rectBack = display.newRoundedRect(grp, 0, 0, dim.Q * 0.95, dim.Q * 0.95, dim.Q / 20)  -- TODO magic numbers
-
-  -- rectBack:setFillColor(unpack(_G.MUST_COLORS.ivory)) -- if alpha == 0, we don't get tap events
-  rectBack:setFillColor(1,1,1) -- if alpha == 0, we don't get tap events
   local paint = {
     type = 'image',
-    -- filename = 'assets/Light-Wood-Background-Texture-1536x1024.jpg',
-    filename = 'assets/tile' .. tostring(math.random(1,4) .. '.png'),
+    filename = 'assets/tile' .. tostring(math.random(1,5) .. '.png'),
     baseDir = system.ResourceDirectory,
   }
   rectBack.fill = paint
+  if math.random() < 0.5 then
+    rectBack.rotation = 180
+  end
+  -- if alpha == 0, we don't get tap events
+  -- set fill color AFTER applying paint
+  rectBack:setFillColor(unpack(_G.MUST_COLORS.tile))
 
   -- grp[3]
   local tileFontSize = dim.tileFontSize
@@ -81,15 +83,6 @@ function Tile.createGraphics(x, y, letter)
   -- })
 
   return grp
-end
-
-function Tile:refreshLetter()
-  local dim = _G.DIMENSIONS
-
-  local textLetter = self.grp[3]
-  display.remove(textLetter)
-  textLetter = display.newText(self.grp, self.letter, 0, 0, _G.TILE_FONT, dim.tileFontSize)
-  textLetter:setFillColor(unpack(_G.MUST_COLORS.black))
 end
 
 function Tile:depress()
@@ -168,8 +161,7 @@ end
 
 function Tile:deselect()
   self.selected = false
-  -- self.grp[2]:setFillColor(unpack(_G.MUST_COLORS.ivory))
-  self.grp[2]:setFillColor(1,1,1)
+  self.grp[2]:setFillColor(unpack(_G.MUST_COLORS.tile))
   self:undepress()
 end
 
@@ -185,6 +177,15 @@ function Tile:shake()
   -- trace('shaking', tostring(self))
   transition.to(self.grp, {time=50, transition=easing.continuousLoop, x=self.grp.x + 10})
   transition.to(self.grp, {delay=50, time=50, transition=easing.continuousLoop, x=self.grp.x - 10})
+end
+
+function Tile:settle()
+  transition.moveTo(self.grp, {
+    x = self.slot.center.x,
+    y = self.slot.center.y,
+    time = _G.FLIGHT_TIME / 2,
+    transition = easing.outQuad,
+  })
 end
 
 function Tile:flyAway(n, wordLength)

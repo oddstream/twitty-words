@@ -153,19 +153,19 @@ function scene:create(event)
   rectToolbar:setFillColor(unpack(_G.MUST_COLORS.uibackground))
 
   local newButton = widget.newButton({
-    x = display.contentWidth - dim.halfQ,
+    x = dim.halfQ,
     y = halfHeight,
     onRelease = function()
       composer.gotoScene('Must', {effect='slideLeft'})
     end,
-    label = 'NEW GAME >',
+    label = '< NEW GAME',
     labelColor = { default=_G.MUST_COLORS.uiforeground, over=_G.MUST_COLORS.uicontrol },
-    labelAlign = 'right',
+    labelAlign = 'left',
     font = _G.TILE_FONT,
     fontSize = dim.halfQ,
     textOnly = true,
   })
-  newButton.anchorX = 1
+  newButton.anchorX = 0
   sceneGroup:insert(newButton)
 
   local function _createTile(x, y, txt, selected)

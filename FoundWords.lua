@@ -22,22 +22,6 @@ local tiles = nil
 -- Scene event functions
 -- -----------------------------------------------------------------------------------
 
---[[
-local function flyAwayTiles()
-
-  for _,grp in ipairs(tiles) do
-    local dx, dy = Util.randomDirections()
-    transition.moveTo(grp, {
-      x = dx,
-      y = dy,
-      time = _G.FLIGHT_TIME,
-      transition = easing.outQuart,
-    })
-  end
-
-end
-]]
-
 local function backTouch(event)
 
   local grp = event.target
@@ -106,14 +90,8 @@ function scene:create(event)
     x = dim.halfQ,
     y = halfHeight,
     onRelease = function()
-      -- flyAwayTiles()
-      -- transition.fadeOut(rectBackground, {
-        -- time = _G.FLIGHT_TIME,
-        -- onComplete = function()
-          composer.hideOverlay('slideLeft')
-          _G.grid:resumeCountdown()
-        -- end
-      -- })
+      composer.hideOverlay('slideLeft')
+      _G.grid:resumeCountdown()
     end,
     label = '< BACK',
     labelColor = { default=_G.MUST_COLORS.uiforeground, over=_G.MUST_COLORS.uicontrol },
@@ -129,14 +107,8 @@ function scene:create(event)
     x = display.contentWidth - dim.halfQ,
     y = halfHeight,
     onRelease = function()
-      -- flyAwayTiles()
-      -- transition.fadeOut(rectBackground, {
-        -- time = _G.FLIGHT_TIME / 2,
-        -- onComplete = function()
-          composer.hideOverlay()
-          _G.grid:gameOver()
-        -- end
-      -- })
+      composer.hideOverlay()
+      _G.grid:gameOver()
     end,
     label = 'FINISH >',
     labelColor = { default=_G.MUST_COLORS.uiforeground, over=_G.MUST_COLORS.uicontrol },
@@ -152,19 +124,27 @@ function scene:create(event)
 
   local y = dim.toolBarHeight + dim.halfQ
 
-  for _,word in ipairs(_G.grid.words) do
+  for i,word in ipairs(_G.grid.words) do
 
     local score = 0
-    local x = dim.halfQ * 3
+    local xNumber = dim.halfQ
+    local xScore = dim.halfQ
+    local xLetter = dim.halfQ * 3
+
+    if type(_G.GAME_MODE) == 'number' then
+      _createTile(xNumber, y, tostring(i))
+      xScore = xScore + dim.halfQ * 2
+      xLetter = xLetter + dim.halfQ * 2
+    end
 
     for j=1, string.len(word) do
       local letter = string.sub(word, j, j)
       score = score + _G.SCRABBLE_SCORES[letter]
-      _createTile(x, y, letter)
-      x = x + dim.halfQ
+      _createTile(xLetter, y, letter)
+      xLetter = xLetter + dim.halfQ
     end
 
-    _createTile(dim.halfQ, y, tostring(score * string.len(word)))
+    _createTile(xScore, y, tostring(score * string.len(word)))
     y = y + dim.halfQ
   end
 
@@ -190,7 +170,7 @@ function scene:hide(event)
 
   if phase == 'will' then
     -- Code here runs when the scene is on screen (but is about to go off screen)
-    -- TODO put flyAwayTiles() here?
+
   elseif phase == 'did' then
     -- Code here runs immediately after the scene goes entirely off screen
     -- composer.removeScene('FoundWords')

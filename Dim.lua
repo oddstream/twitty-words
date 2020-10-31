@@ -31,7 +31,7 @@ function Dim.new()
   o.halfQ = math.floor(o.Q/2)
   o.Q3D = o.Q * 0.025
 
-  o.tileFontSize = o.Q * 0.66
+  o.tileFontSize = o.Q * 0.75
 
   o.toolBarHeight = o.Q
 

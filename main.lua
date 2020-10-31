@@ -122,20 +122,20 @@ _G.MUST_COLORS = {
   -- baize = {240*4/1020, 1, 240*4/1020},  -- Honeydew
   -- baize = {250*4/1020, 235*4/1020, 215*4/1020},  -- AntiqueWhite
   -- baize = {255*4/1020, 245*4/1020, 238*4/1020},  -- SeaShell
-  baize = {248*4/1020, 248*4/1020, 255*4/1020},  -- GhostWhite
+  -- baize = {248*4/1020, 248*4/1020, 255*4/1020},  -- GhostWhite
 
-  white = {1,1,1},
-  offwhite = {0.91,0.9,0.9},
+  baize = {1, 1, 0.94}, -- ivory
   -- selected = {1,0.8,0},
   -- back = {100*4/1020,147*4/1020,237*4/1020}, -- CornFlowerBlue
-  border = {0.75,0.75,0.75},  -- Silver
-  -- border = {0.5,0.5,0.5}, -- Gray
+  tile = {1, 245*4/1020, 238*4/1020}, -- Seashell
 
-  ivory = {1, 1, 0.94}, -- normal tile background
-  gold = {1, 0.84, 0},  -- selected tile background
+  ivory = {1, 1, 0.94},
+  gold = {1, 0.84, 0},
   greenery = {0x88*4/1020, 0xB0*4/1020, 0x4b*4/1020},
   moccasin = {1, 228*4/1020, 181*4/1020},
 
+  white = {1,1,1},
+  offwhite = {0.91,0.9,0.9},
   aqua = {0,1,1},
   red = {1,0,0},
   orange = {1,0.65,0},
