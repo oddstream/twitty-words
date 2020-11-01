@@ -5,6 +5,7 @@ local composer = require('composer')
 local scene = composer.newScene()
 
 local Tappy = require 'Tappy'
+local Util = require 'Util'
 
 -- -----------------------------------------------------------------------------------
 -- Code outside of the scene event functions below will only be executed ONCE unless
@@ -36,14 +37,14 @@ function scene:create(event)
     end
   end
 
-  display.setDefault('background', unpack(_G.MUST_COLORS.baize))
+  Util.setBackground(sceneGroup)
 
   local y
-  y = (display.contentHeight / 2) - dim.Q - dim.Q
+  y = (display.actualContentHeight / 2) - dim.Q - dim.Q
   _createRow(y, 'CASUAL', 'untimed')
-  y = (display.contentHeight / 2)
+  y = (display.actualContentHeight / 2)
   _createRow(y, 'URGENT', 'timed')
-  y = (display.contentHeight / 2) + dim.Q + dim.Q
+  y = (display.actualContentHeight / 2) + dim.Q + dim.Q
   _createRow(y, 'TWELVE', 12)
 
 end

@@ -36,29 +36,39 @@ function Util.clamp(value, min, max)
   return math.min(math.max(value, min), max)
 end
 
+function Util.setBackground(group)
+  -- dependant on scale = 'letterbox' in config.lua
+  local bg = display.newImage(group, 'assets/pexels-pixabay-301717.jpg') --, display.actualContentWidth, display.actualContentHeight)
+  bg.x = display.contentCenterX
+  bg.y = display.contentCenterY
+  bg.rotation = 90
+end
+
+--[[
 function Util.randomDirections()
 
   local degrees = math.random(1, 360)
   local radians = degrees * math.pi / 180
 
-  local x = (display.contentWidth / 2) + (display.contentWidth) * math.sin(radians)
-  local y = (display.contentHeight / 2) + (display.contentHeight) * math.cos(radians)
+  local x = (display.actualContentWidth / 2) + (display.actualContentWidth) * math.sin(radians)
+  local y = (display.actualContentHeight / 2) + (display.actualContentHeight) * math.cos(radians)
 
   local Q = _G.DIMENSIONS.Q
 
-  local xMax = display.contentWidth + Q
+  local xMax = display.actualContentWidth + Q
   local xMin = -xMax
-  local yMax = display.contentHeight + Q
+  local yMax = display.actualContentHeight + Q
   local yMin = -yMax
 
   x = Util.clamp(x, xMin, xMax)
   y = Util.clamp(y, yMin, yMax)
 
-  -- x = math.random(-Q, display.contentWidth + Q)
-  -- y = display.contentHeight + Q
+  -- x = math.random(-Q, display.actualContentWidth + Q)
+  -- y = display.actualContentHeight + Q
 
   return x, y
 
 end
+]]
 
 return Util

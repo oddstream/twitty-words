@@ -1,8 +1,8 @@
 -- Must.lua
 
-local Dim = require 'Dim'
 local Grid = require 'Grid'
 local Toolbar = require 'Toolbar'
+local Util = require 'Util'
 
 local composer = require('composer')
 local scene = composer.newScene()
@@ -10,32 +10,18 @@ local widget = require('widget')
 
 widget.setTheme('widget_theme_android_holo_dark')
 
-local function loadDictionary()
-  -- look for dictionary file in resource directory (the one containing main.lua)
-  local filePath = system.pathForFile('Collins Scrabble Words (2019).txt', system.ResourceDirectory)
-  local file = io.open(filePath)
-  if not file then
-    trace('ERROR: Cannot open', filePath)
-  else
-    trace('opened', filePath)
-    _G.DICTIONARY = file:read('*a')
-    io.close(file)
-    trace('dictionary length', string.len(_G.DICTIONARY))
-  end
-end
-
 function scene:create(event)
   local sceneGroup = self.view
 
-  display.setDefault('background', unpack(_G.MUST_COLORS.baize))
+  -- display.setDefault('background', unpack(_G.MUST_COLORS.baize))
 
+  _G.MUST_GROUPS.grid = self.view -- TODO referenced by Tile
+
+  Util.setBackground(self.view)
+
+  -- create a separate group for UI objects, so they are always on top of grid
   _G.MUST_GROUPS.ui = display.newGroup()
   sceneGroup:insert(_G.MUST_GROUPS.ui)
-
-  _G.MUST_GROUPS.grid = display.newGroup()
-  sceneGroup:insert(_G.MUST_GROUPS.grid)
-
-  loadDictionary()
 
 end
 

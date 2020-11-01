@@ -1,17 +1,6 @@
 -- Dim.lua
 
-local Dim = {
-  Q = nil,
-  halfQ = nil,
-
-  numX = nil,
-  numY = nil,
-
-  marginX = nil,
-  marginY = nil,
-
-  toolBarheight = nil,
-}
+local Dim = {}
 Dim.__index = Dim  -- failed table lookups on the instances should fallback to the class table, to get methods
 
 -- "At the beginning of the game, each player draws seven tiles from the bag and places them on their rack"
@@ -41,7 +30,9 @@ function Dim.new()
   -- o.numY = math.floor(contentHeight / o.Q)
 
   o.marginX = (display.actualContentWidth - (o.numX * o.Q)) / 2
-  o.marginY = (o.toolBarHeight / 2) + ((display.actualContentHeight - (o.numY * o.Q)) / 2)
+  -- o.marginY = o.toolBarHeight + (display.actualContentHeight - (o.numY * o.Q)) / 2
+  o.marginY = (display.actualContentHeight - (o.numY * o.Q)) / 2
+  o.marginY = o.marginY + (o.toolBarHeight / 2)
 
   return o
 end

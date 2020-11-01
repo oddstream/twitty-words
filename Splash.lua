@@ -3,9 +3,25 @@
 local composer = require('composer')
 local scene = composer.newScene()
 
+local Util = require 'Util'
+
 local tim = nil
 local logo = nil
 local destination = nil
+
+local function loadDictionary()
+  -- look for dictionary file in resource directory (the one containing main.lua)
+  local filePath = system.pathForFile('Collins Scrabble Words (2019).txt', system.ResourceDirectory)
+  local file = io.open(filePath)
+  if not file then
+    trace('ERROR: Cannot open', filePath)
+  else
+    trace('opened', filePath)
+    _G.DICTIONARY = file:read('*a')
+    io.close(file)
+    trace('dictionary length', string.len(_G.DICTIONARY))
+  end
+end
 
 local function gotoDestination(event)
   composer.gotoScene(destination, {effect='slideLeft'})
@@ -14,7 +30,7 @@ end
 
 function scene:create(event)
   local sceneGroup = self.view
-  display.setDefault('background', unpack(_G.MUST_COLORS.baize))
+  -- display.setDefault('background', unpack(_G.MUST_COLORS.baize))
 end
 
 function scene:show(event)
@@ -24,14 +40,18 @@ function scene:show(event)
   if phase == 'will' then
     -- Code here runs when the scene is still off screen (but is about to come on screen)
 
+    -- Util.setBackground(sceneGroup)
+
     logo = display.newImage(sceneGroup, 'assets/splashlogo.png', system.ResourceDirectory, display.contentCenterX, display.contentCenterY)
     -- png is 420x420 pixels
     -- scale so it occupies one half of screen width
-    local scale = display.contentWidth / 420 / 2
+    local scale = display.actualContentWidth / 420 / 2
     logo:scale(scale,scale)
     assert(logo:addEventListener('tap', gotoDestination))
 
-    transition.fadeOut(logo, {time=1000})
+    loadDictionary()
+
+    -- transition.fadeOut(logo, {time=1000})
 
   elseif phase == 'did' then
     destination = event.params.scene

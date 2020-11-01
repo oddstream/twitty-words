@@ -48,6 +48,7 @@ function Tile.createGraphics(x, y, letter)
 
   -- grp[2]
   local rectBack = display.newRoundedRect(grp, 0, 0, dim.Q * 0.95, dim.Q * 0.95, dim.Q / 20)  -- TODO magic numbers
+--[[
   local paint = {
     type = 'image',
     filename = 'assets/tile' .. tostring(math.random(1,5) .. '.png'),
@@ -58,6 +59,7 @@ function Tile.createGraphics(x, y, letter)
   if math.random() < 0.5 then
     rectBack.rotation = 180
   end
+]]
   -- if alpha == 0, we don't get tap events
   -- set fill color AFTER applying paint
   rectBack:setFillColor(unpack(_G.MUST_COLORS.tile))
@@ -189,12 +191,20 @@ function Tile:flyAway(n, wordLength)
   self.grp:toFront()
 
   transition.moveTo(self.grp, {
-    x = (dim.halfQ + (dim.Q * (n-1))) + ((display.contentWidth / 2) - ((dim.Q * wordLength) / 2)),
+    -- x = (dim.halfQ + (dim.Q * (n-1))) + ((display.actualContentWidth / 2) - ((dim.Q * wordLength) / 2)),
+    x = (dim.halfQ / 2) + (dim.halfQ * (n-1)) + ((display.actualContentWidth / 2) - ((dim.halfQ * wordLength) / 2)),
     y = dim.halfQ,
     time = _G.FLIGHT_TIME,
     transition = easing.outQuad,
   })
-  transition.fadeOut(self.grp, {
+  -- transition.fadeOut(self.grp, {
+  --   time = _G.FLIGHT_TIME,
+  --   transition = easing.linear,
+  --   onComplete = function() self:delete() end,
+  -- })
+  transition.scaleTo(self.grp, {
+    xScale = 0.5,
+    yScale = 0.5,
     time = _G.FLIGHT_TIME,
     transition = easing.linear,
     onComplete = function() self:delete() end,

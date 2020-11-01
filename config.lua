@@ -13,14 +13,14 @@ _G.application =
       if you want to measure it based on a 1 point scale.
     ]]
     width = 1080,
-    height = 1920,
+    height = 1776,
     -- width = 720,
     -- height = 1280,
     -- The scaling method of the content area is determined by the scale value.
     -- If you omit this (not recommended), the width and height values will be ignored and the content area will be set to the device's actual pixel width and height.
-    -- scale = 'letterbox',
+    scale = 'letterbox',
     -- scale = 'zoomEven',   -- made titlebar half disappear
-    scale = 'adaptive',
+    -- scale = 'adaptive',
     -- xAlign = 'center',
     -- yAlign = 'center',
     -- fps = 60, -- seems ok

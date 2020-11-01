@@ -22,9 +22,9 @@ end
 if system.getInfo('environment') == 'simulator' then
   print(_VERSION)
   print('origin', display.screenOriginX, display.screenOriginY)
-  print('content', display.contentWidth, display.contentHeight)
+  print('content', display.actualContentWidth, display.actualContentHeight)
   print('pixels', display.pixelWidth, display.pixelHeight)
-  print('actual content', display.contentWidth, display.contentHeight)
+  print('actual content', display.actualContentWidth, display.actualContentHeight)
   print('viewable content', display.viewableContentWidth, display.viewableContentHeight)
 
   print('maxTextureSize', system.getInfo('maxTextureSize'))
@@ -127,7 +127,8 @@ _G.MUST_COLORS = {
   baize = {1, 1, 0.94}, -- ivory
   -- selected = {1,0.8,0},
   -- back = {100*4/1020,147*4/1020,237*4/1020}, -- CornFlowerBlue
-  tile = {1, 245*4/1020, 238*4/1020}, -- Seashell
+  -- tile = {1, 245*4/1020, 238*4/1020}, -- Seashell
+  tile = {1, 1, 0.94}, -- ivory
 
   ivory = {1, 1, 0.94},
   gold = {1, 0.84, 0},
@@ -196,8 +197,4 @@ _G.GAME_MODE = 'timed'  -- 'untimed' | 'timed' | <number>
 
 _G.DIMENSIONS = Dim.new()
 
--- if system.getInfo('environment') == 'simulator' then
-  -- composer.gotoScene('Must')
--- else
-  composer.gotoScene('Splash', {params={scene='ModeMenu'}})
--- end
+composer.gotoScene('Splash', {params={scene='ModeMenu'}})

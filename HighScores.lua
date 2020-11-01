@@ -9,6 +9,7 @@ local widget = require('widget')
 local json = require('json')
 
 local Tile = require 'Tile'
+local Util = require 'Util'
 
 local scoresTable = {}
 
@@ -108,10 +109,8 @@ function scene:create(event)
   local sceneGroup = self.view
   -- Code here runs when the scene is first created but has not yet appeared on screen
 
-  -- create a group to hold the baize and tiles, so they can be vscrolled
-  local backGroup = display.newGroup()
-  sceneGroup:insert(backGroup)
-  backGroup:addEventListener('touch', backTouch)
+  Util.setBackground(sceneGroup)
+  sceneGroup:addEventListener('touch', backTouch)
 
   loadScores()
 
@@ -140,16 +139,16 @@ function scene:create(event)
     end
   end
 
-  local backHeight = (20 * dim.halfQ) + display.contentHeight
+  -- local backHeight = (20 * dim.halfQ) + display.actualContentHeight
   -- need a background rect for the touch to work when touching the, er, background (otherwise can only touch/vscroll tiles)
-  local rectBackground = display.newRect(backGroup, display.contentWidth / 2, display.contentHeight / 2, display.contentWidth, backHeight)
-  rectBackground:setFillColor(unpack(_G.MUST_COLORS.baize))
+  -- local rectBackground = display.newRect(backGroup, display.actualContentWidth / 2, display.actualContentHeight / 2, display.actualContentWidth, backHeight)
+  -- rectBackground:setFillColor(unpack(_G.MUST_COLORS.baize))
 
   -- a rect for the tool bar
   local height = dim.toolBarHeight
   local halfHeight = height / 2
 
-  local rectToolbar = display.newRect(sceneGroup, display.contentCenterX, halfHeight, display.contentWidth, height)
+  local rectToolbar = display.newRect(sceneGroup, display.contentCenterX, halfHeight, display.actualContentWidth, height)
   rectToolbar:setFillColor(unpack(_G.MUST_COLORS.uibackground))
 
   local newButton = widget.newButton({
@@ -170,7 +169,7 @@ function scene:create(event)
 
   local function _createTile(x, y, txt, selected)
     local grp = Tile.createGraphics(x, y, txt)
-    backGroup:insert(grp)
+    sceneGroup:insert(grp)
     grp:scale(0.5, 0.5)
     if selected then
       grp[2]:setFillColor(unpack(_G.MUST_COLORS.moccasin))
@@ -235,9 +234,9 @@ end
 function scene:destroy(event)
   local sceneGroup = self.view
   -- Code here runs prior to the removal of scene's view
-  assert(Runtime:removeEventListener('key', scene))
+  -- assert(Runtime:removeEventListener('key', scene))
 end
-
+--[[
 function scene:key(event)
   local phase = event.phase
   if phase == 'up' then
@@ -247,7 +246,7 @@ function scene:key(event)
     end
   end
 end
-
+]]
 -- -----------------------------------------------------------------------------------
 -- Scene event function listeners
 -- -----------------------------------------------------------------------------------
@@ -256,7 +255,7 @@ scene:addEventListener('show', scene)
 scene:addEventListener('hide', scene)
 scene:addEventListener('destroy', scene)
 
-Runtime:addEventListener('key', scene)
+-- Runtime:addEventListener('key', scene)
 -- -----------------------------------------------------------------------------------
 
 return scene

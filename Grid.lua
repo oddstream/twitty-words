@@ -131,7 +131,7 @@ end
 function Grid:updateUI(s)
   _G.toolBar:setLeft(string.format('⇆%s', self.swaps))
   if s == nil and type(_G.GAME_MODE) == 'number' then
-    _G.toolBar:setCenter(string.format('%u of %u', #self.words, _G.GAME_MODE))
+    _G.toolBar:setCenter(string.format('%u OF %u', #self.words, _G.GAME_MODE))
   else
     _G.toolBar:setCenter(s)
   end

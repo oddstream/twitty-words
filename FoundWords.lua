@@ -9,7 +9,7 @@ local scene = composer.newScene()
 -- local widget = require('widget')
 
 local Tile = require 'Tile'
--- local Util = require 'Util'
+local Util = require 'Util'
 
 local tiles = nil
 
@@ -32,6 +32,7 @@ local function backTouch(event)
   elseif event.phase == 'moved' then
     -- trace('touch moved, start', event.xStart, event.yStart, 'now', event.x, event.y)
 
+    -- grp.x = event.x - event.xStart
     grp.y = event.y - event.yStart
   elseif event.phase == 'ended' then
     -- trace('touch ended', event.x, event.y)
@@ -56,14 +57,15 @@ function scene:create(event)
   local sceneGroup = self.view
   -- Code here runs when the scene is first created but has not yet appeared on screen
 
-  -- create a group to hold the baize and tiles, so they can be vscrolled
-  local backGroup = display.newGroup()
-  sceneGroup:insert(backGroup)
-  backGroup:addEventListener('touch', backTouch)
+  -- trace('scene height is', sceneGroup.height)
+  -- sceneGroup.height = display.actualContentHeight * 2
+  -- trace('scene height is', sceneGroup.height)
+  Util.setBackground(sceneGroup)
+  sceneGroup:addEventListener('touch', backTouch)
 
   local function _createTile(x, y, txt)
     local grp = Tile.createGraphics(x, y, txt)
-    backGroup:insert(grp)
+    sceneGroup:insert(grp)
     grp:scale(0.5, 0.5)
     table.insert(tiles, grp)
     return grp
@@ -71,19 +73,15 @@ function scene:create(event)
 
 
   -- the background needs to be tall enough to display #_G.grid.words
-  local backHeight = (#_G.grid.words * dim.halfQ) + display.contentHeight
+  -- local backHeight = (#_G.grid.words * dim.halfQ) + display.actualContentHeight
 
-  local rectBackground = display.newRect(backGroup, display.contentWidth / 2, display.contentHeight / 2, display.contentWidth, backHeight)
-  rectBackground:setFillColor(unpack(_G.MUST_COLORS.baize))
-  -- rectBackground.alpha = 0
-  -- transition.fadeIn(rectBackground, {
-  --   time = _G.FLIGHT_TIME
-  -- })
+  -- local rectBackground = display.newRect(backGroup, display.actualContentWidth / 2, display.actualContentHeight / 2, display.actualContentWidth, backHeight)
+  -- rectBackground:setFillColor(unpack(_G.MUST_COLORS.baize))
 
   local height = _G.DIMENSIONS.toolBarHeight
   local halfHeight = height / 2
 
-  local rect = display.newRect(sceneGroup, display.contentCenterX, halfHeight, display.contentWidth, height)
+  local rect = display.newRect(sceneGroup, display.contentCenterX, halfHeight, display.actualContentWidth, height)
   rect:setFillColor(unpack(_G.MUST_COLORS.uibackground))
 
   local backButton = widget.newButton({
@@ -104,7 +102,7 @@ function scene:create(event)
   sceneGroup:insert(backButton)
 
   local finishButton = widget.newButton({
-    x = display.contentWidth - dim.halfQ,
+    x = display.actualContentWidth - dim.halfQ,
     y = halfHeight,
     onRelease = function()
       composer.hideOverlay()
@@ -181,9 +179,9 @@ end
 function scene:destroy(event)
   local sceneGroup = self.view
   -- Code here runs prior to the removal of scene's view
-  assert(Runtime:removeEventListener('key', scene))
+  -- assert(Runtime:removeEventListener('key', scene))
 end
-
+--[[
 function scene:key(event)
   local phase = event.phase
   if phase == 'up' then
@@ -193,7 +191,7 @@ function scene:key(event)
     end
   end
 end
-
+]]
 -- -----------------------------------------------------------------------------------
 -- Scene event function listeners
 -- -----------------------------------------------------------------------------------
@@ -202,7 +200,7 @@ scene:addEventListener('show', scene)
 scene:addEventListener('hide', scene)
 scene:addEventListener('destroy', scene)
 
-Runtime:addEventListener('key', scene)
+-- Runtime:addEventListener('key', scene)
 -- -----------------------------------------------------------------------------------
 
 return scene
