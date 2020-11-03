@@ -145,15 +145,12 @@ function scene:create(event)
   -- rectBackground:setFillColor(unpack(_G.MUST_COLORS.baize))
 
   -- a rect for the tool bar
-  local height = dim.toolBarHeight
-  local halfHeight = height / 2
-
-  local rectToolbar = display.newRect(sceneGroup, display.contentCenterX, halfHeight, display.actualContentWidth, height)
+  local rectToolbar = display.newRect(sceneGroup, dim.toolBarX, dim.toolBarY, dim.toolBarWidth, dim.toolBarHeight)
   rectToolbar:setFillColor(unpack(_G.MUST_COLORS.uibackground))
 
   local newButton = widget.newButton({
     x = dim.halfQ,
-    y = halfHeight,
+    y = dim.toolBarY,
     onRelease = function()
       composer.gotoScene('Must', {effect='slideLeft'})
     end,
@@ -179,14 +176,14 @@ function scene:create(event)
 
   local function _showScoreAndWord(thisScore, thisWord, yPos, hilite)
     _createTile(dim.halfQ, yPos, tostring(thisScore), hilite)
-    local x = dim.halfQ * 3
+    local x = dim.marginX + (dim.halfQ * 3)
     for j=1, string.len(thisWord) do
       _createTile(x, yPos, string.sub(thisWord, j, j), hilite)
       x = x + dim.halfQ
     end
   end
 
-  local y = dim.toolBarHeight + dim.halfQ
+  local y = dim.marginY + dim.halfQ
 
   for i = 1, 20 do
     if scoresTable[i] then
@@ -214,6 +211,7 @@ function scene:show(event)
     -- Code here runs when the scene is still off screen (but is about to come on screen)
   elseif phase == 'did' then
     -- Code here runs when the scene is entirely on screen
+    Runtime:addEventListener('key', scene)
   end
 end
 
@@ -222,11 +220,13 @@ function scene:hide(event)
   local sceneGroup = self.view
   local phase = event.phase
 
+  trace('HighScores scene:hide', phase)
+
   if phase == 'will' then
     -- Code here runs when the scene is on screen (but is about to go off screen)
   elseif phase == 'did' then
     -- Code here runs immediately after the scene goes entirely off screen
-    composer.removeScene('HighScores')
+    assert(Runtime:removeEventListener('key', scene))
   end
 end
 
@@ -234,9 +234,10 @@ end
 function scene:destroy(event)
   local sceneGroup = self.view
   -- Code here runs prior to the removal of scene's view
-  -- assert(Runtime:removeEventListener('key', scene))
+  trace('HighScores scene:destroy')
+  composer.removeScene('HighScores')
 end
---[[
+
 function scene:key(event)
   local phase = event.phase
   if phase == 'up' then
@@ -246,7 +247,7 @@ function scene:key(event)
     end
   end
 end
-]]
+
 -- -----------------------------------------------------------------------------------
 -- Scene event function listeners
 -- -----------------------------------------------------------------------------------
@@ -255,7 +256,6 @@ scene:addEventListener('show', scene)
 scene:addEventListener('hide', scene)
 scene:addEventListener('destroy', scene)
 
--- Runtime:addEventListener('key', scene)
 -- -----------------------------------------------------------------------------------
 
 return scene

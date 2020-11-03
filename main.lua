@@ -4,6 +4,7 @@ local pprint = require 'pprint'
 local composer = require 'composer'
 
 local Dim = require 'Dim'
+local Grid = require 'Grid'
 
 -- build for Win32 to test the sound, because playing sounds in the simulator crashes the sound driver
 _G.MUTE_AUDIO = system.getInfo('environment') == 'simulator'
@@ -20,12 +21,14 @@ function _G.trace(...)
 end
 
 if system.getInfo('environment') == 'simulator' then
-  print(_VERSION)
-  print('origin', display.screenOriginX, display.screenOriginY)
-  print('content', display.actualContentWidth, display.actualContentHeight)
-  print('pixels', display.pixelWidth, display.pixelHeight)
-  print('actual content', display.actualContentWidth, display.actualContentHeight)
-  print('viewable content', display.viewableContentWidth, display.viewableContentHeight)
+  print('_VERSION', _VERSION)
+  print('screenOrigin', display.screenOriginX, display.screenOriginY)
+  print('safeAreaInsets', display.getSafeAreaInsets())
+  print('content', display.contentWidth, display.contentHeight)
+  print('actualContent', display.actualContentWidth, display.actualContentHeight)
+  print('safeActualContent', display.safeActualContentWidth, display.safeActualContentHeight)
+  print('viewableContent', display.viewableContentWidth, display.viewableContentHeight)
+  print('pixel', display.pixelWidth, display.pixelHeight)
 
   print('maxTextureSize', system.getInfo('maxTextureSize'))
 
@@ -188,13 +191,13 @@ if not table.filter then
 end
 -- trace('table filter', type(_G.table.filter))
 
-_G.grid = nil
+_G.DIMENSIONS = Dim.new()
+-- grid (of slots) has no graphical elements, and does not change size, so persists across all games
+_G.grid = Grid.new(_G.DIMENSIONS.numX, _G.DIMENSIONS.numY)
 _G.GAME_MODE = 'timed'  -- 'untimed' | 'timed' | <number>
 
 -- for k,v in pairs( _G ) do
 --   print( k , v )
 -- end
-
-_G.DIMENSIONS = Dim.new()
 
 composer.gotoScene('Splash', {params={scene='ModeMenu'}})

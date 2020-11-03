@@ -35,8 +35,10 @@ function Slot:position()
   self.center.y = dim.marginY + self.center.y
 end
 
-function Slot:createTile()
-  local letter = table.remove(self.grid.letterPool)
+function Slot:createTile(letter)
+  if letter == nil then
+    letter = table.remove(self.grid.letterPool)
+  end
   if letter then
     self.tile = Tile.new(self, letter)
     self.tile:addEventListener()
@@ -92,7 +94,7 @@ function Slot:flyAwaySwaps()
 
   transition.moveTo(grp, {
     x = dim.halfQ,
-    y = dim.toolBarHeight / 2,
+    y = dim.toolBarY,
     time = _G.FLIGHT_TIME,
     transition = easing.outQuad,
     onComplete = function()
@@ -116,7 +118,7 @@ function Slot:flyAwayScore(score)
 
   transition.moveTo(grp, {
     x = display.actualContentWidth - dim.halfQ,
-    y = dim.toolBarHeight / 2,
+    y = dim.toolBarY,
     time = _G.FLIGHT_TIME,
     transition = easing.outQuad,
     onComplete = function()

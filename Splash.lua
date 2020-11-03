@@ -3,8 +3,6 @@
 local composer = require('composer')
 local scene = composer.newScene()
 
-local Util = require 'Util'
-
 local tim = nil
 local logo = nil
 local destination = nil
@@ -66,9 +64,9 @@ function scene:hide(event)
 
   if phase == 'will' then
     -- Code here runs when the scene is on screen (but is about to go off screen)
+    logo:removeEventListener('tap', gotoDestination)
   elseif phase == 'did' then
     -- Code here runs immediately after the scene goes entirely off screen
-    composer.removeScene('Splash')
   end
 end
 
@@ -79,7 +77,7 @@ function scene:destroy(event)
     timer.cancel(tim)
     tim = nil
   end
-  logo:removeEventListener('tap', gotoDestination)
+  composer.removeScene('Splash')
 end
 
 -- -----------------------------------------------------------------------------------

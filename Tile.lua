@@ -1,13 +1,6 @@
 -- Tile.lua
 
-local Tile = {
-  slot = nil,
-
-  letter = nil, -- A..Z
-  selected = nil, -- boolean (or a number, dunno yet)
-
-  grp = nil,  -- group of graphic objects
-}
+local Tile = {}
 Tile.__index = Tile
 
 function Tile.new(slot, letter)
@@ -17,16 +10,14 @@ function Tile.new(slot, letter)
 
   o.slot = slot
 
-  -- do
-  --   local n = math.random(1, #_G.SCRABBLE_LETTERS)
-  --   o.letter = string.sub(_G.SCRABBLE_LETTERS, n, n)
-  -- end
   o.letter = letter
 
   o.grp = o.createGraphics(slot.center.x, slot.center.y, o.letter)
   _G.MUST_GROUPS.grid:insert(o.grp)
 
   -- don't add event listers here, as tiles are also used for displaying found words and high scores
+
+  o.selected = false
 
   return o
 end
@@ -75,6 +66,13 @@ function Tile.createGraphics(x, y, letter)
 
   local textLetter = display.newText(grp, letter, 0, 0, _G.TILE_FONT, tileFontSize)
   textLetter:setFillColor(unpack(_G.MUST_COLORS.black))
+
+  -- grp[4]
+  -- makes the grid harder to scan
+  -- if string.len(letter) == 1 and _G.SCRABBLE_SCORES[letter] then
+  --   local textScore = display.newText(grp, tostring(_G.SCRABBLE_SCORES[letter]), dim.Q / 3, dim.Q / 3, _G.TILE_FONT, tileFontSize / 3)
+  --   textScore:setFillColor(unpack(_G.MUST_COLORS.black))
+  -- end
 
   return grp
 end
@@ -193,7 +191,7 @@ function Tile:flyAway(n, wordLength)
   transition.moveTo(self.grp, {
     -- x = (dim.halfQ + (dim.Q * (n-1))) + ((display.actualContentWidth / 2) - ((dim.Q * wordLength) / 2)),
     x = (dim.halfQ / 2) + (dim.halfQ * (n-1)) + ((display.actualContentWidth / 2) - ((dim.halfQ * wordLength) / 2)),
-    y = dim.halfQ,
+    y = dim.toolBarY,
     time = _G.FLIGHT_TIME,
     transition = easing.outQuad,
   })

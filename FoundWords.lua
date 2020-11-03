@@ -78,15 +78,12 @@ function scene:create(event)
   -- local rectBackground = display.newRect(backGroup, display.actualContentWidth / 2, display.actualContentHeight / 2, display.actualContentWidth, backHeight)
   -- rectBackground:setFillColor(unpack(_G.MUST_COLORS.baize))
 
-  local height = _G.DIMENSIONS.toolBarHeight
-  local halfHeight = height / 2
-
-  local rect = display.newRect(sceneGroup, display.contentCenterX, halfHeight, display.actualContentWidth, height)
+  local rect = display.newRect(sceneGroup, dim.toolBarX, dim.toolBarY, dim.toolBarWidth, dim.toolBarHeight)
   rect:setFillColor(unpack(_G.MUST_COLORS.uibackground))
 
   local backButton = widget.newButton({
-    x = dim.halfQ,
-    y = halfHeight,
+    x = dim.marginX + dim.halfQ,
+    y = dim.toolBarY,
     onRelease = function()
       composer.hideOverlay('slideLeft')
       _G.grid:resumeCountdown()
@@ -102,8 +99,8 @@ function scene:create(event)
   sceneGroup:insert(backButton)
 
   local finishButton = widget.newButton({
-    x = display.actualContentWidth - dim.halfQ,
-    y = halfHeight,
+    x = display.safeActualContentWidth - dim.halfQ,
+    y = dim.toolBarY,
     onRelease = function()
       composer.hideOverlay()
       _G.grid:gameOver()
@@ -120,14 +117,14 @@ function scene:create(event)
 
   tiles = {}
 
-  local y = dim.toolBarHeight + dim.halfQ
+  local y = dim.marginY + dim.halfQ
 
   for i,word in ipairs(_G.grid.words) do
 
     local score = 0
-    local xNumber = dim.halfQ
-    local xScore = dim.halfQ
-    local xLetter = dim.halfQ * 3
+    local xNumber = dim.marginX + dim.halfQ
+    local xScore = dim.marginX + dim.halfQ
+    local xLetter = dim.marginX + (dim.halfQ * 3)
 
     if type(_G.GAME_MODE) == 'number' then
       _createTile(xNumber, y, tostring(i))

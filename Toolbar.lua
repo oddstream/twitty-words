@@ -41,26 +41,17 @@ function Toolbar.new()
 
   local dim = _G.DIMENSIONS
 
-  local height = dim.toolBarHeight
-  local halfHeight = height / 2
+  o.rect = display.newRect(_G.MUST_GROUPS.ui, dim.toolBarX, dim.toolBarY, dim.toolBarWidth, dim.toolBarHeight)
+  o.rect:setFillColor(unpack(_G.MUST_COLORS.uibackground))
 
-  -- o.rect = display.newRect(_G.MUST_GROUPS.ui, display.contentCenterX, halfHeight, display.actualContentWidth, height)
-  -- o.rect:setFillColor(unpack(_G.MUST_COLORS.uibackground))
+  o.left = Tappy.new(_G.MUST_GROUPS.ui, dim.halfQ, dim.toolBarY, function() _G.grid:jumble() end)
 
-  o.left = Tappy.new(_G.MUST_GROUPS.ui, dim.halfQ, halfHeight, function() _G.grid:jumble() end)
-
---[[
-  o.center = display.newText(_G.MUST_GROUPS.ui, '', display.contentCenterX, halfHeight, _G.TILE_FONT, dim.halfQ)
-  -- o.center:setFillColor(unpack(_G.MUST_COLORS.uiforeground))
-  o.center:setFillColor(unpack(_G.MUST_COLORS.black))
-]]
+  -- o.center = display.newText(_G.MUST_GROUPS.ui, '', dim.toolBarX, dim.toolBarY, _G.TILE_FONT, dim.tileFontSize)
+  -- o.center:setFillColor(unpack(_G.MUST_COLORS.black))
   o.center = display.newGroup()
-  -- o.center.x = display.contentCenterX
-  -- o.center.y = halfHeight
-  -- o.center.anchorX = 0.5
   _G.MUST_GROUPS.ui:insert(o.center)
 
-  o.right = Tappy.new(_G.MUST_GROUPS.ui, display.actualContentWidth - dim.halfQ, halfHeight, function()
+  o.right = Tappy.new(_G.MUST_GROUPS.ui, display.actualContentWidth - dim.halfQ, dim.toolBarY, function()
     _G.grid:pauseCountdown()
     composer.showOverlay('FoundWords', {effect='slideRight'})
   end)
@@ -84,11 +75,9 @@ local function _createTile(group, x, y, txt)
   return grp
 end
 
---[[
 function Toolbar:set(pos, s)
   self[pos].text = s or ''
 end
-]]
 
 function Toolbar:setLeft(s)
   -- self:set('left', s)
@@ -96,9 +85,8 @@ function Toolbar:setLeft(s)
 end
 
 function Toolbar:setCenter(s)
---[[
-  self:set('center', s)
-]]
+  -- self:set('center', s)
+
   local dim = _G.DIMENSIONS
 
   while self.center.numChildren > 0 do
@@ -107,13 +95,14 @@ function Toolbar:setCenter(s)
   if s then
     local x = dim.halfQ
     for i=1, string.len(s) do
-      local tile = _createTile(self.center, x, dim.halfQ, string.sub(s, i, i))
+      local tile = _createTile(self.center, x, dim.toolBarY, string.sub(s, i, i))
       self.center:insert(tile)
       x = x + dim.halfQ
     end
     -- the first tile is dim.halfQ over to the right
     self.center.x = display.contentCenterX - (string.len(s) * dim.halfQ / 2) - (dim.halfQ / 2)
   end
+
 end
 
 function Toolbar:setRight(s)

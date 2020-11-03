@@ -1,5 +1,7 @@
 -- Util.lua
 
+local json = require 'json'
+
 local Util = {}
 Util.__index = Util
 
@@ -70,5 +72,9 @@ function Util.randomDirections()
 
 end
 ]]
+
+function Util.cloneTable(t)
+  return json.decode( json.encode( t ) )
+end
 
 return Util

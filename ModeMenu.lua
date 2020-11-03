@@ -70,7 +70,6 @@ function scene:hide(event)
     -- Code here runs when the scene is on screen (but is about to go off screen)
   elseif phase == 'did' then
     -- Code here runs immediately after the scene goes entirely off screen
-    -- composer.removeScene('FoundWords')
   end
 end
 
@@ -78,7 +77,7 @@ end
 function scene:destroy(event)
   local sceneGroup = self.view
   -- Code here runs prior to the removal of scene's view
-  assert(Runtime:removeEventListener('key', scene))
+  composer.removeScene('FoundWords')
 end
 
 -- -----------------------------------------------------------------------------------

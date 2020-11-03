@@ -3,6 +3,7 @@
 local composer = require('composer')
 
 local Slot = require 'Slot'
+local Util = require 'Util'
 
 local Grid = {
   -- prototype object
@@ -10,6 +11,7 @@ local Grid = {
   width = nil,      -- number of columns
   height = nil,      -- number of rows
 
+  undoStack = {},
   letterPool = nil,
 
   selectedSlots = nil,  -- table of selected slots, in order they were selected
@@ -36,6 +38,43 @@ function Grid.new(width, height)
   return o
 end
 
+function Grid:createSaveable()
+  local o = {}
+  o.letterPool = Util.cloneTable(self.letterPool)
+  do
+    local state = {}
+    for _,slot in ipairs(self.slots) do
+      if slot.tile then
+        table.insert(state, {x=slot.x, y=slot.y, letter=slot.tile.letter})
+      end
+    end
+    o.state = state
+  end
+  o.words = Util.cloneTable(self.words)
+  o.swaps = self.swaps
+  o.score = self.score  -- TODO could recalc this
+  return o
+end
+
+function Grid:replaceWithSaved(saved)
+  self:deleteTiles()
+
+  self.letterPool = saved.letterPool
+  self:createTilesFromSaved(saved.state)
+  self.words = saved.words
+  self.swaps = saved.swaps
+  self.score = saved.score  -- TODO could recalc this
+
+  self:updateUI()
+end
+
+function Grid:undo()
+  local saved = table.remove(self.undoStack)
+  if saved then
+    self:replaceWithSaved(saved)
+  end
+end
+
 function Grid:timer(event)
   -- event.source (Grid table)
   -- event.count
@@ -43,7 +82,7 @@ function Grid:timer(event)
     self.secondsLeft = self.secondsLeft - 1
   end
   if #self.selectedSlots == 0 then
-    self:updateUI(string.format('%u:%02u',
+    _G.statusBar:setRight(string.format('%u:%02u',
       math.floor(self.secondsLeft / 60),
       math.floor(self.secondsLeft % 60)))
   end
@@ -70,25 +109,15 @@ end
 
 function Grid:gameOver()
 
-  self:updateUI('GAME OVER')  -- TODO toast/bubble?
-
-  local deductions = self:calcResidualScore()
-
   if self.countdownTimer then
     timer.cancel(self.countdownTimer)
   end
   -- the following produced runtime error, not sure why
   -- self.countdownTimer = nil
 
-  -- delete all tiles
-  for _,slot in ipairs(self.slots) do
-    if slot.tile then
-      slot.tile:delete()
-      slot.tile = nil
-    end
-    -- restore position of slot in case it compacted
-    slot:position()
-  end
+  local deductions = self:calcResidualScore()
+
+  self:deleteTiles()
 
   -- run the garbage collector
   do
@@ -118,6 +147,7 @@ function Grid:newGame()
   self.words = {}
   self.swaps = 1
   self.selectedSlots = {}
+  self.undoStack = {}
 
   if _G.GAME_MODE == 'timed' then
     self.secondsLeft = 60 * 5
@@ -130,13 +160,13 @@ end
 
 function Grid:updateUI(s)
   _G.toolBar:setLeft(string.format('⇆%s', self.swaps))
-  if s == nil and type(_G.GAME_MODE) == 'number' then
-    _G.toolBar:setCenter(string.format('%u OF %u', #self.words, _G.GAME_MODE))
-  else
-    _G.toolBar:setCenter(s)
-  end
+  _G.toolBar:setCenter(s)
   -- _G.toolBar:setRight(string.format('%+d', self.score))
   _G.toolBar:setRight(string.format('%u', self.score))
+
+  if type(_G.GAME_MODE) == 'number' then
+    _G.statusBar:setRight(string.format('%u of %u', #self.words, _G.GAME_MODE))
+  end
 end
 
 function Grid:createLetterPool()
@@ -246,9 +276,27 @@ local function isWordInDictionary(word)
 end
 
 function Grid:createTiles()
-  self:iterator(function(slot)
+  for _,slot in ipairs(self.slots) do
     slot:createTile()
-  end)
+  end
+end
+
+function Grid:createTilesFromSaved(saved)
+  for _,save in ipairs(saved) do
+    local slot = self:findSlot(save.x, save.y)
+    slot:createTile(save.letter)
+  end
+end
+
+function Grid:deleteTiles()
+  for _,slot in ipairs(self.slots) do
+    if slot.tile then
+      slot.tile:delete()
+      slot.tile = nil
+    end
+    -- restore position of slot in case it compacted
+    slot:position()
+  end
 end
 
 function Grid:countTiles()
@@ -272,9 +320,9 @@ function Grid:getTiles()
 end
 
 function Grid:deselectAllSlots()
-  self:iterator(function(slot)
+  for _,slot in ipairs(self.slots) do
     slot:deselect()
-  end)
+  end
   self.selectedSlots = {}
 end
 
@@ -343,6 +391,7 @@ function Grid:testSelection()
     local t1 = s1.tile
     local t2 = s2.tile
     if self.swaps > 0 then
+      table.insert(self.undoStack, self:createSaveable())
       if t1.letter ~= t2.letter then
 
           s1.tile, s2.tile = s2.tile, s1.tile
@@ -364,6 +413,7 @@ function Grid:testSelection()
     if isWordInDictionary(word) then
     -- if true then
       -- trace(score, word)
+      table.insert(self.undoStack, self:createSaveable())
       table.insert(self.words, word)
       -- updateUI later when score has transitioned
       self:sortWords()
@@ -572,7 +622,7 @@ function Grid:jumble()
     })
   end
 
-  -- TODO maybe toast/bubble 'SHUFFLING', nah it's kind of obvious
+  table.insert(self.undoStack, self:createSaveable())
 
   -- https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
   -- https://stackoverflow.com/questions/35572435/how-do-you-do-the-fisher-yates-shuffle-in-lua
