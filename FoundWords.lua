@@ -78,12 +78,12 @@ function scene:create(event)
   -- local rectBackground = display.newRect(backGroup, display.actualContentWidth / 2, display.actualContentHeight / 2, display.actualContentWidth, backHeight)
   -- rectBackground:setFillColor(unpack(_G.MUST_COLORS.baize))
 
-  local rect = display.newRect(sceneGroup, dim.toolBarX, dim.toolBarY, dim.toolBarWidth, dim.toolBarHeight)
+  local rect = display.newRect(sceneGroup, dim.resultsbarX, dim.resultsbarY, dim.resultsbarWidth, dim.resultsbarHeight)
   rect:setFillColor(unpack(_G.MUST_COLORS.uibackground))
 
   local backButton = widget.newButton({
     x = dim.marginX + dim.halfQ,
-    y = dim.toolBarY,
+    y = dim.resultsbarY,
     onRelease = function()
       composer.hideOverlay('slideLeft')
       _G.grid:resumeCountdown()
@@ -92,7 +92,7 @@ function scene:create(event)
     labelColor = { default=_G.MUST_COLORS.uiforeground, over=_G.MUST_COLORS.uicontrol },
     labelAlign = 'left',
     font = _G.TILE_FONT,
-    fontSize = dim.halfQ,
+    fontSize = dim.resultsbarHeight / 2,
     textOnly = true,
   })
   backButton.anchorX = 0
@@ -100,16 +100,17 @@ function scene:create(event)
 
   local finishButton = widget.newButton({
     x = display.safeActualContentWidth - dim.halfQ,
-    y = dim.toolBarY,
+    y = dim.resultsbarY,
     onRelease = function()
       composer.hideOverlay()
+      composer.removeScene('FoundWords')
       _G.grid:gameOver()
     end,
     label = 'FINISH >',
     labelColor = { default=_G.MUST_COLORS.uiforeground, over=_G.MUST_COLORS.uicontrol },
     labelAlign = 'right',
     font = _G.TILE_FONT,
-    fontSize = dim.halfQ,
+    fontSize = dim.resultsbarHeight / 2,
     textOnly = true,
   })
   finishButton.anchorX = 1
@@ -117,7 +118,7 @@ function scene:create(event)
 
   tiles = {}
 
-  local y = dim.marginY + dim.halfQ
+  local y = dim.resultsbarHeight + dim.halfQ
 
   for i,word in ipairs(_G.grid.words) do
 

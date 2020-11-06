@@ -30,7 +30,8 @@ function Tappy.new(group, x, y, cmd)
 end
 
 function Tappy.createGraphics(x, y, label)
-  return Tile.createGraphics(x, y, label)
+  local grp = Tile.createGraphics(x, y, label)
+  return grp
 end
 
 function Tappy:setLabel(label)

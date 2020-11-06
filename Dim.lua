@@ -13,7 +13,7 @@ function Dim.new()
   local topInset, leftInset, bottomInset, rightInset = display.getSafeAreaInsets()
 
   o.numX = 7
-  o.numY = 10
+  o.numY = 9
 
   local xQ = math.floor(display.safeActualContentWidth/o.numX)
   local yQ = math.floor(display.safeActualContentHeight / (o.numY + 1 + 0.5)) -- add for toolbar (1) and statusbar (0.5)
@@ -25,17 +25,27 @@ function Dim.new()
 
   o.tileFontSize = o.Q * 0.75
 
-  o.toolBarHeight = o.Q
-  o.toolBarX = display.contentCenterX
-  o.toolBarY = topInset + (o.toolBarHeight / 2)
-  o.toolBarWidth = display.safeActualContentWidth
+  o.statusbarHeight = o.Q / 2
+  o.statusbarX = display.contentCenterX
+  o.statusbarY = topInset + (o.statusbarHeight / 2)
+  o.statusbarWidth = display.safeActualContentWidth
 
-  o.statusBarHeight = o.Q / 2
-  o.statusBarX = display.contentCenterX
-  o.statusBarY = display.safeActualContentHeight - bottomInset - (o.statusBarHeight / 2)
-  o.statusBarWidth = display.safeActualContentWidth
+  o.wordbarHeight = o.Q
+  o.wordbarX = display.contentCenterX
+  o.wordbarY = topInset + o.statusbarHeight + (o.wordbarHeight / 2)
+  o.wordbarWidth = display.safeActualContentWidth
 
-  o.baizeHeight = display.safeActualContentHeight - o.toolBarHeight - o.statusBarHeight
+  o.toolbarHeight = o.Q
+  o.toolbarX = display.contentCenterX
+  o.toolbarY = display.safeActualContentHeight - (o.toolbarHeight / 2)
+  o.toolbarWidth = display.safeActualContentWidth
+
+  o.resultsbarHeight = o.Q / 2
+  o.resultsbarX = display.contentCenterX
+  o.resultsbarY = topInset + (o.resultsbarHeight / 2)
+  o.resultsbarWidth = display.safeActualContentWidth
+
+  o.baizeHeight = display.safeActualContentHeight - o.statusbarHeight - o.toolbarHeight - o.wordbarHeight
 
   -- o.numX = math.floor(display.actualContentWidth / o.Q)
   -- o.numY = math.floor(contentHeight / o.Q)
@@ -44,10 +54,12 @@ function Dim.new()
   o.marginX = o.marginX + leftInset
 
   -- TODO this is top margin
-  -- o.marginY = o.toolBarHeight + (display.actualContentHeight - (o.numY * o.Q)) / 2
-  o.marginY = topInset + o.toolBarHeight
+  -- o.marginY = ((o.toolbarHeight + o.statusbarHeight + (o.Q * o.numY)) - display.safeActualContentHeight) / 2
+  -- o.marginY = o.toolbarHeight + (display.actualContentHeight - (o.numY * o.Q)) / 2
   -- o.marginY = (display.safeActualContentHeight - (o.numY * o.Q)) / 2
 
+  trace('baize', o.baizeHeight, 'tiles', o.numY * o.Q)
+  o.marginY = topInset + o.statusbarHeight + o.wordbarHeight + ((o.baizeHeight - (o.numY * o.Q)) / 2)
   return o
 end
 

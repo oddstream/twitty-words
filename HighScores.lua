@@ -11,13 +11,12 @@ local json = require('json')
 local Tile = require 'Tile'
 local Util = require 'Util'
 
-local scoresTable = {}
-
 local filePath = system.pathForFile(_G.GAME_MODE .. '_scores.json', system.DocumentsDirectory)
 -- win32 c:\Users\oddst\AppData\Roaming\Wychwood Paddocks\Must\Documents
 -- print(filePath)
 
 local function loadScores()
+  local scoresTable
   local file = io.open(filePath, 'r')
 
   if file then
@@ -50,9 +49,10 @@ local function loadScores()
       {score=50, words={'GNOME'}},
     }
   end
+  return scoresTable
 end
 
-local function saveScores()
+local function saveScores(scoresTable)
   for i = #scoresTable, 21, -1 do
     table.remove(scoresTable, i)
   end
@@ -109,95 +109,35 @@ function scene:create(event)
   local sceneGroup = self.view
   -- Code here runs when the scene is first created but has not yet appeared on screen
 
+  trace('HighScores scene:create')
   Util.setBackground(sceneGroup)
   sceneGroup:addEventListener('touch', backTouch)
-
-  loadScores()
-
-  local score = nil
-  local words = nil
-
-  if event.params then
-    score = event.params.score
-    -- trace('score', score)
-    words = event.params.words
-    -- trace('words', words)
-
-    if score and words then
-
-      table.insert(scoresTable, {score=score, words=words})
-
-      table.sort(scoresTable, function(a,b) return a.score > b.score end) -- default comp uses <
-
-      if score > scoresTable[#scoresTable].score then
-        -- trace('writing scores')
-        saveScores()
-      -- else
-      --   trace('worthless new score')
-      end
-
-    end
-  end
 
   -- local backHeight = (20 * dim.halfQ) + display.actualContentHeight
   -- need a background rect for the touch to work when touching the, er, background (otherwise can only touch/vscroll tiles)
   -- local rectBackground = display.newRect(backGroup, display.actualContentWidth / 2, display.actualContentHeight / 2, display.actualContentWidth, backHeight)
   -- rectBackground:setFillColor(unpack(_G.MUST_COLORS.baize))
 
-  -- a rect for the tool bar
-  local rectToolbar = display.newRect(sceneGroup, dim.toolBarX, dim.toolBarY, dim.toolBarWidth, dim.toolBarHeight)
+  -- a rect for the results tool bar
+  local rectToolbar = display.newRect(sceneGroup, dim.resultsbarX, dim.resultsbarY, dim.resultsbarWidth, dim.resultsbarHeight)
   rectToolbar:setFillColor(unpack(_G.MUST_COLORS.uibackground))
 
   local newButton = widget.newButton({
     x = dim.halfQ,
-    y = dim.toolBarY,
+    y = dim.resultsbarY,
     onRelease = function()
+      composer.removeScene('HighScores')
       composer.gotoScene('Must', {effect='slideLeft'})
     end,
     label = '< NEW GAME',
     labelColor = { default=_G.MUST_COLORS.uiforeground, over=_G.MUST_COLORS.uicontrol },
     labelAlign = 'left',
     font = _G.TILE_FONT,
-    fontSize = dim.halfQ,
+    fontSize = dim.resultsbarHeight / 2,
     textOnly = true,
   })
   newButton.anchorX = 0
   sceneGroup:insert(newButton)
-
-  local function _createTile(x, y, txt, selected)
-    local grp = Tile.createGraphics(x, y, txt)
-    sceneGroup:insert(grp)
-    grp:scale(0.5, 0.5)
-    if selected then
-      grp[2]:setFillColor(unpack(_G.MUST_COLORS.moccasin))
-    end
-    return grp
-  end
-
-  local function _showScoreAndWord(thisScore, thisWord, yPos, hilite)
-    _createTile(dim.halfQ, yPos, tostring(thisScore), hilite)
-    local x = dim.marginX + (dim.halfQ * 3)
-    for j=1, string.len(thisWord) do
-      _createTile(x, yPos, string.sub(thisWord, j, j), hilite)
-      x = x + dim.halfQ
-    end
-  end
-
-  local y = dim.marginY + dim.halfQ
-
-  for i = 1, 20 do
-    if scoresTable[i] then
-      -- show the highest scoring word, which has been sorted (when inserted) to the front
-      _showScoreAndWord(scoresTable[i].score, scoresTable[i].words[1], y, scoresTable[i].score == score)
-      y = y + dim.halfQ
-    end
-  end
-
-  -- show the user's pathetic effort if it's not in the top 20
-  if score < scoresTable[20].score and #words > 0 then
-    y = y + dim.halfQ
-    _showScoreAndWord(score, words[1], y, true)
-  end
 
 end
 
@@ -206,12 +146,77 @@ end
 function scene:show(event)
   local sceneGroup = self.view
   local phase = event.phase
+  local dim = _G.DIMENSIONS
+
+  trace('HighScores scene:show', phase)
 
   if phase == 'will' then
     -- Code here runs when the scene is still off screen (but is about to come on screen)
-  elseif phase == 'did' then
+    local scoresTable = loadScores()
+
+    local score = nil
+    local words = nil
+
+    if event.params then
+      score = event.params.score
+      -- trace('score', score)
+      words = event.params.words
+      -- trace('words', words)
+
+      if score and words then
+
+        table.insert(scoresTable, {score=score, words=words})
+
+        table.sort(scoresTable, function(a,b) return a.score > b.score end) -- default comp uses <
+
+        if score > scoresTable[#scoresTable].score then
+          -- trace('writing scores')
+          saveScores(scoresTable)
+        -- else
+        --   trace('worthless new score')
+        end
+
+      end
+    end
+
+    local function _createTile(x, y, txt, selected)
+      local grp = Tile.createGraphics(x, y, txt)
+      sceneGroup:insert(grp)
+      grp:scale(0.5, 0.5)
+      if selected then
+        grp[2]:setFillColor(unpack(_G.MUST_COLORS.moccasin))
+      end
+      return grp
+    end
+
+    local function _showScoreAndWord(thisScore, thisWord, yPos, hilite)
+      _createTile(dim.halfQ, yPos, tostring(thisScore), hilite)
+      local x = dim.marginX + (dim.halfQ * 3)
+      for j=1, string.len(thisWord) do
+        _createTile(x, yPos, string.sub(thisWord, j, j), hilite)
+        x = x + dim.halfQ
+      end
+    end
+
+    local y = dim.resultsbarHeight + dim.halfQ
+
+    for i = 1, 20 do
+      if scoresTable[i] then
+        -- show the highest scoring word, which has been sorted (when inserted) to the front
+        _showScoreAndWord(scoresTable[i].score, scoresTable[i].words[1], y, scoresTable[i].score == score)
+        y = y + dim.halfQ
+      end
+    end
+
+    -- show the user's pathetic effort if it's not in the top 20
+    if score < scoresTable[20].score and #words > 0 then
+      y = y + dim.halfQ
+      _showScoreAndWord(score, words[1], y, true)
+    end
+
+    elseif phase == 'did' then
     -- Code here runs when the scene is entirely on screen
-    Runtime:addEventListener('key', scene)
+    -- Runtime:addEventListener('key', scene)
   end
 end
 
@@ -226,7 +231,7 @@ function scene:hide(event)
     -- Code here runs when the scene is on screen (but is about to go off screen)
   elseif phase == 'did' then
     -- Code here runs immediately after the scene goes entirely off screen
-    assert(Runtime:removeEventListener('key', scene))
+    -- assert(Runtime:removeEventListener('key', scene))
   end
 end
 
@@ -235,18 +240,17 @@ function scene:destroy(event)
   local sceneGroup = self.view
   -- Code here runs prior to the removal of scene's view
   trace('HighScores scene:destroy')
-  composer.removeScene('HighScores')
 end
 
-function scene:key(event)
-  local phase = event.phase
-  if phase == 'up' then
-    if event.keyName == 'back' or event.keyName == 'deleteBack' then
-      composer.gotoScene('Must')
-      return true -- override the key
-    end
-  end
-end
+-- function scene:key(event)
+--   local phase = event.phase
+--   if phase == 'up' then
+--     if event.keyName == 'back' or event.keyName == 'deleteBack' then
+--       composer.gotoScene('Must')
+--       return true -- override the key
+--     end
+--   end
+-- end
 
 -- -----------------------------------------------------------------------------------
 -- Scene event function listeners
@@ -255,7 +259,6 @@ scene:addEventListener('create', scene)
 scene:addEventListener('show', scene)
 scene:addEventListener('hide', scene)
 scene:addEventListener('destroy', scene)
-
 -- -----------------------------------------------------------------------------------
 
 return scene

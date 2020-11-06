@@ -191,7 +191,7 @@ function Tile:flyAway(n, wordLength)
   transition.moveTo(self.grp, {
     -- x = (dim.halfQ + (dim.Q * (n-1))) + ((display.actualContentWidth / 2) - ((dim.Q * wordLength) / 2)),
     x = (dim.halfQ / 2) + (dim.halfQ * (n-1)) + ((display.actualContentWidth / 2) - ((dim.halfQ * wordLength) / 2)),
-    y = dim.toolBarY,
+    y = dim.wordbarY,
     time = _G.FLIGHT_TIME,
     transition = easing.outQuad,
   })

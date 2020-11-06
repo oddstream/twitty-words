@@ -1,6 +1,7 @@
 -- Toolbar.lua
 
 local composer = require 'composer'
+local widget = require 'widget'
 
 local Tappy = require 'Tappy'
 local Tile = require 'Tile'
@@ -41,20 +42,28 @@ function Toolbar.new()
 
   local dim = _G.DIMENSIONS
 
-  o.rect = display.newRect(_G.MUST_GROUPS.ui, dim.toolBarX, dim.toolBarY, dim.toolBarWidth, dim.toolBarHeight)
-  o.rect:setFillColor(unpack(_G.MUST_COLORS.uibackground))
+  -- o.rect = display.newRect(_G.MUST_GROUPS.ui, dim.toolbarX, dim.toolbarY, dim.toolbarWidth, dim.toolbarHeight)
+  -- o.rect:setFillColor(unpack(_G.MUST_COLORS.uibackground))
 
-  o.left = Tappy.new(_G.MUST_GROUPS.ui, dim.halfQ, dim.toolBarY, function() _G.grid:jumble() end)
+  o.left = Tappy.new(_G.MUST_GROUPS.ui, dim.halfQ, dim.toolbarY, function()
+    _G.grid:shuffle()
+  end)
+  o.left.grp[2]:setFillColor(unpack(_G.MUST_COLORS.tappy))
 
-  -- o.center = display.newText(_G.MUST_GROUPS.ui, '', dim.toolBarX, dim.toolBarY, _G.TILE_FONT, dim.tileFontSize)
-  -- o.center:setFillColor(unpack(_G.MUST_COLORS.black))
-  o.center = display.newGroup()
-  _G.MUST_GROUPS.ui:insert(o.center)
+  o.undo = Tappy.new(_G.MUST_GROUPS.ui, dim.halfQ + dim.Q, dim.toolbarY, function()
+    _G.grid:undo()
+  end)
+  o.undo.grp[2]:setFillColor(unpack(_G.MUST_COLORS.tappy))
+  o.undo:setLabel('⎌')
 
-  o.right = Tappy.new(_G.MUST_GROUPS.ui, display.actualContentWidth - dim.halfQ, dim.toolBarY, function()
+  o.center = display.newText(_G.MUST_GROUPS.ui, '', dim.toolbarX, dim.toolbarY, _G.TILE_FONT, dim.tileFontSize)
+  o.center:setFillColor(unpack(_G.MUST_COLORS.black))
+
+  o.right = Tappy.new(_G.MUST_GROUPS.ui, display.actualContentWidth - dim.halfQ, dim.toolbarY, function()
     _G.grid:pauseCountdown()
     composer.showOverlay('FoundWords', {effect='slideRight'})
   end)
+  o.right.grp[2]:setFillColor(unpack(_G.MUST_COLORS.tappy))
 
   return o
 end
@@ -68,13 +77,6 @@ function Toolbar:destroy()
 end
 ]]
 
-local function _createTile(group, x, y, txt)
-  local grp = Tile.createGraphics(x, y, txt)
-  group:insert(grp)
-  grp:scale(0.5, 0.5)
-  return grp
-end
-
 function Toolbar:set(pos, s)
   self[pos].text = s or ''
 end
@@ -85,24 +87,7 @@ function Toolbar:setLeft(s)
 end
 
 function Toolbar:setCenter(s)
-  -- self:set('center', s)
-
-  local dim = _G.DIMENSIONS
-
-  while self.center.numChildren > 0 do
-    self.center[1]:removeSelf()
-  end
-  if s then
-    local x = dim.halfQ
-    for i=1, string.len(s) do
-      local tile = _createTile(self.center, x, dim.toolBarY, string.sub(s, i, i))
-      self.center:insert(tile)
-      x = x + dim.halfQ
-    end
-    -- the first tile is dim.halfQ over to the right
-    self.center.x = display.contentCenterX - (string.len(s) * dim.halfQ / 2) - (dim.halfQ / 2)
-  end
-
+  self:set('center', s)
 end
 
 function Toolbar:setRight(s)

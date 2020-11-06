@@ -1,7 +1,9 @@
 -- Must.lua
 
 local Statusbar = require 'Statusbar'
+local Wordbar = require 'Wordbar'
 local Toolbar = require 'Toolbar'
+
 local Util = require 'Util'
 
 local composer = require('composer')
@@ -24,8 +26,9 @@ function scene:create(event)
   _G.MUST_GROUPS.ui = display.newGroup()
   sceneGroup:insert(_G.MUST_GROUPS.ui)
 
-  _G.toolBar = Toolbar.new()
-  _G.statusBar = Statusbar.new()
+  _G.statusbar = Statusbar.new()
+  _G.wordbar = Wordbar.new()
+  _G.toolbar = Toolbar.new()
   -- scene remains in memory once created, ie it's only created once when app is run
 end
 
@@ -80,14 +83,12 @@ function scene:key(event)
 
   if phase == 'up' then
     if event.keyName == 'back' or event.keyName == 'deleteBack' then
-      if _G.grid.countdownTimer then  -- TODO
-        timer.cancel(_G.grid.countdownTimer)
-      end
+      _G.grid:cancelCountdown()
       _G.grid:deleteTiles()
       composer.gotoScene('ModeMenu')
       return true -- override the key
-    elseif event.keyName == 'j' then
-      _G.grid:jumble()
+    elseif event.keyName == 's' then
+      _G.grid:shuffle()
     elseif event.keyName == 'u' then
       _G.grid:undo()
     elseif event.keyName == 'w' then

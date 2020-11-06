@@ -94,7 +94,7 @@ function Slot:flyAwaySwaps()
 
   transition.moveTo(grp, {
     x = dim.halfQ,
-    y = dim.toolBarY,
+    y = dim.toolbarY,
     time = _G.FLIGHT_TIME,
     transition = easing.outQuad,
     onComplete = function()
@@ -118,7 +118,9 @@ function Slot:flyAwayScore(score)
 
   transition.moveTo(grp, {
     x = display.actualContentWidth - dim.halfQ,
-    y = dim.toolBarY,
+    y = dim.toolbarY,
+    -- x = dim.statusbarX,
+    -- y = dim.statusbarY,
     time = _G.FLIGHT_TIME,
     transition = easing.outQuad,
     onComplete = function()

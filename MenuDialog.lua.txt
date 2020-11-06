@@ -1,0 +1,155 @@
+-- MenuDialog.lua
+
+local composer = require('composer')
+local scene = composer.newScene()
+
+local widget = require('widget')
+widget.setTheme('widget_theme_android_holo_dark')
+
+-- -----------------------------------------------------------------------------------
+-- Code outside of the scene event functions below will only be executed ONCE unless
+-- the scene is removed entirely (not recycled) via 'composer.removeScene()'
+-- -----------------------------------------------------------------------------------
+
+--[[
+  <star> New deal
+  <star_border> Specify deal...
+  <replay> Replay this deal
+  <apps> Find new game...
+  -------
+  <save> Save this position
+  <restore> Last last saved position
+  -------
+  <assessment> Statistics...
+  <settings> Settings...
+  <help> Help
+]]
+
+local items = {
+  {label='Shuffle', cmd='jumble'},
+  {label='Undo', cmd='undo'},
+  {label='-'},
+  {label='Found Words...', cmd='showFoundWords'},
+  {label='-'},
+  {label='Finish', cmd='gameOver'},
+}
+
+-- -----------------------------------------------------------------------------------
+-- Scene event functions
+-- -----------------------------------------------------------------------------------
+
+-- create()
+function scene:create(event)
+  -- trace('MenuDialog create', event.phase)
+
+  local sceneGroup = self.view
+  -- Code here runs when the scene is first created but has not yet appeared on screen
+
+  -- removed the tap listener below; too many false hits when trying to select a menu item
+  -- scene.view:addEventListener('tap', function() composer.hideOverlay('slideLeft') end)
+end
+
+-- show()
+function scene:show(event)
+  -- trace('MenuDialog show', event.phase)
+  local sceneGroup = self.view
+  local phase = event.phase
+
+  if phase == 'will' then
+    local dim = _G.DIMENSIONS
+    local fontSize = dim.Q * 0.5
+    -- Code here runs when the scene is still off screen (but is about to come on screen)
+    local background = display.newRect(sceneGroup, display.contentCenterX, display.contentCenterY, display.contentWidth / 2, display.contentHeight)
+    background:setFillColor(unpack(_G.MUST_COLORS.uibackground))
+    background.alpha = 0.95
+    background.anchorX = 1
+    local close = display.newText(sceneGroup, 'X          ', fontSize / 2, dim.toolBarY, _G.TILE_FONT, fontSize)
+    close.anchorX = 0
+    close:setFillColor(unpack(_G.MUST_COLORS.uicontrol))
+    assert(close:addEventListener('tap', function() composer.hideOverlay('slideLeft') end))
+
+    local y = dim.tileFontSize * 2
+
+    for _,item in pairs(items) do
+      if item.label == '-' then
+        local line = display.newLine(sceneGroup, 0, y, background.width, y)
+        -- assert(line)
+        line:setStrokeColor(0)
+        line.strokeWidth = 2
+        line.anchorX = 0
+      else
+        local btn = widget.newButton{
+          x = fontSize / 2,
+          y = y,
+          onRelease = function()
+            -- use a delay to stop the tap event propagating to recycle below
+            -- https://forums.coronalabs.com/topic/27804-tap-of-button-on-modal-overlay-propagates-to-scene-below-after-hideoverlay/
+            -- https://forums.coronalabs.com/topic/66141-tapping-button-on-modal-overlay-propagates-to-scene-below-after-hideoverlay/
+            composer.hideOverlay()  -- remove menu immediately
+            timer.performWithDelay(500, function()
+              _G.grid[item.cmd](_G.grid)
+            end)
+            -- return true -- fails to stop propagation
+          end,
+          label = item.label,
+          labelColor = { default=_G.MUST_COLORS.uiforeground, over=_G.MUST_COLORS.uicontrol },
+          font = _G.TILE_FONT,
+          fontSize = fontSize,
+          textOnly = true,
+        }
+        btn.anchorX = 0
+        sceneGroup:insert(btn)
+      end
+
+      y = y + fontSize * 1.5
+    end
+  elseif phase == 'did' then
+    -- Code here runs when the scene is entirely on screen
+    Runtime:addEventListener('key', scene)
+  end
+end
+
+-- hide()
+function scene:hide(event)
+  -- trace('MenuDialog hide', event.phase)
+  local sceneGroup = self.view
+  local phase = event.phase
+
+  if phase == 'will' then
+    -- Code here runs when the scene is on screen (but is about to go off screen)
+    assert(Runtime:removeEventListener('key', scene))
+  elseif phase == 'did' then
+    -- Code here runs immediately after the scene goes entirely off screen
+    -- composer.removeScene('MenuDialog')
+  end
+end
+
+-- destroy()
+function scene:destroy(event)
+  -- trace('MenuDialog destroy', event.phase)
+  local sceneGroup = self.view
+  -- Code here runs prior to the removal of scene's view
+end
+
+function scene:key(event)
+
+  local phase = event.phase
+
+  if phase == 'up' then
+    if event.keyName == 'back' or event.keyName == 'deleteBack' then
+      composer.hideOverlay('slideLeft')
+      return true -- override the key
+    end
+  end
+end
+
+-- -----------------------------------------------------------------------------------
+-- Scene event function listeners
+-- -----------------------------------------------------------------------------------
+scene:addEventListener('create', scene)
+scene:addEventListener('show', scene)
+scene:addEventListener('hide', scene)
+scene:addEventListener('destroy', scene)
+-- -----------------------------------------------------------------------------------
+
+return scene

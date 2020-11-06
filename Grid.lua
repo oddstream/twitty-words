@@ -81,12 +81,12 @@ function Grid:timer(event)
   if self.secondsLeft > 0 then
     self.secondsLeft = self.secondsLeft - 1
   end
-  if #self.selectedSlots == 0 then
-    _G.statusBar:setRight(string.format('%u:%02u',
-      math.floor(self.secondsLeft / 60),
-      math.floor(self.secondsLeft % 60)))
-  end
-  if self.secondsLeft == 0 then
+
+  _G.statusbar:setRight(string.format('%u:%02u',
+    math.floor(self.secondsLeft / 60),
+    math.floor(self.secondsLeft % 60)))
+
+    if self.secondsLeft == 0 then
     self:gameOver()
   end
 end
@@ -103,17 +103,21 @@ function Grid:resumeCountdown()
   end
 end
 
+function Grid:cancelCountdown()
+  if self.countdownTimer then
+    timer.cancel(self.countdownTimer)
+  -- the following produced runtime error, not sure why
+  -- self.countdownTimer = nil
+  end
+end
+
 function Grid:destroy()
   trace('Gird:destroy()')
 end
 
 function Grid:gameOver()
 
-  if self.countdownTimer then
-    timer.cancel(self.countdownTimer)
-  end
-  -- the following produced runtime error, not sure why
-  -- self.countdownTimer = nil
+  self:cancelCountdown()
 
   local deductions = self:calcResidualScore()
 
@@ -158,15 +162,18 @@ function Grid:newGame()
   self:updateUI()
 end
 
-function Grid:updateUI(s)
-  _G.toolBar:setLeft(string.format('⇆%s', self.swaps))
-  _G.toolBar:setCenter(s)
-  -- _G.toolBar:setRight(string.format('%+d', self.score))
-  _G.toolBar:setRight(string.format('%u', self.score))
-
+function Grid:updateUI(s, score)
   if type(_G.GAME_MODE) == 'number' then
-    _G.statusBar:setRight(string.format('%u of %u', #self.words, _G.GAME_MODE))
+    _G.statusbar:setRight(string.format('%u of %u', #self.words, _G.GAME_MODE))
   end
+
+  _G.wordbar:setCenter(s)
+
+  _G.toolbar:setLeft(string.format('⇆%s', self.swaps))
+  _G.toolbar:setRight(string.format('%u', self.score))  -- or '%+d'
+
+  -- _G.statusbar:setLeft(score and tostring(score) or nil)
+  -- _G.statusbar:setCenter(tostring(self.score))
 end
 
 function Grid:createLetterPool()
@@ -401,7 +408,7 @@ function Grid:testSelection()
           t2:settle()
 
         self.swaps = self.swaps - 1
-        self:updateUI(nil)
+        self:updateUI()
       end
     else
       t1:shake()
@@ -440,7 +447,7 @@ function Grid:testSelection()
 
       -- wait for tile transitions to finish (and tiles be deleted) before updating UI and checking for end of game
       timer.performWithDelay(_G.FLIGHT_TIME, function()
-        self:updateUI(word)
+        self:updateUI(word, score)
         if self:countTiles() < 3 then -- will end automatically with 0, 1 or 2 tiles
           self:gameOver()
         elseif type(_G.GAME_MODE) == 'number' and #self.words == _G.GAME_MODE then
@@ -601,7 +608,7 @@ function Grid:compactColumns()
   end
 end
 
-function Grid:jumble()
+function Grid:shuffle()
 
   if self.swaps == 0 then
     return
@@ -649,6 +656,8 @@ end
 function Grid:addTiles()
   -- add tile to top of any column, that has no tile(s) at the top and a tile at the bottom
 
+  local dim = _G.DIMENSIONS
+
   local function _tilesInColumn(slot)
     local count = 0
     while slot do
@@ -659,21 +668,32 @@ function Grid:addTiles()
   end
 
   local tilesAdded = false
-  local slot = self:findSlot(1,1)
-  while slot do
-    local count = _tilesInColumn(slot)
-    if count > 0 and count < (self.height - 1) then
-      if slot:createTile() then
-        tilesAdded = true
+  local column = self:findSlot(1,1)
+  while column and #self.letterPool > 0 do
+    local count = _tilesInColumn(column)
+    if count > 0 and count < self.height then
+      local slot = column
+      while slot and slot.tile == nil and #self.letterPool > 0 do
+        if slot:createTile() then
+          slot.tile.grp.y = dim.wordbarY  -- TODO hacky
+          slot.tile:settle()
+          tilesAdded = true
+        end
+        slot = slot.s
       end
     end
-    slot = slot.e
+    column = column.e
   end
 
   if tilesAdded then
     self:dropColumns()
   end
 
+end
+
+function Grid:showFoundWords()
+  self:pauseCountdown()
+  composer.showOverlay('FoundWords', {effect='slideRight'})
 end
 
 return Grid
