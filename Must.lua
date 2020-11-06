@@ -92,7 +92,7 @@ function scene:key(event)
     elseif event.keyName == 'u' then
       _G.grid:undo()
     elseif event.keyName == 'w' then
-      composer.showOverlay('FoundWords', {effect='slideRight'})
+      _G.grid:showFoundWords()
     end
   end
 end

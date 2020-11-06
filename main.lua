@@ -6,9 +6,6 @@ local composer = require 'composer'
 local Dim = require 'Dim'
 local Grid = require 'Grid'
 
--- build for Win32 to test the sound, because playing sounds in the simulator crashes the sound driver
-_G.MUTE_AUDIO = system.getInfo('environment') == 'simulator'
-
 function _G.trace(...)
   if system.getInfo('environment') == 'simulator' then
     local lst = {...}
@@ -155,6 +152,36 @@ _G.MUST_COLORS = {
 _G.MUST_GROUPS = {
   grid = nil,
   ui = nil,
+}
+
+_G.MUST_SOUNDS = {
+  complete = audio.loadSound('assets/complete.wav'),
+  -- failure (to get on high score table)
+  select1 = audio.loadSound('assets/click1.ogg'),
+  select2 = audio.loadSound('assets/click2.ogg'),
+  select3 = audio.loadSound('assets/click3.ogg'),
+  select4 = audio.loadSound('assets/click4.ogg'),
+  select5 = audio.loadSound('assets/click5.ogg'),
+  -- shuffle
+  -- cannot shuffle (not enough swaps)
+  -- swap
+  -- cannot swap (not enough swaps)
+  found = audio.loadSound('assets/confirmation_002.ogg'),
+  shake = audio.loadSound('assets/error_008.ogg'),
+  -- did not find word (not in dictionary)
+  timer = audio.loadSound('assets/question_004.ogg'),
+--[[
+  deal = audio.loadSound('assets/cardFan1.wav'),
+  load = audio.loadSound('assets/cardFan2.wav'),
+  move1 = audio.loadSound('assets/cardPlace3.wav'),
+  move2 = audio.loadSound('assets/cardPlace4.wav'),
+  move3 = audio.loadSound('assets/cardPlace1.wav'),
+  move4 = audio.loadSound('assets/cardPlace2.wav'),
+  undo = audio.loadSound('assets/cardOpenPackage2.wav'),
+  menuopen = audio.loadSound('assets/cardSlide1.wav'),
+  menuclose = audio.loadSound('assets/cardSlide2.wav'),
+  uitap = audio.loadSound('assets/cardSlide8.wav'),
+]]
 }
 
 if not _G.table.contains then

@@ -80,6 +80,10 @@ function Grid:timer(event)
   -- event.count
   if self.secondsLeft > 0 then
     self.secondsLeft = self.secondsLeft - 1
+
+    if self.secondsLeft < 10 then
+      Util.sound('timer')
+    end
   end
 
   _G.statusbar:setRight(string.format('%u:%02u',
@@ -347,6 +351,7 @@ function Grid:selectSlot(slot)
   end
 
   if #self.selectedSlots == 0 then
+    Util.sound('select' .. tostring(math.random(1,5)))
     table.insert(self.selectedSlots, slot)
   else
     local last = self.selectedSlots[#self.selectedSlots]
@@ -363,6 +368,7 @@ function Grid:selectSlot(slot)
         if not _connected(slot, last) then
           self:deselectAllSlots()
         else
+          Util.sound('select' .. tostring(math.random(1,5)))
           table.insert(self.selectedSlots, slot)
         end
       end
@@ -420,6 +426,9 @@ function Grid:testSelection()
     if isWordInDictionary(word) then
     -- if true then
       -- trace(score, word)
+
+      Util.sound('found')
+
       table.insert(self.undoStack, self:createSaveable())
       table.insert(self.words, word)
       -- updateUI later when score has transitioned
@@ -654,7 +663,6 @@ function Grid:shuffle()
 end
 
 function Grid:addTiles()
-  -- add tile to top of any column, that has no tile(s) at the top and a tile at the bottom
 
   local dim = _G.DIMENSIONS
 

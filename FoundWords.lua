@@ -103,7 +103,7 @@ function scene:create(event)
     y = dim.resultsbarY,
     onRelease = function()
       composer.hideOverlay()
-      composer.removeScene('FoundWords')
+      -- composer.removeScene('FoundWords')
       _G.grid:gameOver()
     end,
     label = 'FINISH >',
@@ -169,7 +169,7 @@ function scene:hide(event)
 
   elseif phase == 'did' then
     -- Code here runs immediately after the scene goes entirely off screen
-    -- composer.removeScene('FoundWords')
+    composer.removeScene('FoundWords')
   end
 end
 

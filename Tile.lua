@@ -1,5 +1,7 @@
 -- Tile.lua
 
+local Util = require 'Util'
+
 local Tile = {}
 Tile.__index = Tile
 
@@ -170,6 +172,7 @@ end
 
 function Tile:shake()
   -- trace('shaking', tostring(self))
+  Util.sound('shake')
   transition.to(self.grp, {time=50, transition=easing.continuousLoop, x=self.grp.x + 10})
   transition.to(self.grp, {delay=50, time=50, transition=easing.continuousLoop, x=self.grp.x - 10})
 end

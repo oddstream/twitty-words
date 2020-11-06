@@ -212,6 +212,8 @@ function scene:show(event)
     if score < scoresTable[20].score and #words > 0 then
       y = y + dim.halfQ
       _showScoreAndWord(score, words[1], y, true)
+    else
+      Util.sound('complete')
     end
 
     elseif phase == 'did' then

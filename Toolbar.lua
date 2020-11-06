@@ -60,8 +60,7 @@ function Toolbar.new()
   o.center:setFillColor(unpack(_G.MUST_COLORS.black))
 
   o.right = Tappy.new(_G.MUST_GROUPS.ui, display.actualContentWidth - dim.halfQ, dim.toolbarY, function()
-    _G.grid:pauseCountdown()
-    composer.showOverlay('FoundWords', {effect='slideRight'})
+    _G.grid:showFoundWords()
   end)
   o.right.grp[2]:setFillColor(unpack(_G.MUST_COLORS.tappy))
 

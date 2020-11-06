@@ -73,6 +73,18 @@ function Util.randomDirections()
 end
 ]]
 
+function Util.sound(name)
+  -- build for Win32 to test the sound, because playing sounds in the simulator crashes the sound driver
+  if system.getInfo('environment') == 'simulator' then
+    -- trace('SOUND', name)
+  else
+    local handle = _G.MUST_SOUNDS[name]
+    if handle then
+      audio.play(handle)
+    end
+  end
+end
+
 function Util.cloneTable(t)
   return json.decode( json.encode( t ) )
 end
