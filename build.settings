@@ -31,17 +31,17 @@ settings =
   window =
   {
     defaultMode = 'normal',
-    defaultViewWidth = 480,
-    defaultViewHeight = 480 * 16 / 9,
+    defaultViewWidth = 320,
+    defaultViewHeight = 320 * 16 / 9,
     resizable = true,
-    minViewWidth = 480,
-    minViewHeight = 480 * 16 / 9,
+    minViewWidth = 320,
+    minViewHeight = 320 * 16 / 9,
     enableCloseButton = true,
     enableMinimizeButton = true,
     suspendWhenMinimized = true,
     titleText =
     {
-      default = 'Must'
+      default = 'Find Words On Tiles'
     }
   },
 

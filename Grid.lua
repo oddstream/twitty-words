@@ -172,9 +172,14 @@ function Grid:updateUI(s, score)
   end
 
   _G.wordbar:setCenter(s)
+  -- _G.wordbar:setRight(score and tostring(score) or nil)
 
   _G.toolbar:setLeft(string.format('⇆%s', self.swaps))
-  _G.toolbar:setRight(string.format('%u', self.score))  -- or '%+d'
+  if score and #self.selectedSlots > 0 then
+    _G.toolbar:setRight(string.format('+%u', score))
+  else
+    _G.toolbar:setRight(string.format('%u', self.score))  -- or '%+d'
+  end
 
   -- _G.statusbar:setLeft(score and tostring(score) or nil)
   -- _G.statusbar:setCenter(tostring(self.score))
@@ -407,6 +412,8 @@ function Grid:testSelection()
       table.insert(self.undoStack, self:createSaveable())
       if t1.letter ~= t2.letter then
 
+          Util.sound('swap')
+
           s1.tile, s2.tile = s2.tile, s1.tile
           t1.slot = s2
           t1:settle()
@@ -417,6 +424,7 @@ function Grid:testSelection()
         self:updateUI()
       end
     else
+      Util.sound('shake')
       t1:shake()
       t2:shake()
     end
@@ -464,6 +472,7 @@ function Grid:testSelection()
         end
       end)
     else  -- word not in dictionary
+      Util.sound('shake')
       for _,slot in ipairs(self.selectedSlots) do
         slot.tile:shake()
       end
@@ -637,6 +646,8 @@ function Grid:shuffle()
       transition = easing.outQuart,
     })
   end
+
+  Util.sound('shuffle')
 
   table.insert(self.undoStack, self:createSaveable())
 

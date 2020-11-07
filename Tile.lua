@@ -36,11 +36,11 @@ function Tile.createGraphics(x, y, letter)
   grp.y = y
 
   -- grp[1]
-  local rectShadow = display.newRoundedRect(grp, dim.Q3D, dim.Q3D, dim.Q * 0.95, dim.Q * 0.95, dim.Q / 20)  -- TODO magic numbers
+  local rectShadow = display.newRoundedRect(grp, dim.Q3D, dim.Q3D, dim.Q * 0.95, dim.Q * 0.95, dim.Q / 15)  -- TODO magic numbers
   rectShadow:setFillColor(0.2,0.2,0.2)
 
   -- grp[2]
-  local rectBack = display.newRoundedRect(grp, 0, 0, dim.Q * 0.95, dim.Q * 0.95, dim.Q / 20)  -- TODO magic numbers
+  local rectBack = display.newRoundedRect(grp, 0, 0, dim.Q * 0.95, dim.Q * 0.95, dim.Q / 15)  -- TODO magic numbers
 --[[
   local paint = {
     type = 'image',
@@ -59,8 +59,10 @@ function Tile.createGraphics(x, y, letter)
 
   -- grp[3]
   local tileFontSize = dim.tileFontSize
-  if string.len(letter) > 1 then
-    tileFontSize = tileFontSize * 0.66
+  if string.len(letter) > 3 then
+    tileFontSize = tileFontSize * 0.5
+  elseif string.len(letter) > 1 then
+    tileFontSize = tileFontSize * 0.666
   end
   -- tried a highlight on the letter; can't see it against ivory background
   -- local textHighlight = display.newText(grp, letter, -(dim.Q / 30), -(dim.Q / 30), _G.TILE_FONT, tileFontSize)
@@ -172,7 +174,6 @@ end
 
 function Tile:shake()
   -- trace('shaking', tostring(self))
-  Util.sound('shake')
   transition.to(self.grp, {time=50, transition=easing.continuousLoop, x=self.grp.x + 10})
   transition.to(self.grp, {delay=50, time=50, transition=easing.continuousLoop, x=self.grp.x - 10})
 end

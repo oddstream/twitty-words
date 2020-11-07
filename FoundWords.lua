@@ -82,7 +82,7 @@ function scene:create(event)
   rect:setFillColor(unpack(_G.MUST_COLORS.uibackground))
 
   local backButton = widget.newButton({
-    x = dim.marginX + dim.halfQ,
+    x = dim.firstTileX + dim.halfQ,
     y = dim.resultsbarY,
     onRelease = function()
       composer.hideOverlay('slideLeft')
@@ -103,7 +103,6 @@ function scene:create(event)
     y = dim.resultsbarY,
     onRelease = function()
       composer.hideOverlay()
-      -- composer.removeScene('FoundWords')
       _G.grid:gameOver()
     end,
     label = 'FINISH >',
@@ -118,14 +117,14 @@ function scene:create(event)
 
   tiles = {}
 
-  local y = dim.resultsbarHeight + dim.halfQ
+  local y = dim.resultsbarY + dim.Q
 
   for i,word in ipairs(_G.grid.words) do
 
     local score = 0
-    local xNumber = dim.marginX + dim.halfQ
-    local xScore = dim.marginX + dim.halfQ
-    local xLetter = dim.marginX + (dim.halfQ * 3)
+    local xNumber = dim.firstTileX + dim.halfQ
+    local xScore = dim.firstTileX + dim.halfQ
+    local xLetter = dim.firstTileX + (dim.halfQ * 3)
 
     if type(_G.GAME_MODE) == 'number' then
       _createTile(xNumber, y, tostring(i))
@@ -154,6 +153,7 @@ function scene:show(event)
 
   if phase == 'will' then
     -- Code here runs when the scene is still off screen (but is about to come on screen)
+    -- assert(Runtime:addEventListener('key', scene))
   elseif phase == 'did' then
     -- Code here runs when the scene is entirely on screen
   end
@@ -166,9 +166,11 @@ function scene:hide(event)
 
   if phase == 'will' then
     -- Code here runs when the scene is on screen (but is about to go off screen)
+    -- Runtime.removeEventListener('key', scene)
 
   elseif phase == 'did' then
     -- Code here runs immediately after the scene goes entirely off screen
+    -- delete the scene so it gets built next time it's shown
     composer.removeScene('FoundWords')
   end
 end
@@ -177,19 +179,18 @@ end
 function scene:destroy(event)
   local sceneGroup = self.view
   -- Code here runs prior to the removal of scene's view
-  -- assert(Runtime:removeEventListener('key', scene))
 end
---[[
-function scene:key(event)
-  local phase = event.phase
-  if phase == 'up' then
-    if event.keyName == 'back' or event.keyName == 'deleteBack' then
-      composer.hideOverlay()
-      return true -- override the key
-    end
-  end
-end
-]]
+
+-- function scene:key(event)
+--   local phase = event.phase
+--   if phase == 'up' then
+--     if event.keyName == 'back' or event.keyName == 'deleteBack' then
+--       composer.hideOverlay()
+--       return true -- override the key
+--     end
+--   end
+-- end
+
 -- -----------------------------------------------------------------------------------
 -- Scene event function listeners
 -- -----------------------------------------------------------------------------------
@@ -197,8 +198,6 @@ scene:addEventListener('create', scene)
 scene:addEventListener('show', scene)
 scene:addEventListener('hide', scene)
 scene:addEventListener('destroy', scene)
-
--- Runtime:addEventListener('key', scene)
 -- -----------------------------------------------------------------------------------
 
 return scene

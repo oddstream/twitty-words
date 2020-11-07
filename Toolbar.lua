@@ -1,10 +1,6 @@
 -- Toolbar.lua
 
-local composer = require 'composer'
-local widget = require 'widget'
-
 local Tappy = require 'Tappy'
-local Tile = require 'Tile'
 
 --[[
   varargs
@@ -26,12 +22,7 @@ end
 
 ]]
 
-local Toolbar = {
-  -- rect = nil,
-  left = nil,
-  center = nil,
-  right = nil,
-}
+local Toolbar = {}
 Toolbar.__index = Toolbar
 
 function Toolbar.new()
@@ -50,14 +41,14 @@ function Toolbar.new()
   end)
   o.left.grp[2]:setFillColor(unpack(_G.MUST_COLORS.tappy))
 
-  o.undo = Tappy.new(_G.MUST_GROUPS.ui, dim.halfQ + dim.Q, dim.toolbarY, function()
+  o.undo = Tappy.new(_G.MUST_GROUPS.ui, dim.toolbarX, dim.toolbarY, function()
     _G.grid:undo()
   end)
   o.undo.grp[2]:setFillColor(unpack(_G.MUST_COLORS.tappy))
   o.undo:setLabel('⎌')
 
-  o.center = display.newText(_G.MUST_GROUPS.ui, '', dim.toolbarX, dim.toolbarY, _G.TILE_FONT, dim.tileFontSize)
-  o.center:setFillColor(unpack(_G.MUST_COLORS.black))
+  -- o.center = display.newText(_G.MUST_GROUPS.ui, '', dim.toolbarX, dim.toolbarY, _G.TILE_FONT, dim.tileFontSize)
+  -- o.center:setFillColor(unpack(_G.MUST_COLORS.black))
 
   o.right = Tappy.new(_G.MUST_GROUPS.ui, display.actualContentWidth - dim.halfQ, dim.toolbarY, function()
     _G.grid:showFoundWords()
@@ -85,9 +76,9 @@ function Toolbar:setLeft(s)
   self.left:setLabel(s)
 end
 
-function Toolbar:setCenter(s)
-  self:set('center', s)
-end
+-- function Toolbar:setCenter(s)
+--   self:set('center', s)
+-- end
 
 function Toolbar:setRight(s)
   -- self:set('right', s)

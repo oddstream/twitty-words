@@ -59,10 +59,10 @@ function scene:hide(event)
   if phase == 'will' then
     -- Code here runs when the scene is on screen (but is about to go off screen)
     if not Runtime:removeEventListener('key', scene) then
-      trace('could not removeEventListener key in scene:hide')
+      trace('ERROR: could not removeEventListener key in scene:hide')
     end
     -- if not Runtime:removeEventListener('system', scene) then
-    --   trace('could not removeEventListener system in scene:hide')
+    --   trace('ERROR: could not removeEventListener system in scene:hide')
     -- end
   elseif phase == 'did' then
     -- Code here runs immediately after the scene goes entirely off screen
@@ -97,15 +97,16 @@ function scene:key(event)
   end
 end
 
---[[
 function scene:system(event)
   -- print( "System event name and type: " .. event.name, event.type )
-  -- if event.type == 'applicationExit' then
-  -- elseif event.type == 'applicationSuspend' then
-  -- elseif event.type == 'applicationResume' then
-  -- end
+  if event.type == 'applicationExit' then
+  elseif event.type == 'applicationSuspend' then
+    _G.grid:pauseCountdown()
+  elseif event.type == 'applicationResume' then
+    _G.grid:resumeCountdown()
+  end
 end
-]]
+
 -- -----------------------------------------------------------------------------------
 -- Scene event function listeners
 -- -----------------------------------------------------------------------------------

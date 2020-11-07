@@ -1,12 +1,14 @@
 -- Statusbar.lua
 
+local composer = require 'composer'
+local widget = require 'widget'
+
 local Statusbar = {}
 Statusbar.__index = Statusbar
 
 function Statusbar.new()
   local o = {}
 
-  -- assert(self==Statusbar)
   setmetatable(o, Statusbar)
 
   local dim = _G.DIMENSIONS
@@ -16,15 +18,32 @@ function Statusbar.new()
   o.rect = display.newRect(_G.MUST_GROUPS.ui, dim.statusbarX, dim.statusbarY, dim.statusbarWidth, dim.statusbarHeight)
   o.rect:setFillColor(unpack(_G.MUST_COLORS.uibackground))
 
-  o.left = display.newText(_G.MUST_GROUPS.ui, 'left', dim.marginX + halfFontSize, dim.statusbarY, _G.TILE_FONT, fontSize)
-  o.left:setFillColor(unpack(_G.MUST_COLORS.uiforeground))
+  -- o.left = display.newText(_G.MUST_GROUPS.ui, '🦝', halfFontSize, dim.statusbarY, _G.TILE_FONT, fontSize)
+  -- o.left:setFillColor(unpack(_G.MUST_COLORS.uiforeground))
+  -- o.left.anchorX = 0
+  o.left = widget.newButton({
+    x = halfFontSize,
+    y = dim.statusbarY,
+    onRelease = function()
+      _G.grid:cancelCountdown()
+      _G.grid:deleteTiles()
+      composer.gotoScene('ModeMenu')
+    end,
+    label = '☰',
+    labelColor = { default=_G.MUST_COLORS.uiforeground, over=_G.MUST_COLORS.uicontrol },
+    labelAlign = 'left',
+    font = _G.TILE_FONT,
+    fontSize = fontSize,
+    textOnly = true,
+  })
   o.left.anchorX = 0
+  _G.MUST_GROUPS.ui:insert(o.left)
 
-  o.center = display.newText(_G.MUST_GROUPS.ui, 'center', dim.statusbarX, dim.statusbarY, _G.TILE_FONT, fontSize)
+  o.center = display.newText(_G.MUST_GROUPS.ui, 'Find Words on Tiles', dim.statusbarX, dim.statusbarY, _G.TILE_FONT, fontSize)
   o.center:setFillColor(unpack(_G.MUST_COLORS.uiforeground))
   o.center.anchorX = 0.5
 
-  o.right = display.newText(_G.MUST_GROUPS.ui, 'right', dim.statusbarWidth - halfFontSize, dim.statusbarY, _G.TILE_FONT, fontSize)
+  o.right = display.newText(_G.MUST_GROUPS.ui, '', dim.statusbarWidth - halfFontSize, dim.statusbarY, _G.TILE_FONT, fontSize)
   o.right:setFillColor(unpack(_G.MUST_COLORS.uiforeground))
   o.right.anchorX = 1
 
@@ -45,7 +64,8 @@ function Statusbar:set(pos, s)
 end
 
 function Statusbar:setLeft(s)
-  self:set('left', s)
+  -- self:set('left', s)
+  self.left:setLabel(s)
 end
 
 function Statusbar:setCenter(s)

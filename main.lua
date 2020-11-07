@@ -17,7 +17,7 @@ function _G.trace(...)
   end
 end
 
-if system.getInfo('environment') == 'simulator' then
+if system.getInfo('platform') == 'win32' or system.getInfo('environment') == 'simulator' then
   print('_VERSION', _VERSION)
   print('screenOrigin', display.screenOriginX, display.screenOriginY)
   print('safeAreaInsets', display.getSafeAreaInsets())
@@ -117,7 +117,8 @@ _G.FLIGHT_TIME = 2000
 _G.MUST_COLORS = {
   uiforeground = {1,1,1},
   uibackground = {0.1,0.1,0.1},
-  uicontrol = {51*4/1020,181*4/1020,229*4/1020}, -- color from widget_theme_android_holo_dark@4x.png
+  uicontrol = {1, 228*4/1020, 181*4/1020},  -- moccasin
+  -- uicontrol = {51*4/1020,181*4/1020,229*4/1020}, -- color from widget_theme_android_holo_dark@4x.png
 
   -- baize = {240*4/1020, 1, 240*4/1020},  -- Honeydew
   -- baize = {250*4/1020, 235*4/1020, 215*4/1020},  -- AntiqueWhite
@@ -156,32 +157,21 @@ _G.MUST_GROUPS = {
 
 _G.MUST_SOUNDS = {
   complete = audio.loadSound('assets/complete.wav'),
-  -- failure (to get on high score table)
+  failure = audio.loadSound('assets/error_008.ogg'),
+
   select1 = audio.loadSound('assets/click1.ogg'),
   select2 = audio.loadSound('assets/click2.ogg'),
   select3 = audio.loadSound('assets/click3.ogg'),
   select4 = audio.loadSound('assets/click4.ogg'),
   select5 = audio.loadSound('assets/click5.ogg'),
-  -- shuffle
-  -- cannot shuffle (not enough swaps)
-  -- swap
-  -- cannot swap (not enough swaps)
+
+  shuffle = audio.loadSound('assets/maximize_004.ogg'),
+  swap = audio.loadSound('assets/minimize_007.ogg'),
+
   found = audio.loadSound('assets/confirmation_002.ogg'),
   shake = audio.loadSound('assets/error_008.ogg'),
-  -- did not find word (not in dictionary)
+
   timer = audio.loadSound('assets/question_004.ogg'),
---[[
-  deal = audio.loadSound('assets/cardFan1.wav'),
-  load = audio.loadSound('assets/cardFan2.wav'),
-  move1 = audio.loadSound('assets/cardPlace3.wav'),
-  move2 = audio.loadSound('assets/cardPlace4.wav'),
-  move3 = audio.loadSound('assets/cardPlace1.wav'),
-  move4 = audio.loadSound('assets/cardPlace2.wav'),
-  undo = audio.loadSound('assets/cardOpenPackage2.wav'),
-  menuopen = audio.loadSound('assets/cardSlide1.wav'),
-  menuclose = audio.loadSound('assets/cardSlide2.wav'),
-  uitap = audio.loadSound('assets/cardSlide8.wav'),
-]]
 }
 
 if not _G.table.contains then

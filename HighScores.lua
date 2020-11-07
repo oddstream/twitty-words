@@ -126,7 +126,6 @@ function scene:create(event)
     x = dim.halfQ,
     y = dim.resultsbarY,
     onRelease = function()
-      composer.removeScene('HighScores')
       composer.gotoScene('Must', {effect='slideLeft'})
     end,
     label = '< NEW GAME',
@@ -191,14 +190,14 @@ function scene:show(event)
 
     local function _showScoreAndWord(thisScore, thisWord, yPos, hilite)
       _createTile(dim.halfQ, yPos, tostring(thisScore), hilite)
-      local x = dim.marginX + (dim.halfQ * 3)
+      local x = dim.firstTileX + (dim.halfQ * 3)
       for j=1, string.len(thisWord) do
         _createTile(x, yPos, string.sub(thisWord, j, j), hilite)
         x = x + dim.halfQ
       end
     end
 
-    local y = dim.resultsbarHeight + dim.halfQ
+    local y = dim.resultsbarY + dim.Q
 
     for i = 1, 20 do
       if scoresTable[i] then
@@ -209,16 +208,20 @@ function scene:show(event)
     end
 
     -- show the user's pathetic effort if it's not in the top 20
-    if score < scoresTable[20].score and #words > 0 then
-      y = y + dim.halfQ
-      _showScoreAndWord(score, words[1], y, true)
-    else
-      Util.sound('complete')
+    if #words > 0 then
+      if score < scoresTable[20].score then
+        Util.sound('failure')
+        y = y + dim.halfQ
+        _showScoreAndWord(score, words[1], y, true)
+      else
+        Util.sound('complete')
+      end
     end
 
-    elseif phase == 'did' then
-    -- Code here runs when the scene is entirely on screen
     -- Runtime:addEventListener('key', scene)
+
+  elseif phase == 'did' then
+    -- Code here runs when the scene is entirely on screen
   end
 end
 
@@ -231,9 +234,12 @@ function scene:hide(event)
 
   if phase == 'will' then
     -- Code here runs when the scene is on screen (but is about to go off screen)
+    -- Runtime:removeEventListener('key', scene)
+
   elseif phase == 'did' then
     -- Code here runs immediately after the scene goes entirely off screen
-    -- assert(Runtime:removeEventListener('key', scene))
+    --- delete the scene so it gets built next time it's shown
+    composer.removeScene('HighScores')
   end
 end
 
@@ -248,7 +254,7 @@ end
 --   local phase = event.phase
 --   if phase == 'up' then
 --     if event.keyName == 'back' or event.keyName == 'deleteBack' then
---       composer.gotoScene('Must')
+--       composer.gotoScene('Must', {effect='slideLeft'})
 --       return true -- override the key
 --     end
 --   end

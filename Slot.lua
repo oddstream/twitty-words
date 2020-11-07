@@ -30,9 +30,8 @@ function Slot:position()
   local dim = _G.DIMENSIONS
   -- calculate where the screen coords center point will be
   self.center = {x=(self.x * dim.Q) - dim.Q + dim.halfQ, y=(self.y * dim.Q) - dim.Q + dim.halfQ}
-  self.center.x = self.center.x + dim.marginX
-  -- self.center.y = dim.titleBarHeight + dim.marginY + self.center.y
-  self.center.y = dim.marginY + self.center.y
+  self.center.x = self.center.x + dim.firstTileX
+  self.center.y = dim.firstTileY + self.center.y
 end
 
 function Slot:createTile(letter)
