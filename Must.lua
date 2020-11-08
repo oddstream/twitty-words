@@ -83,10 +83,13 @@ function scene:key(event)
 
   if phase == 'up' then
     if event.keyName == 'back' or event.keyName == 'deleteBack' then
+      Util.sound('ui')
       _G.grid:cancelCountdown()
       _G.grid:deleteTiles()
       composer.gotoScene('ModeMenu')
       return true -- override the key
+    elseif event.keyName == 'h' then
+      _G.grid:hint()
     elseif event.keyName == 's' then
       _G.grid:shuffle()
     elseif event.keyName == 'u' then

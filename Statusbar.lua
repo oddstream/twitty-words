@@ -3,6 +3,8 @@
 local composer = require 'composer'
 local widget = require 'widget'
 
+local Util = require 'Util'
+
 local Statusbar = {}
 Statusbar.__index = Statusbar
 
@@ -25,6 +27,7 @@ function Statusbar.new()
     x = halfFontSize,
     y = dim.statusbarY,
     onRelease = function()
+      Util.sound('ui')
       _G.grid:cancelCountdown()
       _G.grid:deleteTiles()
       composer.gotoScene('ModeMenu')

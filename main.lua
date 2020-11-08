@@ -159,19 +159,33 @@ _G.MUST_SOUNDS = {
   complete = audio.loadSound('assets/complete.wav'),
   failure = audio.loadSound('assets/error_008.ogg'),
 
-  select1 = audio.loadSound('assets/click1.ogg'),
-  select2 = audio.loadSound('assets/click2.ogg'),
-  select3 = audio.loadSound('assets/click3.ogg'),
-  select4 = audio.loadSound('assets/click4.ogg'),
-  select5 = audio.loadSound('assets/click5.ogg'),
+  select = {
+    audio.loadSound('assets/click1.ogg'),
+    audio.loadSound('assets/click2.ogg'),
+    audio.loadSound('assets/click3.ogg'),
+    audio.loadSound('assets/click4.ogg'),
+    audio.loadSound('assets/click5.ogg'),
+  },
 
   shuffle = audio.loadSound('assets/maximize_004.ogg'),
   swap = audio.loadSound('assets/minimize_007.ogg'),
 
-  found = audio.loadSound('assets/confirmation_002.ogg'),
+  found = {
+    audio.loadSound('assets/confirmation_001.ogg'),
+    audio.loadSound('assets/confirmation_002.ogg'),
+    audio.loadSound('assets/confirmation_003.ogg'),
+    audio.loadSound('assets/confirmation_004.ogg'),
+  },
   shake = audio.loadSound('assets/error_008.ogg'),
 
   timer = audio.loadSound('assets/question_004.ogg'),
+
+  ui = {
+    audio.loadSound('assets/back_001.ogg'),
+    audio.loadSound('assets/back_002.ogg'),
+    audio.loadSound('assets/back_003.ogg'),
+    audio.loadSound('assets/back_004.ogg'),
+  },
 }
 
 if not _G.table.contains then

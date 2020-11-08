@@ -78,12 +78,65 @@ function Util.sound(name)
   if system.getInfo('environment') == 'simulator' then
     -- trace('SOUND', name)
   else
-    local handle = _G.MUST_SOUNDS[name]
+    -- trace('SOUND', name, type(_G.MUST_SOUNDS[name]))
+    local handle
+    if type(_G.MUST_SOUNDS[name]) == 'table' then
+      handle = _G.MUST_SOUNDS[name][math.random(1, #_G.MUST_SOUNDS[name])]
+    elseif type(_G.MUST_SOUNDS[name]) == 'userdata' then
+      handle = _G.MUST_SOUNDS[name]
+    end
     if handle then
       audio.play(handle)
     end
   end
 end
+
+function Util.isWordInDictionary(word)
+
+  if table.contains(_G.DICTIONARY_TRUE, word) then return true end
+  if table.contains(_G.DICTIONARY_FALSE, word) then return false end
+
+  local word2 = string.gsub(word, ' ', '%%u')
+  local first,last = string.find(_G.DICTIONARY, '[^%u]' .. word2 .. '[^%u]')
+  -- if first then
+  --   trace('found', string.sub(_G.DICTIONARY, first+1, last-1))
+  -- end
+  if first then
+    table.insert(_G.DICTIONARY_TRUE, word)
+    trace(word, '> FOUND CACHE')
+  else
+    table.insert(_G.DICTIONARY_FALSE, word)
+    trace(word, '> NOT FOUND CACHE')
+  end
+
+  return first ~= nil
+  -- return true
+end
+
+function Util.isWordPrefixInDictionary(word)
+
+  if table.contains(_G.DICTIONARY_TRUE, word) then return true end
+  if table.contains(_G.DICTIONARY_PREFIX_TRUE, word) then return true end
+  if table.contains(_G.DICTIONARY_PREFIX_FALSE, word) then return false end
+
+  local word2 = string.gsub(word, ' ', '%%u')
+  local first,last = string.find(_G.DICTIONARY, '[^%u]' .. word2)
+  -- if first then
+  --   trace('found', string.sub(_G.DICTIONARY, first+1, last-1))
+  -- end
+
+  if first then
+    table.insert(_G.DICTIONARY_PREFIX_TRUE, word)
+    trace(word, '> FOUND PREFIX CACHE')
+  else
+    table.insert(_G.DICTIONARY_PREFIX_FALSE, word)
+    trace(word, '> NOT FOUND PREFIX CACHE')
+  end
+
+  return first ~= nil
+  -- return true
+end
+
 
 function Util.cloneTable(t)
   return json.decode( json.encode( t ) )

@@ -281,16 +281,6 @@ function Grid:getSelectedWord()
   return word, score * word:len()
 end
 
-local function isWordInDictionary(word)
-  word = string.gsub(word, ' ', '%%u')
-  local first,last = string.find(_G.DICTIONARY, '[^%u]' .. word .. '[^%u]')
-  -- if first then
-  --   trace('found', string.sub(_G.DICTIONARY, first+1, last-1))
-  -- end
-  return first ~= nil
-  -- return true
-end
-
 function Grid:createTiles()
   for _,slot in ipairs(self.slots) do
     slot:createTile()
@@ -356,7 +346,7 @@ function Grid:selectSlot(slot)
   end
 
   if #self.selectedSlots == 0 then
-    Util.sound('select' .. tostring(math.random(1,5)))
+    Util.sound('select')
     table.insert(self.selectedSlots, slot)
   else
     local last = self.selectedSlots[#self.selectedSlots]
@@ -373,7 +363,7 @@ function Grid:selectSlot(slot)
         if not _connected(slot, last) then
           self:deselectAllSlots()
         else
-          Util.sound('select' .. tostring(math.random(1,5)))
+          Util.sound('select')
           table.insert(self.selectedSlots, slot)
         end
       end
@@ -431,7 +421,7 @@ function Grid:testSelection()
     self:deselectAllSlots()
   elseif #self.selectedSlots > 2 then
     local word, score = self:getSelectedWord()
-    if isWordInDictionary(word) then
+    if Util.isWordInDictionary(word) then
     -- if true then
       -- trace(score, word)
 
@@ -710,7 +700,114 @@ function Grid:addTiles()
 
 end
 
+function Grid:DFS(slot, path, word)
+--[[
+procedure DFS(G, v) is
+    label v as discovered
+    for all directed edges from v to w that are in G.adjacentEdges(v) do
+        if vertex w is not labeled as discovered then
+            recursively call DFS(G, w)
+]]
+
+  if string.len(word) > 2 then
+    if Util.isWordInDictionary(word) then
+      -- if true then
+      table.insert(self.foundWords, word)
+    end
+  end
+
+  -- slot.discovered = true
+  for _,dir in ipairs({'n','ne','e','se','s','sw','w','ne'}) do
+    local slot2 = slot[dir]
+    if slot2 and slot2.tile and (not table.contains(path, slot2)) then
+      local w = word .. slot2.tile.letter
+      if string.len(w) < 7 then
+        if Util.isWordPrefixInDictionary(w) then
+          table.insert(path, slot2)
+          self:DFS(slot2, path, w)
+        end
+      end
+    end
+  end
+
+  table.remove(path)
+end
+
+function Grid:hint()
+
+  -- TODO cache dictionary word and prefix lookups
+
+  self.foundWords = {}
+
+  -- for _,slot in ipairs(self.slots) do
+  --   slot.discovered = false
+  -- end
+
+  for _,slot in ipairs(self.slots) do
+    if slot.tile and slot.tile.selected then
+      self:DFS(slot, {slot}, slot.tile.letter)
+      break
+    end
+  end
+
+  local function _calcScore(s)
+    local score = 0
+    for i=1, string.len(s) do
+      score = score + _G.SCRABBLE_SCORES[string.sub(s, i, i)]
+    end
+    return score * string.len(s)
+  end
+
+  trace('FOUND WORDS', unpack(self.foundWords))
+
+  local maxScore = 0
+  local maxWord = ''
+  for _,word in ipairs(self.foundWords) do
+    local score = _calcScore(word)
+    if score > maxScore then
+      maxScore = score
+      maxWord = word
+    end
+  end
+  trace('MAX WORD', maxWord, 'SCORE', maxScore)
+
+end
+
+--[[
+function Grid:BFS(slotStart)
+
+  assert(slotStart.tile)
+
+  for _,slot in ipairs(self.slots) do
+    slot.parent = nil
+  end
+
+  local q = {slotStart}        -- push onto queue
+  slotStart.parent = slotStart   -- mark as itself
+  while #q > 0 do
+    local slotThis = table.remove(q, 1)
+    assert(slotThis)
+    assert(slotThis.tile)
+
+    local g = _G.game:isTileHaunted(slotThis)
+    if g then
+      return g
+    end
+
+    for _,dir in ipairs({'n','ne','e','se','s','sw','w','ne'}) do
+      local slotNext = slotThis[dir]
+      if slotNext and slotNext.tile and (slotNext.parent == nil) then
+        slotNext.parent = slotThis
+        q[#q+1] = slotNext  -- table.insert(q, slotNext) -- push to end of q
+      end
+    end
+  end
+  return nil
+end
+]]
+
 function Grid:showFoundWords()
+  Util.sound('ui')
   self:pauseCountdown()
   composer.showOverlay('FoundWords', {effect='slideRight'})
 end

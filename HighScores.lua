@@ -126,6 +126,7 @@ function scene:create(event)
     x = dim.halfQ,
     y = dim.resultsbarY,
     onRelease = function()
+      Util.sound('ui')
       composer.gotoScene('Must', {effect='slideLeft'})
     end,
     label = '< NEW GAME',

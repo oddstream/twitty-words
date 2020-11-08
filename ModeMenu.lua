@@ -29,6 +29,7 @@ function scene:create(event)
     local x = dim.Q
     for i=1, string.len(title) do
       local tappy = Tappy.new(sceneGroup, x, y, function()
+        Util.sound('ui')
         _G.GAME_MODE = mode
         composer.gotoScene('Must', {effect='slideLeft'})
       end)

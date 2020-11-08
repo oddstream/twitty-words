@@ -19,6 +19,10 @@ local function loadDictionary()
     io.close(file)
     trace('dictionary length', string.len(_G.DICTIONARY))
   end
+  _G.DICTIONARY_TRUE = {}
+  _G.DICTIONARY_FALSE = {}
+  _G.DICTIONARY_PREFIX_TRUE = {}
+  _G.DICTIONARY_PREFIX_FALSE = {}
 end
 
 local function gotoDestination(event)
