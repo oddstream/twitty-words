@@ -103,10 +103,10 @@ function Util.isWordInDictionary(word)
   -- end
   if first then
     table.insert(_G.DICTIONARY_TRUE, word)
-    trace(word, '> FOUND CACHE')
+    -- trace(word, '> FOUND CACHE')
   else
     table.insert(_G.DICTIONARY_FALSE, word)
-    trace(word, '> NOT FOUND CACHE')
+    -- trace(word, '> NOT FOUND CACHE')
   end
 
   return first ~= nil
@@ -127,10 +127,56 @@ function Util.isWordPrefixInDictionary(word)
 
   if first then
     table.insert(_G.DICTIONARY_PREFIX_TRUE, word)
-    trace(word, '> FOUND PREFIX CACHE')
+    -- trace(word, '> FOUND PREFIX CACHE')
   else
     table.insert(_G.DICTIONARY_PREFIX_FALSE, word)
-    trace(word, '> NOT FOUND PREFIX CACHE')
+    -- trace(word, '> NOT FOUND PREFIX CACHE')
+  end
+
+  return first ~= nil
+  -- return true
+end
+
+function Util.isWordInHintDict(word)
+
+  if table.contains(_G.HINTDICT_TRUE, word) then return true end
+  if table.contains(_G.HINTDICT_FALSE, word) then return false end
+
+  local word2 = string.gsub(word, ' ', '%%u')
+  local first,last = string.find(_G.HINTDICT, '[^%u]' .. word2 .. '[^%u]')
+  -- if first then
+  --   trace('found', string.sub(_G.HINTDICT, first+1, last-1))
+  -- end
+  if first then
+    table.insert(_G.HINTDICT_TRUE, word)
+    -- trace(word, '> FOUND 3000 CACHE')
+  else
+    table.insert(_G.HINTDICT_FALSE, word)
+    -- trace(word, '> NOT FOUND 3000 CACHE')
+  end
+
+  return first ~= nil
+  -- return true
+end
+
+function Util.isWordPrefixInHintDict(word)
+
+  if table.contains(_G.HINTDICT_TRUE, word) then return true end
+  if table.contains(_G.HINTDICT_PREFIX_TRUE, word) then return true end
+  if table.contains(_G.HINTDICT_PREFIX_FALSE, word) then return false end
+
+  local word2 = string.gsub(word, ' ', '%%u')
+  local first,last = string.find(_G.HINTDICT, '[^%u]' .. word2)
+  -- if first then
+  --   trace('found', string.sub(_G.HINTDICT, first+1, last-1))
+  -- end
+
+  if first then
+    table.insert(_G.HINTDICT_PREFIX_TRUE, word)
+    -- trace(word, '> FOUND 3000 PREFIX CACHE')
+  else
+    table.insert(_G.HINTDICT_PREFIX_FALSE, word)
+    -- trace(word, '> NOT FOUND 3000 PREFIX CACHE')
   end
 
   return first ~= nil

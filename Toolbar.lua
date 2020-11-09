@@ -41,6 +41,12 @@ function Toolbar.new()
   end)
   o.left.grp[2]:setFillColor(unpack(_G.MUST_COLORS.tappy))
 
+  o.hint = Tappy.new(_G.MUST_GROUPS.ui, dim.Q + dim.Q, dim.toolbarY, function()
+    _G.grid:hint()
+  end)
+  o.hint.grp[2]:setFillColor(unpack(_G.MUST_COLORS.tappy))
+  o.hint:setLabel('💡')
+
   o.undo = Tappy.new(_G.MUST_GROUPS.ui, dim.toolbarX, dim.toolbarY, function()
     _G.grid:undo()
   end)
@@ -74,6 +80,10 @@ end
 function Toolbar:setLeft(s)
   -- self:set('left', s)
   self.left:setLabel(s)
+end
+
+function Toolbar:setHint(s)
+  self.hint:setLabel(s)
 end
 
 -- function Toolbar:setCenter(s)

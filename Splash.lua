@@ -7,8 +7,10 @@ local tim = nil
 local logo = nil
 local destination = nil
 
-local function loadDictionary()
+local function loadDictionaries()
   -- look for dictionary file in resource directory (the one containing main.lua)
+  -- local filePath = system.pathForFile('Collins Scrabble Words (2019).txt', system.ResourceDirectory)  -- 279498 words
+
   local filePath = system.pathForFile('Collins Scrabble Words (2019).txt', system.ResourceDirectory)
   local file = io.open(filePath)
   if not file then
@@ -23,6 +25,23 @@ local function loadDictionary()
   _G.DICTIONARY_FALSE = {}
   _G.DICTIONARY_PREFIX_TRUE = {}
   _G.DICTIONARY_PREFIX_FALSE = {}
+
+  -- https://raw.githubusercontent.com/sapbmw/The-Oxford-3000/master/The_Oxford_3000.txt
+  -- filePath = system.pathForFile('Oxford3000.txt', system.ResourceDirectory)
+  filePath = system.pathForFile('1000 words.txt', system.ResourceDirectory)
+  file = io.open(filePath)
+  if not file then
+    trace('ERROR: Cannot open', filePath)
+  else
+    trace('opened', filePath)
+    _G.HINTDICT = file:read('*a')
+    io.close(file)
+    trace('dictionary length', string.len(_G.DICTIONARY))
+  end
+  _G.HINTDICT_TRUE = {}
+  _G.HINTDICT_FALSE = {}
+  _G.HINTDICT_PREFIX_TRUE = {}
+  _G.HINTDICT_PREFIX_FALSE = {}
 end
 
 local function gotoDestination(event)
@@ -51,7 +70,7 @@ function scene:show(event)
     logo:scale(scale,scale)
     assert(logo:addEventListener('tap', gotoDestination))
 
-    loadDictionary()
+    loadDictionaries()
 
     -- transition.fadeOut(logo, {time=1000})
 

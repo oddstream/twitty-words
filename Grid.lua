@@ -52,6 +52,7 @@ function Grid:createSaveable()
   end
   o.words = Util.cloneTable(self.words)
   o.swaps = self.swaps
+  o.hints = self.hints
   o.score = self.score  -- TODO could recalc this
   return o
 end
@@ -63,6 +64,7 @@ function Grid:replaceWithSaved(saved)
   self:createTilesFromSaved(saved.state)
   self.words = saved.words
   self.swaps = saved.swaps
+  self.hints = saved.hints
   self.score = saved.score  -- TODO could recalc this
 
   self:updateUI()
@@ -154,6 +156,7 @@ function Grid:newGame()
   self.score = 0
   self.words = {}
   self.swaps = 1
+  self.hints = 3
   self.selectedSlots = {}
   self.undoStack = {}
 
@@ -174,7 +177,9 @@ function Grid:updateUI(s, score)
   _G.wordbar:setCenter(s)
   -- _G.wordbar:setRight(score and tostring(score) or nil)
 
-  _G.toolbar:setLeft(string.format('⇆%s', self.swaps))
+  _G.toolbar:setLeft(string.format('⇆%u', self.swaps))
+  _G.toolbar:setHint(string.format('💡%u', self.hints))
+
   if score and #self.selectedSlots > 0 then
     _G.toolbar:setRight(string.format('+%u', score))
   else
@@ -710,7 +715,7 @@ procedure DFS(G, v) is
 ]]
 
   if string.len(word) > 2 then
-    if Util.isWordInDictionary(word) then
+    if Util.isWordInHintDict(word) then
       -- if true then
       table.insert(self.foundWords, word)
     end
@@ -722,7 +727,7 @@ procedure DFS(G, v) is
     if slot2 and slot2.tile and (not table.contains(path, slot2)) then
       local w = word .. slot2.tile.letter
       if string.len(w) < 7 then
-        if Util.isWordPrefixInDictionary(w) then
+        if Util.isWordPrefixInHintDict(w) then
           table.insert(path, slot2)
           self:DFS(slot2, path, w)
         end
@@ -735,7 +740,10 @@ end
 
 function Grid:hint()
 
-  -- TODO cache dictionary word and prefix lookups
+  if self.hints <= 0 then
+    Util.sound('failure')
+    return
+  end
 
   self.foundWords = {}
 
@@ -743,10 +751,11 @@ function Grid:hint()
   --   slot.discovered = false
   -- end
 
+  _G.wordbar:setCenter('SEARCHING')
+
   for _,slot in ipairs(self.slots) do
-    if slot.tile and slot.tile.selected then
+    if slot.tile then
       self:DFS(slot, {slot}, slot.tile.letter)
-      break
     end
   end
 
@@ -771,40 +780,15 @@ function Grid:hint()
   end
   trace('MAX WORD', maxWord, 'SCORE', maxScore)
 
-end
+  self.hints = self.hints - 1
 
---[[
-function Grid:BFS(slotStart)
-
-  assert(slotStart.tile)
-
-  for _,slot in ipairs(self.slots) do
-    slot.parent = nil
+  if #self.foundWords > 0 then
+    self:updateUI(maxWord)
+  else
+    self:updateUI('* NOT FOUND *')
   end
 
-  local q = {slotStart}        -- push onto queue
-  slotStart.parent = slotStart   -- mark as itself
-  while #q > 0 do
-    local slotThis = table.remove(q, 1)
-    assert(slotThis)
-    assert(slotThis.tile)
-
-    local g = _G.game:isTileHaunted(slotThis)
-    if g then
-      return g
-    end
-
-    for _,dir in ipairs({'n','ne','e','se','s','sw','w','ne'}) do
-      local slotNext = slotThis[dir]
-      if slotNext and slotNext.tile and (slotNext.parent == nil) then
-        slotNext.parent = slotThis
-        q[#q+1] = slotNext  -- table.insert(q, slotNext) -- push to end of q
-      end
-    end
-  end
-  return nil
 end
-]]
 
 function Grid:showFoundWords()
   Util.sound('ui')
