@@ -1,7 +1,5 @@
 -- Tile.lua
 
-local Util = require 'Util'
-
 local Tile = {}
 Tile.__index = Tile
 

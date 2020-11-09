@@ -2,24 +2,20 @@
 
 local Tile = require 'Tile'
 
-local Tappy = {
-  group = nil,
-  label = nil,
-  cmd = nil,  -- function run when tapped
-  grp = nil,  -- group of graphic objects
-}
+local Tappy = {}
 Tappy.__index = Tappy
 
-function Tappy.new(group, x, y, cmd)
+function Tappy.new(group, x, y, cmd, description)
 
   local o = {}
   setmetatable(o, Tappy)
 
   o.group = group
   o.cmd = cmd
+  o.description = description
   o.label = ''
 
-  o.grp = o.createGraphics(x, y, o.label)
+  o.grp = o:_createGraphics(x, y, o.label, o.description)
   o.group:insert(o.grp)
 
   -- removed the tap listener below; creates false hit when coming back from FoundWords
@@ -29,8 +25,31 @@ function Tappy.new(group, x, y, cmd)
   return o
 end
 
-function Tappy.createGraphics(x, y, label)
+function Tappy:_createGraphics(x, y, label, description)
+  local dim = _G.DIMENSIONS
   local grp = Tile.createGraphics(x, y, label)
+
+  if description then
+    self.letterNormalY = -(dim.Q / 8)
+    self.letterDepressedY = self.letterNormalY + dim.Q3D
+    self.descriptionNormalY = dim.Q / 3
+    self.descriptionDepressedY = self.descriptionNormalY + dim.Q3D
+
+    grp[3].y = self.letterNormalY
+    local txt = display.newText({
+      parent = grp,
+      text = description,
+      x = 0,
+      y = self.descriptionNormalY,
+      font = _G.TILE_FONT,
+      fontSize = dim.halfQ / 3,
+    })
+    txt:setFillColor(unpack(_G.MUST_COLORS.black))
+  else
+    self.letterNormalY = 0
+    self.letterDepressedY = dim.Q3D
+  end
+
   return grp
 end
 
@@ -57,12 +76,20 @@ function Tappy:depress()
   local rectShadow = self.grp[1]
   rectShadow.x = 0
   rectShadow.y = 0
+
   local rectBack = self.grp[2]
   rectBack.x = dim.Q3D
   rectBack.y = dim.Q3D
+
   local textLetter = self.grp[3]
   textLetter.x = dim.Q3D
-  textLetter.y = dim.Q3D
+  textLetter.y = self.letterDepressedY
+
+  if self.description then
+    local textDesc = self.grp[4]
+    textDesc.x = dim.Q3D
+    textDesc.y = self.descriptionDepressedY
+  end
 end
 
 function Tappy:undepress()
@@ -72,12 +99,20 @@ function Tappy:undepress()
   local rectShadow = self.grp[1]
   rectShadow.x = dim.Q3D
   rectShadow.y = dim.Q3D
+
   local rectBack = self.grp[2]
   rectBack.x = 0
   rectBack.y = 0
+
   local textLetter = self.grp[3]
   textLetter.x = 0
-  textLetter.y = 0
+  textLetter.y = self.letterNormalY
+
+  if self.description then
+    local textDesc = self.grp[4]
+    textDesc.x = 0
+    textDesc.y = self.descriptionNormalY
+  end
 end
 
 -- function Tappy:tap(event)

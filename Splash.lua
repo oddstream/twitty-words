@@ -23,8 +23,6 @@ local function loadDictionaries()
   end
   _G.DICTIONARY_TRUE = {}
   _G.DICTIONARY_FALSE = {}
-  _G.DICTIONARY_PREFIX_TRUE = {}
-  _G.DICTIONARY_PREFIX_FALSE = {}
 
   -- https://raw.githubusercontent.com/sapbmw/The-Oxford-3000/master/The_Oxford_3000.txt
   -- filePath = system.pathForFile('Oxford3000.txt', system.ResourceDirectory)
@@ -36,7 +34,7 @@ local function loadDictionaries()
     trace('opened', filePath)
     _G.HINTDICT = file:read('*a')
     io.close(file)
-    trace('dictionary length', string.len(_G.DICTIONARY))
+    trace('dictionary length', string.len(_G.HINTDICT))
   end
   _G.HINTDICT_TRUE = {}
   _G.HINTDICT_FALSE = {}

@@ -52,7 +52,7 @@ function Grid:createSaveable()
   end
   o.words = Util.cloneTable(self.words)
   o.swaps = self.swaps
-  o.hints = self.hints
+  -- self.hints is not covered by the unconditional undo guarantee
   o.score = self.score  -- TODO could recalc this
   return o
 end
@@ -64,7 +64,7 @@ function Grid:replaceWithSaved(saved)
   self:createTilesFromSaved(saved.state)
   self.words = saved.words
   self.swaps = saved.swaps
-  self.hints = saved.hints
+  -- self.hints is not covered by the unconditional undo guarantee
   self.score = saved.score  -- TODO could recalc this
 
   self:updateUI()
@@ -156,7 +156,11 @@ function Grid:newGame()
   self.score = 0
   self.words = {}
   self.swaps = 1
-  self.hints = 3
+  if system.getInfo('environment') == 'simulator' then
+    self.hints = 9
+  else
+    self.hints = 3
+  end
   self.selectedSlots = {}
   self.undoStack = {}
 
@@ -472,7 +476,7 @@ function Grid:testSelection()
         slot.tile:shake()
       end
       self:deselectAllSlots()
-      self:updateUI(nil)
+      self:updateUI()
     end
   end
 end
@@ -664,7 +668,7 @@ function Grid:shuffle()
   end
 
   self.swaps = self.swaps - 1
-  self:updateUI(nil)
+  self:updateUI()
 
 end
 
@@ -706,22 +710,7 @@ function Grid:addTiles()
 end
 
 function Grid:DFS(slot, path, word)
---[[
-procedure DFS(G, v) is
-    label v as discovered
-    for all directed edges from v to w that are in G.adjacentEdges(v) do
-        if vertex w is not labeled as discovered then
-            recursively call DFS(G, w)
-]]
 
-  if string.len(word) > 2 then
-    if Util.isWordInHintDict(word) then
-      -- if true then
-      table.insert(self.foundWords, word)
-    end
-  end
-
-  -- slot.discovered = true
   for _,dir in ipairs({'n','ne','e','se','s','sw','w','ne'}) do
     local slot2 = slot[dir]
     if slot2 and slot2.tile and (not table.contains(path, slot2)) then
@@ -732,6 +721,14 @@ procedure DFS(G, v) is
           self:DFS(slot2, path, w)
         end
       end
+    else
+      if string.len(word) > 2 then
+        if not table.contains(self.foundWords, word) then
+          if Util.isWordInHintDict(word) then
+            table.insert(self.foundWords, word)
+          end
+        end
+      end
     end
   end
 
@@ -739,25 +736,6 @@ procedure DFS(G, v) is
 end
 
 function Grid:hint()
-
-  if self.hints <= 0 then
-    Util.sound('failure')
-    return
-  end
-
-  self.foundWords = {}
-
-  -- for _,slot in ipairs(self.slots) do
-  --   slot.discovered = false
-  -- end
-
-  _G.wordbar:setCenter('SEARCHING')
-
-  for _,slot in ipairs(self.slots) do
-    if slot.tile then
-      self:DFS(slot, {slot}, slot.tile.letter)
-    end
-  end
 
   local function _calcScore(s)
     local score = 0
@@ -767,26 +745,83 @@ function Grid:hint()
     return score * string.len(s)
   end
 
-  trace('FOUND WORDS', unpack(self.foundWords))
+  local function _maxWord()
+    local maxScore = 0
+    local maxWord = ''
+    for _,word in ipairs(self.foundWords) do
+      local score = _calcScore(word)
+      if score > maxScore then
+        maxScore = score
+        maxWord = word
+      end
+    end
+    return maxWord, maxScore
+  end
 
-  local maxScore = 0
-  local maxWord = ''
-  for _,word in ipairs(self.foundWords) do
-    local score = _calcScore(word)
-    if score > maxScore then
-      maxScore = score
-      maxWord = word
+  if self.hints < 1 then
+    Util.sound('failure')
+    return
+  end
+
+  local function _body(event)
+    local source = event.source
+    for _,slot in ipairs(self.slots) do
+      if slot.tile then
+        self:DFS(slot, {slot}, slot.tile.letter)
+
+        local maxWord, _ = _maxWord()
+        _G.wordbar:setCenter(maxWord)
+
+        coroutine.yield() -- yield to the timer, so UI can update
+      end
+    end
+    timer.cancel(source)
+
+    -- trace(#self.foundWords, 'FOUND WORDS:', unpack(self.foundWords))
+
+    self.hints = self.hints - 1
+
+    if #self.foundWords > 0 then
+      local maxWord, _ = _maxWord()
+      self:updateUI(maxWord)
+      Util.sound('found')
+    else
+      Util.sound('failure')
+      self:updateUI()
     end
   end
-  trace('MAX WORD', maxWord, 'SCORE', maxScore)
 
-  self.hints = self.hints - 1
+  self.foundWords = {}
 
-  if #self.foundWords > 0 then
-    self:updateUI(maxWord)
-  else
-    self:updateUI('* NOT FOUND *')
+  -- https://coronalabs.com/blog/2015/02/10/tutorial-using-coroutines-in-corona/
+
+  timer.performWithDelay(1000/30, coroutine.wrap(_body), 0)
+
+--[[
+  local co = coroutine.create(function()
+
+    for _,slot in ipairs(self.slots) do
+      if slot.tile then
+        self:DFS(slot, {slot}, slot.tile.letter)
+        coroutine.yield()
+      end
+    end
+
+  end)
+
+  while coroutine.status(co) == 'suspended' do
+
+    -- local maxWord, maxScore = _maxWord()
+
+    -- trace('MAX WORD', maxWord, 'SCORE', maxScore)
+
+    -- _G.wordbar:setCenter(tostring(#self.foundWords))
+    -- timer.performWithDelay(30, function() coroutine.resume(co) end)
+    coroutine.resume(co)
   end
+
+  -- trace(coroutine.status(co))
+]]
 
 end
 

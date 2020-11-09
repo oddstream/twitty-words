@@ -39,11 +39,12 @@ function Util.clamp(value, min, max)
 end
 
 function Util.setBackground(group)
-  -- dependant on scale = 'letterbox' in config.lua
+  -- -- dependant on scale = 'letterbox' in config.lua
   local bg = display.newImage(group, 'assets/pexels-pixabay-301717.jpg') --, display.actualContentWidth, display.actualContentHeight)
   bg.x = display.contentCenterX
   bg.y = display.contentCenterY
   bg.rotation = 90
+  -- display.setDefault('background', 0, 0.25, 0)
 end
 
 --[[
@@ -107,30 +108,6 @@ function Util.isWordInDictionary(word)
   else
     table.insert(_G.DICTIONARY_FALSE, word)
     -- trace(word, '> NOT FOUND CACHE')
-  end
-
-  return first ~= nil
-  -- return true
-end
-
-function Util.isWordPrefixInDictionary(word)
-
-  if table.contains(_G.DICTIONARY_TRUE, word) then return true end
-  if table.contains(_G.DICTIONARY_PREFIX_TRUE, word) then return true end
-  if table.contains(_G.DICTIONARY_PREFIX_FALSE, word) then return false end
-
-  local word2 = string.gsub(word, ' ', '%%u')
-  local first,last = string.find(_G.DICTIONARY, '[^%u]' .. word2)
-  -- if first then
-  --   trace('found', string.sub(_G.DICTIONARY, first+1, last-1))
-  -- end
-
-  if first then
-    table.insert(_G.DICTIONARY_PREFIX_TRUE, word)
-    -- trace(word, '> FOUND PREFIX CACHE')
-  else
-    table.insert(_G.DICTIONARY_PREFIX_FALSE, word)
-    -- trace(word, '> NOT FOUND PREFIX CACHE')
   end
 
   return first ~= nil

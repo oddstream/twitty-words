@@ -38,18 +38,19 @@ function Toolbar.new()
 
   o.left = Tappy.new(_G.MUST_GROUPS.ui, dim.halfQ, dim.toolbarY, function()
     _G.grid:shuffle()
-  end)
+  end, 'SWAP')
   o.left.grp[2]:setFillColor(unpack(_G.MUST_COLORS.tappy))
+  o.left:setLabel('⇆')
 
   o.hint = Tappy.new(_G.MUST_GROUPS.ui, dim.Q + dim.Q, dim.toolbarY, function()
     _G.grid:hint()
-  end)
+  end, 'HINT')
   o.hint.grp[2]:setFillColor(unpack(_G.MUST_COLORS.tappy))
   o.hint:setLabel('💡')
 
   o.undo = Tappy.new(_G.MUST_GROUPS.ui, dim.toolbarX, dim.toolbarY, function()
     _G.grid:undo()
-  end)
+  end, 'UNDO')
   o.undo.grp[2]:setFillColor(unpack(_G.MUST_COLORS.tappy))
   o.undo:setLabel('⎌')
 
@@ -58,8 +59,9 @@ function Toolbar.new()
 
   o.right = Tappy.new(_G.MUST_GROUPS.ui, display.actualContentWidth - dim.halfQ, dim.toolbarY, function()
     _G.grid:showFoundWords()
-  end)
+  end, 'SCORE')
   o.right.grp[2]:setFillColor(unpack(_G.MUST_COLORS.tappy))
+  o.right:setLabel('0')
 
   return o
 end
