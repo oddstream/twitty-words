@@ -185,9 +185,11 @@ function Grid:updateUI(s, score)
   _G.toolbar:setHint(string.format('💡%u', self.hints))
 
   if score and #self.selectedSlots > 0 then
-    _G.toolbar:setRight(string.format('+%u', score))
+    -- _G.toolbar:setRight(string.format('+%u', score))
+    _G.statusbar:setCenter(string.format('+%u', score))
   else
-    _G.toolbar:setRight(string.format('%u', self.score))  -- or '%+d'
+    -- _G.toolbar:setRight(string.format('%u', self.score))  -- or '%+d'
+    _G.statusbar:setCenter(string.format('%u', self.score))  -- or '%+d'
   end
 
   -- _G.statusbar:setLeft(score and tostring(score) or nil)
@@ -363,7 +365,7 @@ function Grid:selectSlot(slot)
       if table.contains(self.selectedSlots, slot) then
         local lastButOne = self.selectedSlots[#self.selectedSlots-1]
         if slot == lastButOne then
-          trace('backtracking')
+          -- trace('backtracking')
           table.remove(self.selectedSlots)  -- remove last element
           last:deselect()
         end
@@ -721,7 +723,7 @@ function Grid:DFS(slot, path, word)
           self:DFS(slot2, path, w)
         end
       end
-    else
+    else  -- end of the path
       if string.len(word) > 2 then
         if not table.contains(self.foundWords, word) then
           if Util.isWordInHintDict(word) then
@@ -733,6 +735,7 @@ function Grid:DFS(slot, path, word)
   end
 
   table.remove(path)
+
 end
 
 function Grid:hint()
@@ -795,7 +798,7 @@ function Grid:hint()
 
   -- https://coronalabs.com/blog/2015/02/10/tutorial-using-coroutines-in-corona/
 
-  timer.performWithDelay(1000/30, coroutine.wrap(_body), 0)
+  timer.performWithDelay(0, coroutine.wrap(_body), 0)
 
 --[[
   local co = coroutine.create(function()

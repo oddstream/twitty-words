@@ -54,14 +54,14 @@ function Toolbar.new()
   o.undo.grp[2]:setFillColor(unpack(_G.MUST_COLORS.tappy))
   o.undo:setLabel('⎌')
 
-  -- o.center = display.newText(_G.MUST_GROUPS.ui, '', dim.toolbarX, dim.toolbarY, _G.TILE_FONT, dim.tileFontSize)
+  -- o.center = display.newText(_G.MUST_GROUPS.ui, '', dim.toolbarX, dim.toolbarY, _G.ACME, dim.tileFontSize)
   -- o.center:setFillColor(unpack(_G.MUST_COLORS.black))
 
   o.right = Tappy.new(_G.MUST_GROUPS.ui, display.actualContentWidth - dim.halfQ, dim.toolbarY, function()
     _G.grid:showFoundWords()
-  end, 'SCORE')
+  end, 'RESULT')
   o.right.grp[2]:setFillColor(unpack(_G.MUST_COLORS.tappy))
-  o.right:setLabel('0')
+  o.right:setLabel('⚖')
 
   return o
 end

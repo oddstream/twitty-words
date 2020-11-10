@@ -5,9 +5,10 @@
 local composer = require('composer')
 local scene = composer.newScene()
 
-local widget = require('widget')
+-- local widget = require('widget')
 local json = require('json')
 
+local Tappy = require 'Tappy'
 local Tile = require 'Tile'
 local Util = require 'Util'
 
@@ -118,13 +119,14 @@ function scene:create(event)
   -- local rectBackground = display.newRect(backGroup, display.actualContentWidth / 2, display.actualContentHeight / 2, display.actualContentWidth, backHeight)
   -- rectBackground:setFillColor(unpack(_G.MUST_COLORS.baize))
 
+--[[
   -- a rect for the results tool bar
-  local rectToolbar = display.newRect(sceneGroup, dim.resultsbarX, dim.resultsbarY, dim.resultsbarWidth, dim.resultsbarHeight)
+  local rectToolbar = display.newRect(sceneGroup, dim.bannerX, dim.bannerY, dim.bannerWidth, dim.bannerHeight)
   rectToolbar:setFillColor(unpack(_G.MUST_COLORS.uibackground))
 
   local newButton = widget.newButton({
     x = dim.halfQ,
-    y = dim.resultsbarY,
+    y = dim.bannerY,
     onRelease = function()
       Util.sound('ui')
       composer.gotoScene('Must', {effect='slideLeft'})
@@ -132,13 +134,13 @@ function scene:create(event)
     label = '< NEW GAME',
     labelColor = { default=_G.MUST_COLORS.uiforeground, over=_G.MUST_COLORS.uicontrol },
     labelAlign = 'left',
-    font = _G.TILE_FONT,
-    fontSize = dim.resultsbarHeight / 2,
+    font = _G.ACME,
+    fontSize = dim.bannerHeight / 2,
     textOnly = true,
   })
   newButton.anchorX = 0
   sceneGroup:insert(newButton)
-
+]]
 end
 
 
@@ -198,7 +200,8 @@ function scene:show(event)
       end
     end
 
-    local y = dim.resultsbarY + dim.Q
+    -- local y = dim.bannerY + dim.Q
+    local y = dim.halfQ
 
     for i = 1, 20 do
       if scoresTable[i] then
@@ -223,6 +226,14 @@ function scene:show(event)
 
   elseif phase == 'did' then
     -- Code here runs when the scene is entirely on screen
+
+    local tappy = Tappy.new(sceneGroup, display.actualContentWidth - dim.Q, display.actualContentHeight - dim.Q, function()
+      Util.sound('ui')
+      composer.gotoScene('Must', {effect='slideLeft'})
+    end, 'NEW')
+    tappy.grp[2]:setFillColor(unpack(_G.MUST_COLORS.tappy))
+    tappy:setLabel('★')
+
   end
 end
 

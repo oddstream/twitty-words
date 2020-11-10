@@ -20,7 +20,7 @@ function Statusbar.new()
   o.rect = display.newRect(_G.MUST_GROUPS.ui, dim.statusbarX, dim.statusbarY, dim.statusbarWidth, dim.statusbarHeight)
   o.rect:setFillColor(unpack(_G.MUST_COLORS.uibackground))
 
-  -- o.left = display.newText(_G.MUST_GROUPS.ui, '🦝', halfFontSize, dim.statusbarY, _G.TILE_FONT, fontSize)
+  -- o.left = display.newText(_G.MUST_GROUPS.ui, '🦝', halfFontSize, dim.statusbarY, _G.ACME, fontSize)
   -- o.left:setFillColor(unpack(_G.MUST_COLORS.uiforeground))
   -- o.left.anchorX = 0
   o.left = widget.newButton({
@@ -35,18 +35,18 @@ function Statusbar.new()
     label = '☰',
     labelColor = { default=_G.MUST_COLORS.uiforeground, over=_G.MUST_COLORS.uicontrol },
     labelAlign = 'left',
-    font = _G.TILE_FONT,
+    font = _G.ACME,
     fontSize = fontSize,
     textOnly = true,
   })
   o.left.anchorX = 0
   _G.MUST_GROUPS.ui:insert(o.left)
 
-  o.center = display.newText(_G.MUST_GROUPS.ui, 'Find Words on Tiles', dim.statusbarX, dim.statusbarY, _G.TILE_FONT, fontSize)
+  o.center = display.newText(_G.MUST_GROUPS.ui, '🦝', dim.statusbarX, dim.statusbarY, _G.ACME, fontSize)
   o.center:setFillColor(unpack(_G.MUST_COLORS.uiforeground))
   o.center.anchorX = 0.5
 
-  o.right = display.newText(_G.MUST_GROUPS.ui, '', dim.statusbarWidth - halfFontSize, dim.statusbarY, _G.TILE_FONT, fontSize)
+  o.right = display.newText(_G.MUST_GROUPS.ui, '🦝', dim.statusbarWidth - halfFontSize, dim.statusbarY, _G.ACME, fontSize)
   o.right:setFillColor(unpack(_G.MUST_COLORS.uiforeground))
   o.right.anchorX = 1
 

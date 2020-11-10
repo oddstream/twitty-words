@@ -116,10 +116,10 @@ function Slot:flyAwayScore(score)
   local grp = Tile.createGraphics(self.center.x, self.center.y, string.format('%+d', score))
 
   transition.moveTo(grp, {
-    x = display.actualContentWidth - dim.halfQ,
-    y = dim.toolbarY,
-    -- x = dim.statusbarX,
-    -- y = dim.statusbarY,
+    -- x = display.actualContentWidth - dim.halfQ,
+    -- y = dim.toolbarY,
+    x = dim.statusbarX,
+    y = dim.statusbarY,
     time = _G.FLIGHT_TIME,
     transition = easing.outQuad,
     onComplete = function()

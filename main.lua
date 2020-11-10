@@ -57,28 +57,28 @@ math.randomseed(os.time())
 -- ugly globals
 
 --[[
-_G.FONT = nil
+_G.ROBOTO_MEDIUM = nil
 _G.BOLDFONT = nil
 
 local systemFonts = native.getFontNames()
 for _, fontName in ipairs(systemFonts) do
   trace(fontName)
   if fontName == 'Roboto-Medium' then
-    _G.FONT = native.newFont(fontName)
+    _G.ROBOTO_MEDIUM = native.newFont(fontName)
   elseif fontName == 'Roboto-Bold' then
     _G.BOLDFONT = native.newFont(fontName)
   end
 end
-if nil == _G.FONT then  _G.FONT = native.systemFont end
-if nil == _G.BOLDFONT then  _G.FONT = native.systemFontBold end
+if nil == _G.ROBOTO_MEDIUM then  _G.ROBOTO_MEDIUM = native.systemFont end
+if nil == _G.BOLDFONT then  _G.ROBOTO_MEDIUM = native.systemFontBold end
 ]]
 
 -- a global object containing useful precalculated dimensions
 _G.DIMENSIONS = {}
 
-_G.TILE_FONT = 'assets/Acme-Regular.ttf'
--- _G.FONT = 'assets/Roboto-Medium.ttf'
--- _G.BOLD_FONT = 'assets/Roboto-Bold.ttf'
+_G.ACME = 'assets/Acme-Regular.ttf'
+_G.ROBOTO_MEDIUM = 'assets/Roboto-Medium.ttf'
+_G.ROBOTO_BOLD = 'assets/Roboto-Bold.ttf'
 
 -- https://en.wikipedia.org/wiki/Scrabble_letter_distributions
 _G.SCRABBLE_LETTERS = '  AAAAAAAAABBCCDDDDEEEEEEEEEEEEFFGGGHHIIIIIIIIIJKLLLLMMNNNNNNOOOOOOOOPPQRRRRRRSSSSTTTTTTUUUUVVWWXYYZ'
@@ -125,7 +125,7 @@ _G.MUST_COLORS = {
   -- baize = {255*4/1020, 245*4/1020, 238*4/1020},  -- SeaShell
   -- baize = {248*4/1020, 248*4/1020, 255*4/1020},  -- GhostWhite
 
-  baize = {1, 1, 0.94}, -- ivory
+  baize = {224*4/1020, 1, 1}, -- Lightcyan
   -- selected = {1,0.8,0},
   -- back = {100*4/1020,147*4/1020,237*4/1020}, -- CornFlowerBlue
   -- tile = {1, 245*4/1020, 238*4/1020}, -- Seashell

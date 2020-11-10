@@ -1,0 +1,13 @@
+The hint system is deliberately disappointing and of limited use. It's use is throttled to three uses per grid; it uses a much smaller dictionary; it contains just word roots (eg BOX) so you have to find longer words (BOXES, BOXED, BOXING); you won't get a very high score using it.
+
+Do you save the swaps for alter or use them now
+
+Do you use the high value tiles (Q and Z) now or save them for later
+
+The dictionary contains obscure words for you to learn
+
+The user interface contains things for you to explore (swap and score are buttons)
+
+The high score table taunts you with a record of 1000
+
+If you use a blank tile, you're not told what the tile stood for

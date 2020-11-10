@@ -44,7 +44,7 @@ function Util.setBackground(group)
   bg.x = display.contentCenterX
   bg.y = display.contentCenterY
   bg.rotation = 90
-  -- display.setDefault('background', 0, 0.25, 0)
+  -- display.setDefault('background', unpack(_G.MUST_COLORS.baize))
 end
 
 --[[

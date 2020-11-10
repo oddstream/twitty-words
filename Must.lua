@@ -12,6 +12,40 @@ local widget = require('widget')
 
 widget.setTheme('widget_theme_android_holo_dark')
 
+--[[
+-----------------------------
+local profileThreshold = 0
+if system.getInfo('environment') == 'simulator' then
+  profileThreshold = 1000
+end
+local Counters = {}
+local Names = {}
+
+local function hook ()
+  local f = debug.getinfo(2, "f").func
+  if Counters[f] == nil then    -- first time `f' is called?
+    Counters[f] = 1
+    Names[f] = debug.getinfo(2, "Sn")
+  else  -- only increment the counter
+    Counters[f] = Counters[f] + 1
+  end
+end
+
+local function getname (func)
+  local n = Names[func]
+  if n.what == "C" then
+    return n.name
+  end
+  local loc = string.format("[%s]:%s", n.short_src, n.linedefined)
+  if n.namewhat ~= "" then
+    return string.format("%s (%s)", loc, n.name)
+  else
+    return string.format("%s", loc)
+  end
+end
+-----------------------------
+]]
+
 function scene:create(event)
   local sceneGroup = self.view
 
@@ -47,6 +81,11 @@ function scene:show(event)
     -- Code here runs when the scene is entirely on screen
     Runtime:addEventListener('key', scene)
     -- Runtime:addEventListener('system', scene)
+--[[
+    if profileThreshold > 0 then
+      debug.sethook(hook, "c")  -- turn on the hook
+    end
+]]
   end
 end
 
@@ -66,6 +105,16 @@ function scene:hide(event)
     -- end
   elseif phase == 'did' then
     -- Code here runs immediately after the scene goes entirely off screen
+--[[
+    if profileThreshold > 0 then
+      debug.sethook()   -- turn off the hook
+      for func, count in pairs(Counters) do
+        if count > profileThreshold then
+          print(getname(func), count)
+        end
+      end
+    end
+]]
   end
 end
 

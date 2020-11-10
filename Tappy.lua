@@ -41,7 +41,7 @@ function Tappy:_createGraphics(x, y, label, description)
       text = description,
       x = 0,
       y = self.descriptionNormalY,
-      font = _G.TILE_FONT,
+      font = _G.ACME,
       fontSize = dim.halfQ / 3,
     })
     txt:setFillColor(unpack(_G.MUST_COLORS.black))

@@ -71,19 +71,18 @@ function scene:create(event)
     return grp
   end
 
-
+  -- don't need this if using a bitmap background
   -- the background needs to be tall enough to display #_G.grid.words
   -- local backHeight = (#_G.grid.words * dim.halfQ) + display.actualContentHeight
-
-  -- local rectBackground = display.newRect(backGroup, display.actualContentWidth / 2, display.actualContentHeight / 2, display.actualContentWidth, backHeight)
+  -- local rectBackground = display.newRect(sceneGroup, display.actualContentWidth / 2, display.actualContentHeight / 2, display.actualContentWidth, backHeight)
   -- rectBackground:setFillColor(unpack(_G.MUST_COLORS.baize))
 
-  local rect = display.newRect(sceneGroup, dim.resultsbarX, dim.resultsbarY, dim.resultsbarWidth, dim.resultsbarHeight)
+  local rect = display.newRect(sceneGroup, dim.toolbarX, dim.toolbarY, dim.toolbarWidth, dim.toolbarHeight)
   rect:setFillColor(unpack(_G.MUST_COLORS.uibackground))
 
   local backButton = widget.newButton({
     x = dim.firstTileX + dim.halfQ,
-    y = dim.resultsbarY,
+    y = dim.toolbarY,
     onRelease = function()
       Util.sound('ui')
       composer.hideOverlay('slideLeft')
@@ -92,16 +91,26 @@ function scene:create(event)
     label = '< BACK',
     labelColor = { default=_G.MUST_COLORS.uiforeground, over=_G.MUST_COLORS.uicontrol },
     labelAlign = 'left',
-    font = _G.TILE_FONT,
-    fontSize = dim.resultsbarHeight / 2,
+    font = _G.ACME,
+    fontSize = dim.toolbarHeight / 2,
     textOnly = true,
   })
   backButton.anchorX = 0
   sceneGroup:insert(backButton)
 
+  local scales = display.newText({
+    parent = sceneGroup,
+    x = dim.toolbarX,
+    y = dim.toolbarY,
+    text = '⚖',
+    font = _G.ACME,
+    fontSize = dim.toolbarHeight / 2,
+  })
+  scales:setFillColor(unpack(_G.MUST_COLORS.uiforeground))
+
   local finishButton = widget.newButton({
     x = display.safeActualContentWidth - dim.halfQ,
-    y = dim.resultsbarY,
+    y = dim.toolbarY,
     onRelease = function()
       composer.hideOverlay()
       _G.grid:gameOver()
@@ -109,8 +118,8 @@ function scene:create(event)
     label = 'FINISH >',
     labelColor = { default=_G.MUST_COLORS.uiforeground, over=_G.MUST_COLORS.uicontrol },
     labelAlign = 'right',
-    font = _G.TILE_FONT,
-    fontSize = dim.resultsbarHeight / 2,
+    font = _G.ACME,
+    fontSize = dim.toolbarHeight / 2,
     textOnly = true,
   })
   finishButton.anchorX = 1
@@ -118,7 +127,8 @@ function scene:create(event)
 
   tiles = {}
 
-  local y = dim.resultsbarY + dim.Q
+  -- local y = dim.bannerY + dim.Q
+  local y = dim.halfQ
 
   for i,word in ipairs(_G.grid.words) do
 

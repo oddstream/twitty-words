@@ -42,25 +42,25 @@ function scene:create(event)
 
   local y
   y = (display.actualContentHeight / 2) - dim.Q - dim.Q - dim.Q - dim.Q - dim.Q
-  local banner = display.newText(sceneGroup, 'Find Words on Tiles', display.contentCenterX, y, _G.TILE_FONT, dim.tileFontSize)
+  local banner = display.newText(sceneGroup, 'Find Words on Tiles', display.contentCenterX, y, _G.ACME, dim.tileFontSize)
   banner:setFillColor(0,0,0)
 
   y = (display.actualContentHeight / 2) - dim.Q - dim.Q
   _createRow(y, 'VACATE', 'untimed')
   y = y + dim.Q * 0.75
-  local help1 = display.newText(sceneGroup, 'Clear all tiles in your own time', display.contentCenterX, y, _G.TILE_FONT, dim.tileFontSize / 2)
+  local help1 = display.newText(sceneGroup, 'Clear all tiles in your own time', display.contentCenterX, y, _G.ROBOTO_MEDIUM, dim.tileFontSize / 3)
   help1:setFillColor(0,0,0)
 
   y = (display.actualContentHeight / 2)
   _createRow(y, 'URGENT', 'timed')
   y = y + dim.Q * 0.75
-  local help2 = display.newText(sceneGroup, 'Get your best score in five minutes', display.contentCenterX, y, _G.TILE_FONT, dim.tileFontSize / 2)
+  local help2 = display.newText(sceneGroup, 'Get your best score in five minutes', display.contentCenterX, y, _G.ROBOTO_MEDIUM, dim.tileFontSize / 3)
   help2:setFillColor(0,0,0)
 
   y = (display.actualContentHeight / 2) + dim.Q + dim.Q
   _createRow(y, 'TWELVE', 12)
   y = y + dim.Q * 0.75
-  local help3 = display.newText(sceneGroup, 'Get your best score with twelve words', display.contentCenterX, y, _G.TILE_FONT, dim.tileFontSize / 2)
+  local help3 = display.newText(sceneGroup, 'Get your best score with twelve words', display.contentCenterX, y, _G.ROBOTO_MEDIUM, dim.tileFontSize / 3)
   help3:setFillColor(0,0,0)
 
 end

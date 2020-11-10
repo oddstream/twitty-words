@@ -63,16 +63,16 @@ function Tile.createGraphics(x, y, letter)
     tileFontSize = tileFontSize * 0.666
   end
   -- tried a highlight on the letter; can't see it against ivory background
-  -- local textHighlight = display.newText(grp, letter, -(dim.Q / 30), -(dim.Q / 30), _G.TILE_FONT, tileFontSize)
+  -- local textHighlight = display.newText(grp, letter, -(dim.Q / 30), -(dim.Q / 30), _G.ACME, tileFontSize)
   -- textHighlight:setFillColor(unpack(_G.MUST_COLORS.white))
 
-  local textLetter = display.newText(grp, letter, 0, 0, _G.TILE_FONT, tileFontSize)
+  local textLetter = display.newText(grp, letter, 0, 0, _G.ACME, tileFontSize)
   textLetter:setFillColor(unpack(_G.MUST_COLORS.black))
 
   -- grp[4]
   -- makes the grid harder to scan
   -- if string.len(letter) == 1 and _G.SCRABBLE_SCORES[letter] then
-  --   local textScore = display.newText(grp, tostring(_G.SCRABBLE_SCORES[letter]), dim.Q / 3, dim.Q / 3, _G.TILE_FONT, tileFontSize / 3)
+  --   local textScore = display.newText(grp, tostring(_G.SCRABBLE_SCORES[letter]), dim.Q / 3, dim.Q / 3, _G.ACME, tileFontSize / 3)
   --   textScore:setFillColor(unpack(_G.MUST_COLORS.black))
   -- end
 

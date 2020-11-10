@@ -25,6 +25,11 @@ function Dim.new()
 
   o.tileFontSize = o.Q * 0.75
 
+  -- o.bannerHeight = o.Q
+  -- o.bannerX = display.contentCenterX
+  -- o.bannerY = topInset - display.screenOriginY + (o.bannerHeight / 2)
+  -- o.bannerWidth = display.safeActualContentWidth
+
   o.statusbarHeight = o.Q / 2
   o.statusbarX = display.contentCenterX
   o.statusbarY = topInset - display.screenOriginY + (o.statusbarHeight / 2)
