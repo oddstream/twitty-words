@@ -12,11 +12,11 @@ function Wordbar.new()
   -- assert(self==Wordbar)
   setmetatable(o, Wordbar)
 
-  -- o.rect = display.newRect(_G.MUST_GROUPS.ui, dim.toolbarX, dim.toolbarY, dim.toolbarWidth, dim.toolbarHeight)
-  -- o.rect:setFillColor(unpack(_G.MUST_COLORS.uibackground))
+  -- o.rect = display.newRect(_G.TWITTY_GROUPS.ui, dim.toolbarX, dim.toolbarY, dim.toolbarWidth, dim.toolbarHeight)
+  -- o.rect:setFillColor(unpack(_G.TWITTY_COLORS.uibackground))
 
   o.center = display.newGroup()
-  _G.MUST_GROUPS.ui:insert(o.center)
+  _G.TWITTY_GROUPS.ui:insert(o.center)
 
   return o
 end
@@ -35,9 +35,9 @@ local function _createTile(group, x, y, txt)
   group:insert(grp)
   grp:scale(0.5, 0.5)
   -- if found then
-  --   grp[2]:setFillColor(unpack(_G.MUST_COLORS.moccasin))
+  --   grp[2]:setFillColor(unpack(_G.TWITTY_COLORS.moccasin))
   -- else
-  --   grp[2]:setFillColor(unpack(_G.MUST_COLORS.tile))
+  --   grp[2]:setFillColor(unpack(_G.TWITTY_COLORS.tile))
   -- end
   return grp
 end

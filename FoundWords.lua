@@ -3,20 +3,20 @@
 -- https://docs.coronalabs.com/guide/programming/06/index.html
 
 local composer = require('composer')
-local widget = require('widget')
 local scene = composer.newScene()
 
 -- local widget = require('widget')
 
+local Tappy = require 'Tappy'
 local Tile = require 'Tile'
 local Util = require 'Util'
-
-local tiles = nil
 
 -- -----------------------------------------------------------------------------------
 -- Code outside of the scene event functions below will only be executed ONCE unless
 -- the scene is removed entirely (not recycled) via 'composer.removeScene()'
 -- -----------------------------------------------------------------------------------
+
+local toolbarGroup
 
 -- -----------------------------------------------------------------------------------
 -- Scene event functions
@@ -67,7 +67,6 @@ function scene:create(event)
     local grp = Tile.createGraphics(x, y, txt)
     sceneGroup:insert(grp)
     grp:scale(0.5, 0.5)
-    table.insert(tiles, grp)
     return grp
   end
 
@@ -75,11 +74,13 @@ function scene:create(event)
   -- the background needs to be tall enough to display #_G.grid.words
   -- local backHeight = (#_G.grid.words * dim.halfQ) + display.actualContentHeight
   -- local rectBackground = display.newRect(sceneGroup, display.actualContentWidth / 2, display.actualContentHeight / 2, display.actualContentWidth, backHeight)
-  -- rectBackground:setFillColor(unpack(_G.MUST_COLORS.baize))
-
+  -- rectBackground:setFillColor(unpack(_G.TWITTY_COLORS.baize))
+--[[
   local rect = display.newRect(sceneGroup, dim.toolbarX, dim.toolbarY, dim.toolbarWidth, dim.toolbarHeight)
-  rect:setFillColor(unpack(_G.MUST_COLORS.uibackground))
+  rect:setFillColor(unpack(_G.TWITTY_COLORS.uibackground))
+]]
 
+--[[
   local backButton = widget.newButton({
     x = dim.firstTileX + dim.halfQ,
     y = dim.toolbarY,
@@ -89,7 +90,7 @@ function scene:create(event)
       _G.grid:resumeCountdown()
     end,
     label = '< BACK',
-    labelColor = { default=_G.MUST_COLORS.uiforeground, over=_G.MUST_COLORS.uicontrol },
+    labelColor = { default=_G.TWITTY_COLORS.uiforeground, over=_G.TWITTY_COLORS.uicontrol },
     labelAlign = 'left',
     font = _G.ACME,
     fontSize = dim.toolbarHeight / 2,
@@ -97,17 +98,32 @@ function scene:create(event)
   })
   backButton.anchorX = 0
   sceneGroup:insert(backButton)
+]]
 
+    -- create a group for the tappy so it doesn't scroll with the background
+  toolbarGroup = display:newGroup()
+
+  local tappyBack = Tappy.new(toolbarGroup, dim.halfQ, dim.toolbarY, function()
+    Util.sound('ui')
+    composer.hideOverlay('slideLeft')
+    _G.grid:resumeCountdown()
+    end, 'BACK')
+  tappyBack.grp[2]:setFillColor(unpack(_G.TWITTY_COLORS.tappy))
+  tappyBack:setLabel('←')
+
+  --[[
   local scales = display.newText({
-    parent = sceneGroup,
+    parent = toolbarGroup,
     x = dim.toolbarX,
     y = dim.toolbarY,
     text = '⚖',
     font = _G.ACME,
     fontSize = dim.toolbarHeight / 2,
   })
-  scales:setFillColor(unpack(_G.MUST_COLORS.uiforeground))
+  scales:setFillColor(unpack(_G.TWITTY_COLORS.black))
+]]
 
+--[[
   local finishButton = widget.newButton({
     x = display.safeActualContentWidth - dim.halfQ,
     y = dim.toolbarY,
@@ -116,7 +132,7 @@ function scene:create(event)
       _G.grid:gameOver()
     end,
     label = 'FINISH >',
-    labelColor = { default=_G.MUST_COLORS.uiforeground, over=_G.MUST_COLORS.uicontrol },
+    labelColor = { default=_G.TWITTY_COLORS.uiforeground, over=_G.TWITTY_COLORS.uicontrol },
     labelAlign = 'right',
     font = _G.ACME,
     fontSize = dim.toolbarHeight / 2,
@@ -124,8 +140,15 @@ function scene:create(event)
   })
   finishButton.anchorX = 1
   sceneGroup:insert(finishButton)
+]]
 
-  tiles = {}
+local tappyFinish = Tappy.new(toolbarGroup, display.safeActualContentWidth - dim.halfQ, dim.toolbarY, function()
+  Util.sound('ui')
+  composer.hideOverlay()
+  _G.grid:gameOver()
+  end, 'FINISH')
+  tappyFinish.grp[2]:setFillColor(unpack(_G.TWITTY_COLORS.tappy))
+  tappyFinish:setLabel('→') -- '⯈' didn't appear on the phone
 
   -- local y = dim.bannerY + dim.Q
   local y = dim.halfQ
@@ -181,6 +204,7 @@ function scene:hide(event)
 
   elseif phase == 'did' then
     -- Code here runs immediately after the scene goes entirely off screen
+    toolbarGroup:removeSelf()
     -- delete the scene so it gets built next time it's shown
     composer.removeScene('FoundWords')
   end

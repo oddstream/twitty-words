@@ -44,7 +44,7 @@ function Tappy:_createGraphics(x, y, label, description)
       font = _G.ACME,
       fontSize = dim.halfQ / 3,
     })
-    txt:setFillColor(unpack(_G.MUST_COLORS.black))
+    txt:setFillColor(unpack(_G.TWITTY_COLORS.black))
   else
     self.letterNormalY = 0
     self.letterDepressedY = dim.Q3D

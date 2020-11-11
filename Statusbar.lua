@@ -17,11 +17,11 @@ function Statusbar.new()
   local fontSize = dim.Q / 3
   local halfFontSize = fontSize / 2
 
-  o.rect = display.newRect(_G.MUST_GROUPS.ui, dim.statusbarX, dim.statusbarY, dim.statusbarWidth, dim.statusbarHeight)
-  o.rect:setFillColor(unpack(_G.MUST_COLORS.uibackground))
+  o.rect = display.newRect(_G.TWITTY_GROUPS.ui, dim.statusbarX, dim.statusbarY, dim.statusbarWidth, dim.statusbarHeight)
+  o.rect:setFillColor(unpack(_G.TWITTY_COLORS.uibackground))
 
-  -- o.left = display.newText(_G.MUST_GROUPS.ui, '🦝', halfFontSize, dim.statusbarY, _G.ACME, fontSize)
-  -- o.left:setFillColor(unpack(_G.MUST_COLORS.uiforeground))
+  -- o.left = display.newText(_G.TWITTY_GROUPS.ui, '🦝', halfFontSize, dim.statusbarY, _G.ACME, fontSize)
+  -- o.left:setFillColor(unpack(_G.TWITTY_COLORS.uiforeground))
   -- o.left.anchorX = 0
   o.left = widget.newButton({
     x = halfFontSize,
@@ -33,21 +33,21 @@ function Statusbar.new()
       composer.gotoScene('ModeMenu')
     end,
     label = '☰',
-    labelColor = { default=_G.MUST_COLORS.uiforeground, over=_G.MUST_COLORS.uicontrol },
+    labelColor = { default=_G.TWITTY_COLORS.uiforeground, over=_G.TWITTY_COLORS.uicontrol },
     labelAlign = 'left',
     font = _G.ACME,
     fontSize = fontSize,
     textOnly = true,
   })
   o.left.anchorX = 0
-  _G.MUST_GROUPS.ui:insert(o.left)
+  _G.TWITTY_GROUPS.ui:insert(o.left)
 
-  o.center = display.newText(_G.MUST_GROUPS.ui, '🦝', dim.statusbarX, dim.statusbarY, _G.ACME, fontSize)
-  o.center:setFillColor(unpack(_G.MUST_COLORS.uiforeground))
+  o.center = display.newText(_G.TWITTY_GROUPS.ui, '🦝', dim.statusbarX, dim.statusbarY, _G.ACME, fontSize)
+  o.center:setFillColor(unpack(_G.TWITTY_COLORS.uiforeground))
   o.center.anchorX = 0.5
 
-  o.right = display.newText(_G.MUST_GROUPS.ui, '🦝', dim.statusbarWidth - halfFontSize, dim.statusbarY, _G.ACME, fontSize)
-  o.right:setFillColor(unpack(_G.MUST_COLORS.uiforeground))
+  o.right = display.newText(_G.TWITTY_GROUPS.ui, '🦝', dim.statusbarWidth - halfFontSize, dim.statusbarY, _G.ACME, fontSize)
+  o.right:setFillColor(unpack(_G.TWITTY_COLORS.uiforeground))
   o.right.anchorX = 1
 
   return o

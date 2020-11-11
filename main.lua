@@ -50,7 +50,7 @@ if not _G.onTablet then
 end
 ]]
 
-native.setProperty('windowTitleText', 'Must') -- Win32
+native.setProperty('windowTitleText', 'Twitty') -- Win32
 
 math.randomseed(os.time())
 
@@ -114,7 +114,7 @@ _G.SCRABBLE_SCORES = {
 
 _G.FLIGHT_TIME = 2000
 
-_G.MUST_COLORS = {
+_G.TWITTY_COLORS = {
   uiforeground = {1,1,1},
   uibackground = {0.1,0.1,0.1},
   uicontrol = {1, 228*4/1020, 181*4/1020},  -- moccasin
@@ -150,12 +150,12 @@ _G.MUST_COLORS = {
   black = {0,0,0},
 }
 
-_G.MUST_GROUPS = {
+_G.TWITTY_GROUPS = {
   grid = nil,
   ui = nil,
 }
 
-_G.MUST_SOUNDS = {
+_G.TWITTY_SOUNDS = {
   complete = audio.loadSound('assets/complete.wav'),
   failure = audio.loadSound('assets/error_008.ogg'),
 

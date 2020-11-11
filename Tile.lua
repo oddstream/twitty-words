@@ -13,7 +13,7 @@ function Tile.new(slot, letter)
   o.letter = letter
 
   o.grp = o.createGraphics(slot.center.x, slot.center.y, o.letter)
-  _G.MUST_GROUPS.grid:insert(o.grp)
+  _G.TWITTY_GROUPS.grid:insert(o.grp)
 
   -- don't add event listers here, as tiles are also used for displaying found words and high scores
 
@@ -53,7 +53,7 @@ function Tile.createGraphics(x, y, letter)
 ]]
   -- if alpha == 0, we don't get tap events
   -- set fill color AFTER applying paint
-  rectBack:setFillColor(unpack(_G.MUST_COLORS.tile))
+  rectBack:setFillColor(unpack(_G.TWITTY_COLORS.tile))
 
   -- grp[3]
   local tileFontSize = dim.tileFontSize
@@ -64,16 +64,16 @@ function Tile.createGraphics(x, y, letter)
   end
   -- tried a highlight on the letter; can't see it against ivory background
   -- local textHighlight = display.newText(grp, letter, -(dim.Q / 30), -(dim.Q / 30), _G.ACME, tileFontSize)
-  -- textHighlight:setFillColor(unpack(_G.MUST_COLORS.white))
+  -- textHighlight:setFillColor(unpack(_G.TWITTY_COLORS.white))
 
   local textLetter = display.newText(grp, letter, 0, 0, _G.ACME, tileFontSize)
-  textLetter:setFillColor(unpack(_G.MUST_COLORS.black))
+  textLetter:setFillColor(unpack(_G.TWITTY_COLORS.black))
 
   -- grp[4]
   -- makes the grid harder to scan
   -- if string.len(letter) == 1 and _G.SCRABBLE_SCORES[letter] then
   --   local textScore = display.newText(grp, tostring(_G.SCRABBLE_SCORES[letter]), dim.Q / 3, dim.Q / 3, _G.ACME, tileFontSize / 3)
-  --   textScore:setFillColor(unpack(_G.MUST_COLORS.black))
+  --   textScore:setFillColor(unpack(_G.TWITTY_COLORS.black))
   -- end
 
   return grp
@@ -152,13 +152,13 @@ end
 
 function Tile:select()
   self.selected = true
-  self.grp[2]:setFillColor(unpack(_G.MUST_COLORS.moccasin))
+  self.grp[2]:setFillColor(unpack(_G.TWITTY_COLORS.moccasin))
   self:depress()
 end
 
 function Tile:deselect()
   self.selected = false
-  self.grp[2]:setFillColor(unpack(_G.MUST_COLORS.tile))
+  self.grp[2]:setFillColor(unpack(_G.TWITTY_COLORS.tile))
   self:undepress()
 end
 

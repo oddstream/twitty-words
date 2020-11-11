@@ -50,15 +50,15 @@ function scene:create(event)
   local sceneGroup = self.view
 
   trace('Must scene:create')
-  -- display.setDefault('background', unpack(_G.MUST_COLORS.baize))
+  -- display.setDefault('background', unpack(_G.TWITTY_COLORS.baize))
 
-  _G.MUST_GROUPS.grid = self.view -- TODO referenced by Tile
+  _G.TWITTY_GROUPS.grid = self.view -- TODO referenced by Tile
 
   Util.setBackground(self.view)
 
   -- create a separate group for UI objects, so they are always on top of grid
-  _G.MUST_GROUPS.ui = display.newGroup()
-  sceneGroup:insert(_G.MUST_GROUPS.ui)
+  _G.TWITTY_GROUPS.ui = display.newGroup()
+  sceneGroup:insert(_G.TWITTY_GROUPS.ui)
 
   _G.statusbar = Statusbar.new()
   _G.wordbar = Wordbar.new()
@@ -123,7 +123,7 @@ function scene:destroy(event)
   -- Code here runs prior to the removal of scene's view
   trace('Must scene:destroy')
   _G.grid:destroy()
-  composer.removeScene('Must')
+  composer.removeScene('Twitty')
 
 end
 

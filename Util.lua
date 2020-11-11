@@ -44,7 +44,7 @@ function Util.setBackground(group)
   bg.x = display.contentCenterX
   bg.y = display.contentCenterY
   bg.rotation = 90
-  -- display.setDefault('background', unpack(_G.MUST_COLORS.baize))
+  -- display.setDefault('background', unpack(_G.TWITTY_COLORS.baize))
 end
 
 --[[
@@ -79,12 +79,12 @@ function Util.sound(name)
   if system.getInfo('environment') == 'simulator' then
     -- trace('SOUND', name)
   else
-    -- trace('SOUND', name, type(_G.MUST_SOUNDS[name]))
+    -- trace('SOUND', name, type(_G.TWITTY_SOUNDS[name]))
     local handle
-    if type(_G.MUST_SOUNDS[name]) == 'table' then
-      handle = _G.MUST_SOUNDS[name][math.random(1, #_G.MUST_SOUNDS[name])]
-    elseif type(_G.MUST_SOUNDS[name]) == 'userdata' then
-      handle = _G.MUST_SOUNDS[name]
+    if type(_G.TWITTY_SOUNDS[name]) == 'table' then
+      handle = _G.TWITTY_SOUNDS[name][math.random(1, #_G.TWITTY_SOUNDS[name])]
+    elseif type(_G.TWITTY_SOUNDS[name]) == 'userdata' then
+      handle = _G.TWITTY_SOUNDS[name]
     end
     if handle then
       audio.play(handle)

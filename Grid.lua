@@ -156,11 +156,7 @@ function Grid:newGame()
   self.score = 0
   self.words = {}
   self.swaps = 1
-  if system.getInfo('environment') == 'simulator' then
-    self.hints = 9
-  else
-    self.hints = 3
-  end
+  self.hints = 3
   self.selectedSlots = {}
   self.undoStack = {}
 
@@ -717,7 +713,7 @@ function Grid:DFS(slot, path, word)
     local slot2 = slot[dir]
     if slot2 and slot2.tile and (not table.contains(path, slot2)) then
       local w = word .. slot2.tile.letter
-      if string.len(w) < 7 then
+      if string.len(w) < 10 then
         if Util.isWordPrefixInHintDict(w) then
           table.insert(path, slot2)
           self:DFS(slot2, path, w)
@@ -761,6 +757,9 @@ function Grid:hint()
     return maxWord, maxScore
   end
 
+  if self.hints == 0 and system.getInfo('environment') == 'simulator' then
+    self.hints = 9
+  end
   if self.hints < 1 then
     Util.sound('failure')
     return

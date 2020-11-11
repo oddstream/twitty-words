@@ -12,6 +12,8 @@ local Tappy = require 'Tappy'
 local Tile = require 'Tile'
 local Util = require 'Util'
 
+local toolbarGroup
+
 local filePath = system.pathForFile(_G.GAME_MODE .. '_scores.json', system.DocumentsDirectory)
 -- win32 c:\Users\oddst\AppData\Roaming\Wychwood Paddocks\Must\Documents
 -- print(filePath)
@@ -106,7 +108,6 @@ end
 -- create()
 function scene:create(event)
 
-  local dim = _G.DIMENSIONS
   local sceneGroup = self.view
   -- Code here runs when the scene is first created but has not yet appeared on screen
 
@@ -117,22 +118,22 @@ function scene:create(event)
   -- local backHeight = (20 * dim.halfQ) + display.actualContentHeight
   -- need a background rect for the touch to work when touching the, er, background (otherwise can only touch/vscroll tiles)
   -- local rectBackground = display.newRect(backGroup, display.actualContentWidth / 2, display.actualContentHeight / 2, display.actualContentWidth, backHeight)
-  -- rectBackground:setFillColor(unpack(_G.MUST_COLORS.baize))
+  -- rectBackground:setFillColor(unpack(_G.TWITTY_COLORS.baize))
 
 --[[
   -- a rect for the results tool bar
   local rectToolbar = display.newRect(sceneGroup, dim.bannerX, dim.bannerY, dim.bannerWidth, dim.bannerHeight)
-  rectToolbar:setFillColor(unpack(_G.MUST_COLORS.uibackground))
+  rectToolbar:setFillColor(unpack(_G.TWITTY_COLORS.uibackground))
 
   local newButton = widget.newButton({
     x = dim.halfQ,
     y = dim.bannerY,
     onRelease = function()
       Util.sound('ui')
-      composer.gotoScene('Must', {effect='slideLeft'})
+      composer.gotoScene('Twitty', {effect='slideLeft'})
     end,
     label = '< NEW GAME',
-    labelColor = { default=_G.MUST_COLORS.uiforeground, over=_G.MUST_COLORS.uicontrol },
+    labelColor = { default=_G.TWITTY_COLORS.uiforeground, over=_G.TWITTY_COLORS.uicontrol },
     labelAlign = 'left',
     font = _G.ACME,
     fontSize = dim.bannerHeight / 2,
@@ -186,7 +187,7 @@ function scene:show(event)
       sceneGroup:insert(grp)
       grp:scale(0.5, 0.5)
       if selected then
-        grp[2]:setFillColor(unpack(_G.MUST_COLORS.moccasin))
+        grp[2]:setFillColor(unpack(_G.TWITTY_COLORS.moccasin))
       end
       return grp
     end
@@ -227,11 +228,13 @@ function scene:show(event)
   elseif phase == 'did' then
     -- Code here runs when the scene is entirely on screen
 
-    local tappy = Tappy.new(sceneGroup, display.actualContentWidth - dim.Q, display.actualContentHeight - dim.Q, function()
+    -- create a group for the tappy so it doesn't scroll with the background
+    toolbarGroup = display:newGroup()
+    local tappy = Tappy.new(toolbarGroup, display.safeActualContentWidth - dim.halfQ, dim.toolbarY, function()
       Util.sound('ui')
-      composer.gotoScene('Must', {effect='slideLeft'})
+      composer.gotoScene('Twitty', {effect='slideLeft'})
     end, 'NEW')
-    tappy.grp[2]:setFillColor(unpack(_G.MUST_COLORS.tappy))
+    tappy.grp[2]:setFillColor(unpack(_G.TWITTY_COLORS.tappy))
     tappy:setLabel('★')
 
   end
@@ -250,6 +253,7 @@ function scene:hide(event)
 
   elseif phase == 'did' then
     -- Code here runs immediately after the scene goes entirely off screen
+    toolbarGroup:removeSelf()
     --- delete the scene so it gets built next time it's shown
     composer.removeScene('HighScores')
   end
@@ -266,7 +270,7 @@ end
 --   local phase = event.phase
 --   if phase == 'up' then
 --     if event.keyName == 'back' or event.keyName == 'deleteBack' then
---       composer.gotoScene('Must', {effect='slideLeft'})
+--       composer.gotoScene('Twitty', {effect='slideLeft'})
 --       return true -- override the key
 --     end
 --   end

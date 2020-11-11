@@ -33,34 +33,34 @@ function Toolbar.new()
 
   local dim = _G.DIMENSIONS
 
-  -- o.rect = display.newRect(_G.MUST_GROUPS.ui, dim.toolbarX, dim.toolbarY, dim.toolbarWidth, dim.toolbarHeight)
-  -- o.rect:setFillColor(unpack(_G.MUST_COLORS.uibackground))
+  -- o.rect = display.newRect(_G.TWITTY_GROUPS.ui, dim.toolbarX, dim.toolbarY, dim.toolbarWidth, dim.toolbarHeight)
+  -- o.rect:setFillColor(unpack(_G.TWITTY_COLORS.uibackground))
 
-  o.left = Tappy.new(_G.MUST_GROUPS.ui, dim.halfQ, dim.toolbarY, function()
+  o.left = Tappy.new(_G.TWITTY_GROUPS.ui, dim.halfQ, dim.toolbarY, function()
     _G.grid:shuffle()
   end, 'SWAP')
-  o.left.grp[2]:setFillColor(unpack(_G.MUST_COLORS.tappy))
+  o.left.grp[2]:setFillColor(unpack(_G.TWITTY_COLORS.tappy))
   o.left:setLabel('⇆')
 
-  o.hint = Tappy.new(_G.MUST_GROUPS.ui, dim.Q + dim.Q, dim.toolbarY, function()
+  o.hint = Tappy.new(_G.TWITTY_GROUPS.ui, dim.Q + dim.Q, dim.toolbarY, function()
     _G.grid:hint()
   end, 'HINT')
-  o.hint.grp[2]:setFillColor(unpack(_G.MUST_COLORS.tappy))
+  o.hint.grp[2]:setFillColor(unpack(_G.TWITTY_COLORS.tappy))
   o.hint:setLabel('💡')
 
-  o.undo = Tappy.new(_G.MUST_GROUPS.ui, dim.toolbarX, dim.toolbarY, function()
+  o.undo = Tappy.new(_G.TWITTY_GROUPS.ui, dim.toolbarX, dim.toolbarY, function()
     _G.grid:undo()
   end, 'UNDO')
-  o.undo.grp[2]:setFillColor(unpack(_G.MUST_COLORS.tappy))
+  o.undo.grp[2]:setFillColor(unpack(_G.TWITTY_COLORS.tappy))
   o.undo:setLabel('⎌')
 
-  -- o.center = display.newText(_G.MUST_GROUPS.ui, '', dim.toolbarX, dim.toolbarY, _G.ACME, dim.tileFontSize)
-  -- o.center:setFillColor(unpack(_G.MUST_COLORS.black))
+  -- o.center = display.newText(_G.TWITTY_GROUPS.ui, '', dim.toolbarX, dim.toolbarY, _G.ACME, dim.tileFontSize)
+  -- o.center:setFillColor(unpack(_G.TWITTY_COLORS.black))
 
-  o.right = Tappy.new(_G.MUST_GROUPS.ui, display.actualContentWidth - dim.halfQ, dim.toolbarY, function()
+  o.right = Tappy.new(_G.TWITTY_GROUPS.ui, display.actualContentWidth - dim.halfQ, dim.toolbarY, function()
     _G.grid:showFoundWords()
   end, 'RESULT')
-  o.right.grp[2]:setFillColor(unpack(_G.MUST_COLORS.tappy))
+  o.right.grp[2]:setFillColor(unpack(_G.TWITTY_COLORS.tappy))
   o.right:setLabel('⚖')
 
   return o

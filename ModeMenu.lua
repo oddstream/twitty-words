@@ -31,7 +31,7 @@ function scene:create(event)
       local tappy = Tappy.new(sceneGroup, x, y, function()
         Util.sound('ui')
         _G.GAME_MODE = mode
-        composer.gotoScene('Must', {effect='slideLeft'})
+        composer.gotoScene('Twitty', {effect='slideLeft'})
       end)
       tappy:setLabel(string.sub(title, i, i))
       x = x + dim.Q
@@ -42,8 +42,8 @@ function scene:create(event)
 
   local y
   y = (display.actualContentHeight / 2) - dim.Q - dim.Q - dim.Q - dim.Q - dim.Q
-  local banner = display.newText(sceneGroup, 'Find Words on Tiles', display.contentCenterX, y, _G.ACME, dim.tileFontSize)
-  banner:setFillColor(0,0,0)
+  local title = display.newText(sceneGroup, 'Little Twitty Words', display.contentCenterX, y, _G.ACME, dim.tileFontSize)
+  title:setFillColor(0,0,0)
 
   y = (display.actualContentHeight / 2) - dim.Q - dim.Q
   _createRow(y, 'VACATE', 'untimed')
