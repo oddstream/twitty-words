@@ -152,7 +152,7 @@ end
 
 function Tile:select()
   self.selected = true
-  self.grp[2]:setFillColor(unpack(_G.TWITTY_COLORS.moccasin))
+  self.grp[2]:setFillColor(unpack(_G.TWITTY_COLORS.selected))
   self:depress()
 end
 
@@ -160,6 +160,14 @@ function Tile:deselect()
   self.selected = false
   self.grp[2]:setFillColor(unpack(_G.TWITTY_COLORS.tile))
   self:undepress()
+end
+
+function Tile:mark()
+  self.grp[2]:setFillColor(unpack(_G.TWITTY_COLORS.marked))
+end
+
+function Tile:unmark()
+  self.grp[2]:setFillColor(unpack(_G.TWITTY_COLORS.tile))
 end
 
 function Tile:delete()

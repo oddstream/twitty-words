@@ -34,11 +34,6 @@ local function _createTile(group, x, y, txt)
   local grp = Tile.createGraphics(x, y, txt)
   group:insert(grp)
   grp:scale(0.5, 0.5)
-  -- if found then
-  --   grp[2]:setFillColor(unpack(_G.TWITTY_COLORS.moccasin))
-  -- else
-  --   grp[2]:setFillColor(unpack(_G.TWITTY_COLORS.tile))
-  -- end
   return grp
 end
 

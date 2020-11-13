@@ -362,6 +362,7 @@ function Grid:selectSlot(slot)
         local lastButOne = self.selectedSlots[#self.selectedSlots-1]
         if slot == lastButOne then
           -- trace('backtracking')
+          Util.sound('select')
           table.remove(self.selectedSlots)  -- remove last element
           last:deselect()
         end
@@ -713,17 +714,25 @@ function Grid:DFS(slot, path, word)
     local slot2 = slot[dir]
     if slot2 and slot2.tile and (not table.contains(path, slot2)) then
       local w = word .. slot2.tile.letter
-      if string.len(w) < 10 then
-        if Util.isWordPrefixInHintDict(w) then
+      -- if string.len(w) < 10 then
+        if Util.isWordPrefixInDict(w) then
           table.insert(path, slot2)
           self:DFS(slot2, path, w)
         end
-      end
+      -- end
     else  -- end of the path
       if string.len(word) > 2 then
         if not table.contains(self.foundWords, word) then
-          if Util.isWordInHintDict(word) then
+          if Util.isWordInDict(word) then
             table.insert(self.foundWords, word)
+            -- assert(#path==string.len(word))
+
+            -- self.foundPaths[word] = {}
+            -- for _,s in ipairs(path) do
+            --   table.insert(self.foundPaths[word], s) -- MADE AN INFINITE LOOP self.foundPaths[word] = Util.cloneTable(path)
+            -- end
+            self.foundPaths[word] = table.clone(path)
+            assert(#self.foundPaths[word]==string.len(word))
           end
         end
       end
@@ -766,38 +775,59 @@ function Grid:hint()
   end
 
   local function _body(event)
+    local timeStart = system.getTimer()
     local source = event.source
     for _,slot in ipairs(self.slots) do
       if slot.tile then
+        slot.tile:mark()
+        coroutine.yield() -- yield to the timer, so UI can update
+
         self:DFS(slot, {slot}, slot.tile.letter)
 
         local maxWord, _ = _maxWord()
         _G.wordbar:setCenter(maxWord)
 
+        slot.tile:unmark()
         coroutine.yield() -- yield to the timer, so UI can update
       end
     end
     timer.cancel(source)
+    local timeStop = system.getTimer()
+    trace(#self.foundWords, 'found in time', (timeStop - timeStart) / 1000, 'seconds')
 
     -- trace(#self.foundWords, 'FOUND WORDS:', unpack(self.foundWords))
 
-    self.hints = self.hints - 1
-
     if #self.foundWords > 0 then
-      local maxWord, _ = _maxWord()
-      self:updateUI(maxWord)
       Util.sound('found')
+
+      local maxWord, _ = _maxWord()
+
+      local path = self.foundPaths[maxWord]
+      -- assert(path)
+      -- assert(#path==string.len(maxWord))
+      for _,slot in ipairs(self.slots) do
+        if table.contains(path, slot) then
+          slot.tile:select()
+        end
+      end
+
+      self.hints = self.hints - 1
+
+      self:updateUI(maxWord)
     else
       Util.sound('failure')
       self:updateUI()
     end
   end
 
+  self:deselectAllSlots()
   self.foundWords = {}
+  self.foundPaths = {}
 
   -- https://coronalabs.com/blog/2015/02/10/tutorial-using-coroutines-in-corona/
 
   timer.performWithDelay(0, coroutine.wrap(_body), 0)
+  local timeStart = system.getTimer()
 
 --[[
   local co = coroutine.create(function()

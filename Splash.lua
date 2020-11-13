@@ -32,14 +32,19 @@ local function loadDictionaries()
     trace('ERROR: Cannot open', filePath)
   else
     trace('opened', filePath)
-    _G.HINTDICT = file:read('*a')
+    _G.DICT = file:read('*a')
     io.close(file)
-    trace('dictionary length', string.len(_G.HINTDICT))
+    trace('dictionary length', string.len(_G.DICT))
   end
-  _G.HINTDICT_TRUE = {}
-  _G.HINTDICT_FALSE = {}
-  _G.HINTDICT_PREFIX_TRUE = {}
-  _G.HINTDICT_PREFIX_FALSE = {}
+  _G.DICT_TRUE = {}
+  _G.DICT_FALSE = {}
+  _G.DICT_PREFIX_TRUE = {}
+  _G.DICT_PREFIX_FALSE = {}
+
+  _G.DICTIONARY_TRUE = {}
+  _G.DICTIONARY_FALSE = {}
+  _G.DICTIONARY_PREFIX_TRUE = {}
+  _G.DICTIONARY_PREFIX_FALSE = {}
 end
 
 local function gotoDestination(event)

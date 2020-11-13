@@ -234,7 +234,6 @@ function scene:show(event)
       Util.sound('ui')
       composer.gotoScene('Twitty', {effect='slideLeft'})
     end, 'NEW')
-    tappy.grp[2]:setFillColor(unpack(_G.TWITTY_COLORS.tappy))
     tappy:setLabel('★')
 
   end

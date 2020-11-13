@@ -39,12 +39,23 @@ function Util.clamp(value, min, max)
 end
 
 function Util.setBackground(group)
+  display.setDefault('background', unpack(_G.TWITTY_COLORS.baize))
+  -- display.setDefault('textureWrapX', 'repeat')
+  -- display.setDefault('textureWrapY', 'repeat')
   -- -- dependant on scale = 'letterbox' in config.lua
-  local bg = display.newImage(group, 'assets/pexels-pixabay-301717.jpg') --, display.actualContentWidth, display.actualContentHeight)
-  bg.x = display.contentCenterX
-  bg.y = display.contentCenterY
-  bg.rotation = 90
-  -- display.setDefault('background', unpack(_G.TWITTY_COLORS.baize))
+  -- local bg = display.newImage(group, 'assets/pexels-pixabay-301717.jpg') --, display.actualContentWidth, display.actualContentHeight)
+  local bg = display.newRect(group, display.contentCenterX, display.contentCenterY, display.contentWidth, display.contentHeight * 3)
+  -- bg.x = display.contentCenterX
+  -- bg.y = display.contentCenterY
+  -- bg.rotation = 90
+  bg:setFillColor(unpack(_G.TWITTY_COLORS.baize))
+  bg.alpha = 0.95
+  -- bg.fill = {
+  --   type = 'image',
+  --   filename = 'assets/raccoon256.png'
+  -- }
+  -- bg.fill.scaleX = display.contentWidth / display.contentHeight / 2
+  -- bg.fill.scaleY = display.contentWidth / display.contentHeight / 3
 end
 
 --[[
@@ -114,21 +125,21 @@ function Util.isWordInDictionary(word)
   -- return true
 end
 
-function Util.isWordInHintDict(word)
+function Util.isWordInDict(word)
 
-  if table.contains(_G.HINTDICT_TRUE, word) then return true end
-  if table.contains(_G.HINTDICT_FALSE, word) then return false end
+  if table.contains(_G.DICT_TRUE, word) then return true end
+  if table.contains(_G.DICT_FALSE, word) then return false end
 
   local word2 = string.gsub(word, ' ', '%%u')
-  local first,last = string.find(_G.HINTDICT, '[^%u]' .. word2 .. '[^%u]')
+  local first,last = string.find(_G.DICT, '[^%u]' .. word2 .. '[^%u]')
   -- if first then
-  --   trace('found', string.sub(_G.HINTDICT, first+1, last-1))
+  --   trace('found', string.sub(_G.DICT, first+1, last-1))
   -- end
   if first then
-    table.insert(_G.HINTDICT_TRUE, word)
+    table.insert(_G.DICT_TRUE, word)
     -- trace(word, '> FOUND 3000 CACHE')
   else
-    table.insert(_G.HINTDICT_FALSE, word)
+    table.insert(_G.DICT_FALSE, word)
     -- trace(word, '> NOT FOUND 3000 CACHE')
   end
 
@@ -136,23 +147,47 @@ function Util.isWordInHintDict(word)
   -- return true
 end
 
-function Util.isWordPrefixInHintDict(word)
+function Util.isWordPrefixInDictionary(word)
 
-  if table.contains(_G.HINTDICT_TRUE, word) then return true end
-  if table.contains(_G.HINTDICT_PREFIX_TRUE, word) then return true end
-  if table.contains(_G.HINTDICT_PREFIX_FALSE, word) then return false end
+  if table.contains(_G.DICTIONARY_TRUE, word) then return true end
+  if table.contains(_G.DICTIONARY_PREFIX_TRUE, word) then return true end
+  if table.contains(_G.DICTIONARY_PREFIX_FALSE, word) then return false end
 
   local word2 = string.gsub(word, ' ', '%%u')
-  local first,last = string.find(_G.HINTDICT, '[^%u]' .. word2)
+  local first,last = string.find(_G.DICTIONARY, '[^%u]' .. word2)
   -- if first then
-  --   trace('found', string.sub(_G.HINTDICT, first+1, last-1))
+  --   trace('found', string.sub(_G.DICT, first+1, last-1))
   -- end
 
   if first then
-    table.insert(_G.HINTDICT_PREFIX_TRUE, word)
+    table.insert(_G.DICTIONARY_PREFIX_TRUE, word)
     -- trace(word, '> FOUND 3000 PREFIX CACHE')
   else
-    table.insert(_G.HINTDICT_PREFIX_FALSE, word)
+    table.insert(_G.DICTIONARY_PREFIX_FALSE, word)
+    -- trace(word, '> NOT FOUND 3000 PREFIX CACHE')
+  end
+
+  return first ~= nil
+  -- return true
+end
+
+function Util.isWordPrefixInDict(word)
+
+  if table.contains(_G.DICT_TRUE, word) then return true end
+  if table.contains(_G.DICT_PREFIX_TRUE, word) then return true end
+  if table.contains(_G.DICT_PREFIX_FALSE, word) then return false end
+
+  local word2 = string.gsub(word, ' ', '%%u')
+  local first,last = string.find(_G.DICT, '[^%u]' .. word2)
+  -- if first then
+  --   trace('found', string.sub(_G.DICT, first+1, last-1))
+  -- end
+
+  if first then
+    table.insert(_G.DICT_PREFIX_TRUE, word)
+    -- trace(word, '> FOUND 3000 PREFIX CACHE')
+  else
+    table.insert(_G.DICT_PREFIX_FALSE, word)
     -- trace(word, '> NOT FOUND 3000 PREFIX CACHE')
   end
 

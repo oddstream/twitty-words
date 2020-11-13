@@ -39,19 +39,16 @@ function Toolbar.new()
   o.left = Tappy.new(_G.TWITTY_GROUPS.ui, dim.halfQ, dim.toolbarY, function()
     _G.grid:shuffle()
   end, 'SWAP')
-  o.left.grp[2]:setFillColor(unpack(_G.TWITTY_COLORS.tappy))
   o.left:setLabel('⇆')
 
   o.hint = Tappy.new(_G.TWITTY_GROUPS.ui, dim.Q + dim.Q, dim.toolbarY, function()
     _G.grid:hint()
   end, 'HINT')
-  o.hint.grp[2]:setFillColor(unpack(_G.TWITTY_COLORS.tappy))
   o.hint:setLabel('💡')
 
   o.undo = Tappy.new(_G.TWITTY_GROUPS.ui, dim.toolbarX, dim.toolbarY, function()
     _G.grid:undo()
   end, 'UNDO')
-  o.undo.grp[2]:setFillColor(unpack(_G.TWITTY_COLORS.tappy))
   o.undo:setLabel('⎌')
 
   -- o.center = display.newText(_G.TWITTY_GROUPS.ui, '', dim.toolbarX, dim.toolbarY, _G.ACME, dim.tileFontSize)
@@ -60,7 +57,6 @@ function Toolbar.new()
   o.right = Tappy.new(_G.TWITTY_GROUPS.ui, display.actualContentWidth - dim.halfQ, dim.toolbarY, function()
     _G.grid:showFoundWords()
   end, 'RESULT')
-  o.right.grp[2]:setFillColor(unpack(_G.TWITTY_COLORS.tappy))
   o.right:setLabel('⚖')
 
   return o

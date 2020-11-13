@@ -108,7 +108,6 @@ function scene:create(event)
     composer.hideOverlay('slideLeft')
     _G.grid:resumeCountdown()
     end, 'BACK')
-  tappyBack.grp[2]:setFillColor(unpack(_G.TWITTY_COLORS.tappy))
   tappyBack:setLabel('←')
 
   --[[
@@ -142,12 +141,11 @@ function scene:create(event)
   sceneGroup:insert(finishButton)
 ]]
 
-local tappyFinish = Tappy.new(toolbarGroup, display.safeActualContentWidth - dim.halfQ, dim.toolbarY, function()
-  Util.sound('ui')
-  composer.hideOverlay()
-  _G.grid:gameOver()
-  end, 'FINISH')
-  tappyFinish.grp[2]:setFillColor(unpack(_G.TWITTY_COLORS.tappy))
+  local tappyFinish = Tappy.new(toolbarGroup, display.safeActualContentWidth - dim.halfQ, dim.toolbarY, function()
+    Util.sound('ui')
+    composer.hideOverlay()
+    _G.grid:gameOver()
+    end, 'FINISH')
   tappyFinish:setLabel('→') -- '⯈' didn't appear on the phone
 
   -- local y = dim.bannerY + dim.Q

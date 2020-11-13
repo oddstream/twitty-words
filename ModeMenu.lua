@@ -5,6 +5,7 @@ local composer = require('composer')
 local scene = composer.newScene()
 
 local Tappy = require 'Tappy'
+local Tile = require 'Tile'
 local Util = require 'Util'
 
 -- -----------------------------------------------------------------------------------
@@ -25,7 +26,27 @@ function scene:create(event)
   local sceneGroup = self.view
   -- Code here runs when the scene is first created but has not yet appeared on screen
 
-  local function _createRow(y, title, mode)
+  local function _createTile(group, x, y, txt)
+    local grp = Tile.createGraphics(x, y, txt)
+    group:insert(grp)
+    return grp
+  end
+
+  local function _titleLine(y, s)
+    local titleGroup = display.newGroup()
+    -- the first tile is dim.halfQ over to the right
+    titleGroup.x = display.contentCenterX - (string.len(s) * dim.Q / 2) - (dim.Q / 2)
+    titleGroup.y = y
+    sceneGroup:insert(titleGroup)
+    local x = dim.Q
+    for i=1, string.len(s) do
+      local tile = _createTile(titleGroup, x, dim.wordbarY, string.sub(s, i, i))
+      titleGroup:insert(tile)
+      x = x + dim.Q
+    end
+  end
+
+  local function _createTappyRow(y, title, mode)
     local x = dim.Q
     for i=1, string.len(title) do
       local tappy = Tappy.new(sceneGroup, x, y, function()
@@ -40,25 +61,32 @@ function scene:create(event)
 
   Util.setBackground(sceneGroup)
 
-  local y
-  y = (display.actualContentHeight / 2) - dim.Q - dim.Q - dim.Q - dim.Q - dim.Q
-  local title = display.newText(sceneGroup, 'Little Twitty Words', display.contentCenterX, y, _G.ACME, dim.tileFontSize)
-  title:setFillColor(0,0,0)
+  local y = dim.halfQ
 
-  y = (display.actualContentHeight / 2) - dim.Q - dim.Q
-  _createRow(y, 'VACATE', 'untimed')
+  _titleLine(y, 'LYTTLE')
+
+  y = y + dim.Q
+
+  _titleLine(y, 'TWITTY')
+
+  y = y + dim.Q
+
+  _titleLine(y, 'WORDES')
+
+  y = (display.actualContentHeight / 2)
+  _createTappyRow(y, 'VACATE', 'untimed')
   y = y + dim.Q * 0.75
   local help1 = display.newText(sceneGroup, 'Clear all tiles in your own time', display.contentCenterX, y, _G.ROBOTO_MEDIUM, dim.tileFontSize / 3)
   help1:setFillColor(0,0,0)
 
-  y = (display.actualContentHeight / 2)
-  _createRow(y, 'URGENT', 'timed')
+  y = (display.actualContentHeight / 2) + dim.Q + dim.Q
+  _createTappyRow(y, 'URGENT', 'timed')
   y = y + dim.Q * 0.75
   local help2 = display.newText(sceneGroup, 'Get your best score in five minutes', display.contentCenterX, y, _G.ROBOTO_MEDIUM, dim.tileFontSize / 3)
   help2:setFillColor(0,0,0)
 
-  y = (display.actualContentHeight / 2) + dim.Q + dim.Q
-  _createRow(y, 'TWELVE', 12)
+  y = (display.actualContentHeight / 2) + dim.Q + dim.Q + dim.Q + dim.Q
+  _createTappyRow(y, 'TWELVE', 12)
   y = y + dim.Q * 0.75
   local help3 = display.newText(sceneGroup, 'Get your best score with twelve words', display.contentCenterX, y, _G.ROBOTO_MEDIUM, dim.tileFontSize / 3)
   help3:setFillColor(0,0,0)

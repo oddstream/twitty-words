@@ -114,10 +114,15 @@ _G.SCRABBLE_SCORES = {
 
 _G.FLIGHT_TIME = 2000
 
+local function RGB2DEC(r,g,b)
+  local n = 1/255
+  return {r*n, g*n, b*n}
+end
+
 _G.TWITTY_COLORS = {
   uiforeground = {1,1,1},
   uibackground = {0.1,0.1,0.1},
-  uicontrol = {1, 228*4/1020, 181*4/1020},  -- moccasin
+  uicontrol = RGB2DEC(255, 228, 181),  -- moccasin
   -- uicontrol = {51*4/1020,181*4/1020,229*4/1020}, -- color from widget_theme_android_holo_dark@4x.png
 
   -- baize = {240*4/1020, 1, 240*4/1020},  -- Honeydew
@@ -125,24 +130,25 @@ _G.TWITTY_COLORS = {
   -- baize = {255*4/1020, 245*4/1020, 238*4/1020},  -- SeaShell
   -- baize = {248*4/1020, 248*4/1020, 255*4/1020},  -- GhostWhite
 
-  baize = {224*4/1020, 1, 1}, -- Lightcyan
+  baize = RGB2DEC(210, 180, 140), -- Tan
   -- selected = {1,0.8,0},
   -- back = {100*4/1020,147*4/1020,237*4/1020}, -- CornFlowerBlue
   -- tile = {1, 245*4/1020, 238*4/1020}, -- Seashell
   tile = {1, 1, 0.94}, -- ivory
-  tappy = {1, 228*4/1020, 181*4/1020},
+  selected = RGB2DEC(255, 228, 181),  -- Moccasin
+  marked = RGB2DEC(255, 228, 181), -- Moccasin
+  tappy = RGB2DEC(255, 228, 181), -- Moccasin
 
   ivory = {1, 1, 0.94},
   gold = {1, 0.84, 0},
-  greenery = {0x88*4/1020, 0xB0*4/1020, 0x4b*4/1020},
-  moccasin = {1, 228*4/1020, 181*4/1020},
+  moccasin = RGB2DEC(255, 228, 181),
 
   white = {1,1,1},
   offwhite = {0.91,0.9,0.9},
   aqua = {0,1,1},
   red = {1,0,0},
   orange = {1,0.65,0},
-  pink = {1,192*4/1020,203*4/1020},
+  pink = RGB2DEC(1,192,203),
   blue = {0,0,1},
   green = {0,1,0},
   purple = {0.5,0,0.5},
@@ -222,6 +228,22 @@ if not table.filter then
   end
 end
 -- trace('table filter', type(_G.table.filter))
+
+if not table.clone then
+  function _G.table.clone(orig)
+    local orig_type = type(orig)
+    local copy
+    if orig_type == 'table' then
+      copy = {}
+      for orig_key, orig_value in pairs(orig) do
+        copy[orig_key] = orig_value
+      end
+    else -- number, string, boolean, etc
+      copy = orig
+    end
+    return copy
+  end
+end
 
 _G.DIMENSIONS = Dim.new()
 -- grid (of slots) has no graphical elements, and does not change size, so persists across all games
