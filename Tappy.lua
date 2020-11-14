@@ -5,7 +5,7 @@ local Tile = require 'Tile'
 local Tappy = {}
 Tappy.__index = Tappy
 
-function Tappy.new(group, x, y, cmd, description)
+function Tappy.new(group, x, y, cmd, label, description)
 
   local o = {}
   setmetatable(o, Tappy)
@@ -13,7 +13,7 @@ function Tappy.new(group, x, y, cmd, description)
   o.group = group
   o.cmd = cmd
   o.description = description
-  o.label = ''
+  o.label = label
 
   o.grp = o:_createGraphics(x, y, o.label, o.description)
   o.grp[2]:setFillColor(unpack(_G.TWITTY_COLORS.tappy))
@@ -67,6 +67,22 @@ function Tappy:setLabel(label)
         self.grp[3].size = dim.tileFontSize * 0.666
       end
     end
+  end
+end
+
+function Tappy:enable()
+  self.disabled = false
+  self.grp[3]:setFillColor(unpack(_G.TWITTY_COLORS.black))
+  if self.description then
+    self.grp[4]:setFillColor(unpack(_G.TWITTY_COLORS.black))
+  end
+end
+
+function Tappy:disable()
+  self.disabled = true
+  self.grp[3]:setFillColor(unpack(_G.TWITTY_COLORS.gray))
+  if self.description then
+    self.grp[4]:setFillColor(unpack(_G.TWITTY_COLORS.gray))
   end
 end
 
@@ -136,7 +152,9 @@ function Tappy:touch(event)
     -- trace('touch ended', event.x, event.y, self.letter)
     display.getCurrentStage():setFocus(nil)
     self:undepress()
-    self.cmd()
+    if not self.disabled then -- nil and false are false
+      self.cmd()
+    end
 
   elseif event.phase == 'cancelled' then
     -- trace('touch cancelled', event.x, event.y, self.letter)

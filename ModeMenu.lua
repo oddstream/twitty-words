@@ -17,8 +17,6 @@ local Util = require 'Util'
 -- Scene event functions
 -- -----------------------------------------------------------------------------------
 
--- TODO add a titlebar
-
 -- create()
 function scene:create(event)
 
@@ -53,8 +51,7 @@ function scene:create(event)
         Util.sound('ui')
         _G.GAME_MODE = mode
         composer.gotoScene('Twitty', {effect='slideLeft'})
-      end)
-      tappy:setLabel(string.sub(title, i, i))
+      end, string.sub(title, i, i)) -- no description
       x = x + dim.Q
     end
   end
@@ -63,15 +60,15 @@ function scene:create(event)
 
   local y = dim.halfQ
 
-  _titleLine(y, 'LYTTLE')
-
-  y = y + dim.Q
-
   _titleLine(y, 'TWITTY')
 
   y = y + dim.Q
 
-  _titleLine(y, 'WORDES')
+  _titleLine(y, 'LITTLE')
+
+  y = y + dim.Q
+
+  _titleLine(y, 'SWORDS')
 
   y = (display.actualContentHeight / 2)
   _createTappyRow(y, 'VACATE', 'untimed')

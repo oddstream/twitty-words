@@ -107,8 +107,7 @@ function scene:create(event)
     Util.sound('ui')
     composer.hideOverlay('slideLeft')
     _G.grid:resumeCountdown()
-    end, 'BACK')
-  tappyBack:setLabel('←')
+    end, '←', 'BACK')
 
   --[[
   local scales = display.newText({
@@ -145,10 +144,8 @@ function scene:create(event)
     Util.sound('ui')
     composer.hideOverlay()
     _G.grid:gameOver()
-    end, 'FINISH')
-  tappyFinish:setLabel('→') -- '⯈' didn't appear on the phone
+    end, '→', 'FINISH') -- '⯈' didn't appear on the phone
 
-  -- local y = dim.bannerY + dim.Q
   local y = dim.halfQ
 
   for i,word in ipairs(_G.grid.words) do

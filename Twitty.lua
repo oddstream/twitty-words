@@ -143,6 +143,15 @@ function scene:key(event)
       _G.grid:shuffle()
     elseif event.keyName == 'u' then
       _G.grid:undo()
+    elseif event.keyName == 'd' then
+      -- trace('#_G.DICTIONARY_TRUE', #_G.DICTIONARY_TRUE)
+      -- trace('#_G.DICTIONARY_FALSE', #_G.DICTIONARY_FALSE)
+      -- trace('#_G.DICTIONARY_PREFIX_TRUE', #_G.DICTIONARY_PREFIX_TRUE)
+      -- trace('#_G.DICTIONARY_PREFIX_FALSE', #_G.DICTIONARY_PREFIX_FALSE)
+      trace('#_G.DICT_TRUE', #_G.DICT_TRUE)
+      trace('#_G.DICT_FALSE', #_G.DICT_FALSE)
+      trace('#_G.DICT_PREFIX_TRUE', #_G.DICT_PREFIX_TRUE)
+      trace('#_G.DICT_PREFIX_FALSE', #_G.DICT_PREFIX_FALSE)
     elseif event.keyName == 'w' then
       _G.grid:showFoundWords()
     end

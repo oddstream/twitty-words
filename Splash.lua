@@ -9,7 +9,6 @@ local destination = nil
 
 local function loadDictionaries()
   -- look for dictionary file in resource directory (the one containing main.lua)
-  -- local filePath = system.pathForFile('Collins Scrabble Words (2019).txt', system.ResourceDirectory)  -- 279498 words
 
   local filePath = system.pathForFile('Collins Scrabble Words (2019).txt', system.ResourceDirectory)
   local file = io.open(filePath)
@@ -23,6 +22,8 @@ local function loadDictionaries()
   end
   _G.DICTIONARY_TRUE = {}
   _G.DICTIONARY_FALSE = {}
+  _G.DICTIONARY_PREFIX_TRUE = {}
+  _G.DICTIONARY_PREFIX_FALSE = {}
 
   -- https://raw.githubusercontent.com/sapbmw/The-Oxford-3000/master/The_Oxford_3000.txt
   -- filePath = system.pathForFile('Oxford3000.txt', system.ResourceDirectory)
@@ -34,17 +35,38 @@ local function loadDictionaries()
     trace('opened', filePath)
     _G.DICT = file:read('*a')
     io.close(file)
-    trace('dictionary length', string.len(_G.DICT))
+    trace('dict length', string.len(_G.DICT))
   end
+
+--[[
+  -- cannot search a table for a wildcard, so cannot do this
+  _G.HINTWORDSTABLE = {}
+  for line in io.lines(filePath) do
+    if string.len(line) > 2 then
+      table.insert(_G.HINTWORDSTABLE, line)
+    end
+  end
+]]
+
+--[[
+  local pos = {}
+  local subs = {}
+  local A2Z = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+  for i=1, 26 do
+    local letter = string.sub(A2Z, i, i)
+    pos[letter], _ = string.find(_G.DICT, '\n' .. letter)
+    trace(letter, pos[letter])
+  end
+
+  local firstQ, lastQ = string.find(_G.DICT, '(\nQ)')
+  local firstR, lastR = string.find(_G.DICT, '(\nR)')
+  trace(string.sub(_G.DICT, firstQ, firstR))
+]]
   _G.DICT_TRUE = {}
   _G.DICT_FALSE = {}
   _G.DICT_PREFIX_TRUE = {}
   _G.DICT_PREFIX_FALSE = {}
 
-  _G.DICTIONARY_TRUE = {}
-  _G.DICTIONARY_FALSE = {}
-  _G.DICTIONARY_PREFIX_TRUE = {}
-  _G.DICTIONARY_PREFIX_FALSE = {}
 end
 
 local function gotoDestination(event)

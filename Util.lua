@@ -104,15 +104,17 @@ function Util.sound(name)
 end
 
 function Util.isWordInDictionary(word)
-
+  -- no point using a cache if only used to check words user has selected
+--[[
   if table.contains(_G.DICTIONARY_TRUE, word) then return true end
   if table.contains(_G.DICTIONARY_FALSE, word) then return false end
-
+]]
   local word2 = string.gsub(word, ' ', '%%u')
   local first,last = string.find(_G.DICTIONARY, '[^%u]' .. word2 .. '[^%u]')
   -- if first then
   --   trace('found', string.sub(_G.DICTIONARY, first+1, last-1))
   -- end
+--[[
   if first then
     table.insert(_G.DICTIONARY_TRUE, word)
     -- trace(word, '> FOUND CACHE')
@@ -120,7 +122,7 @@ function Util.isWordInDictionary(word)
     table.insert(_G.DICTIONARY_FALSE, word)
     -- trace(word, '> NOT FOUND CACHE')
   end
-
+]]
   return first ~= nil
   -- return true
 end
@@ -128,7 +130,10 @@ end
 function Util.isWordInDict(word)
 
   if table.contains(_G.DICT_TRUE, word) then return true end
+  -- if _G.DICT_TRUE[word] then return true end
+
   if table.contains(_G.DICT_FALSE, word) then return false end
+  -- if _G.DICT_FALSE[word] then return false end
 
   local word2 = string.gsub(word, ' ', '%%u')
   local first,last = string.find(_G.DICT, '[^%u]' .. word2 .. '[^%u]')
@@ -137,16 +142,19 @@ function Util.isWordInDict(word)
   -- end
   if first then
     table.insert(_G.DICT_TRUE, word)
-    -- trace(word, '> FOUND 3000 CACHE')
+    -- _G.DICT_TRUE[word] = true
+    -- trace(word, '> FOUND IN CACHE')
   else
+    -- _G.DICT_FALSE[word] = true
     table.insert(_G.DICT_FALSE, word)
-    -- trace(word, '> NOT FOUND 3000 CACHE')
+    -- trace(word, '> NOT FOUND IN CACHE')
   end
 
   return first ~= nil
   -- return true
-end
 
+end
+--[[
 function Util.isWordPrefixInDictionary(word)
 
   if table.contains(_G.DICTIONARY_TRUE, word) then return true end
@@ -161,43 +169,51 @@ function Util.isWordPrefixInDictionary(word)
 
   if first then
     table.insert(_G.DICTIONARY_PREFIX_TRUE, word)
-    -- trace(word, '> FOUND 3000 PREFIX CACHE')
+    -- trace(word, '> FOUND IN PREFIX CACHE')
   else
     table.insert(_G.DICTIONARY_PREFIX_FALSE, word)
-    -- trace(word, '> NOT FOUND 3000 PREFIX CACHE')
+    -- trace(word, '> NOT FOUND IN PREFIX CACHE')
   end
 
   return first ~= nil
   -- return true
 end
-
+]]
 function Util.isWordPrefixInDict(word)
 
   if table.contains(_G.DICT_TRUE, word) then return true end
+  -- if _G.DICT_TRUE[word] then return true end
+
   if table.contains(_G.DICT_PREFIX_TRUE, word) then return true end
+  -- if _G.DICT_PREFIX_TRUE[word] then return true end
+
   if table.contains(_G.DICT_PREFIX_FALSE, word) then return false end
+  -- if _G.DICT_PREFIX_FALSE[word] then return false end
 
   local word2 = string.gsub(word, ' ', '%%u')
   local first,last = string.find(_G.DICT, '[^%u]' .. word2)
+
   -- if first then
   --   trace('found', string.sub(_G.DICT, first+1, last-1))
   -- end
 
   if first then
     table.insert(_G.DICT_PREFIX_TRUE, word)
-    -- trace(word, '> FOUND 3000 PREFIX CACHE')
+    -- _G.DICT_PREFIX_TRUE[word] = true
+    -- trace(word, '> FOUND IN PREFIX CACHE')
   else
     table.insert(_G.DICT_PREFIX_FALSE, word)
-    -- trace(word, '> NOT FOUND 3000 PREFIX CACHE')
+    -- _G.DICT_PREFIX_FALSE[word] = true
+    -- trace(word, '> NOT FOUND IN PREFIX CACHE')
   end
 
   return first ~= nil
   -- return true
 end
 
-
-function Util.cloneTable(t)
-  return json.decode( json.encode( t ) )
-end
+-- don't use this on a table that contains tables
+-- function Util.cloneTable(t)
+--   return json.decode( json.encode( t ) )
+-- end
 
 return Util

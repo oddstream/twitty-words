@@ -233,8 +233,7 @@ function scene:show(event)
     local tappy = Tappy.new(toolbarGroup, display.safeActualContentWidth - dim.halfQ, dim.toolbarY, function()
       Util.sound('ui')
       composer.gotoScene('Twitty', {effect='slideLeft'})
-    end, 'NEW')
-    tappy:setLabel('★')
+    end, '★', 'NEW')
 
   end
 end

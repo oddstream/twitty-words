@@ -40,7 +40,7 @@ end
 
 function Grid:createSaveable()
   local o = {}
-  o.letterPool = Util.cloneTable(self.letterPool)
+  o.letterPool = table.clone(self.letterPool)
   do
     local state = {}
     for _,slot in ipairs(self.slots) do
@@ -50,7 +50,7 @@ function Grid:createSaveable()
     end
     o.state = state
   end
-  o.words = Util.cloneTable(self.words)
+  o.words = table.clone(self.words)
   o.swaps = self.swaps
   -- self.hints is not covered by the unconditional undo guarantee
   o.score = self.score  -- TODO could recalc this
@@ -170,26 +170,46 @@ function Grid:newGame()
 end
 
 function Grid:updateUI(s, score)
+
+  if score and #self.selectedSlots > 0 then
+    _G.statusbar:setCenter(string.format('+%u', score))
+  else
+    _G.statusbar:setCenter(string.format('%u', self.score))  -- or '%+d'
+  end
+
   if type(_G.GAME_MODE) == 'number' then
     _G.statusbar:setRight(string.format('%u of %u', #self.words, _G.GAME_MODE))
   end
 
   _G.wordbar:setCenter(s)
-  -- _G.wordbar:setRight(score and tostring(score) or nil)
 
-  _G.toolbar:setLeft(string.format('⇆%u', self.swaps))
-  _G.toolbar:setHint(string.format('💡%u', self.hints))
-
-  if score and #self.selectedSlots > 0 then
-    -- _G.toolbar:setRight(string.format('+%u', score))
-    _G.statusbar:setCenter(string.format('+%u', score))
+  if self.swaps == 0 then
+    _G.toolbar:set('swap', '⇆')
+    _G.toolbar:disable('swap')
   else
-    -- _G.toolbar:setRight(string.format('%u', self.score))  -- or '%+d'
-    _G.statusbar:setCenter(string.format('%u', self.score))  -- or '%+d'
+    _G.toolbar:set('swap', string.format('⇆%u', self.swaps))
+    _G.toolbar:enable('swap')
   end
 
-  -- _G.statusbar:setLeft(score and tostring(score) or nil)
-  -- _G.statusbar:setCenter(tostring(self.score))
+  if self.hints == 0 then
+    _G.toolbar:set('hint', '💡')
+    _G.toolbar:disable('hint')
+  else
+    _G.toolbar:set('hint', string.format('💡%u', self.hints))
+    _G.toolbar:enable('hint')
+  end
+
+  if #self.undoStack > 0 then
+    _G.toolbar:enable('undo')
+  else
+    _G.toolbar:disable('undo')
+  end
+
+  if #self.words > 0 then
+    _G.toolbar:enable('result')
+  else
+    _G.toolbar:disable('result')
+  end
 end
 
 function Grid:createLetterPool()
@@ -200,10 +220,10 @@ function Grid:createLetterPool()
     local letter = string.sub(_G.SCRABBLE_LETTERS, i, i)
     table.insert(self.letterPool, letter)
   end
+  -- assert(#self.letterPool==100)
+
   -- https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
   -- https://stackoverflow.com/questions/35572435/how-do-you-do-the-fisher-yates-shuffle-in-lua
-
-  assert(#self.letterPool==100)
 
   for i=#self.letterPool, 1, -1 do
     local j = math.random(i)
@@ -343,7 +363,7 @@ function Grid:selectSlot(slot)
   assert(slot.tile)
 
   local function _connected(a, b)
-    for _,dir in ipairs({'n','ne','e','se','s','sw','w','nw'}) do
+    for _,dir in ipairs(_G.TOUTES_DIRECTIONS) do
       if a[dir] == b then
         return true
       end
@@ -635,7 +655,7 @@ function Grid:shuffle()
     return
   end
 
-  local function reslot(slot)
+  local function _reslot(slot)
     slot.tile.slot = slot
     transition.moveTo(slot.tile.grp, {
       x = slot.center.x,
@@ -662,8 +682,8 @@ function Grid:shuffle()
 
     -- swap the tiles (with transition)
     slot1.tile, slot2.tile = slot2.tile, slot1.tile
-    reslot(slot1)
-    reslot(slot2)
+    _reslot(slot1)
+    _reslot(slot2)
   end
 
   self.swaps = self.swaps - 1
@@ -710,7 +730,7 @@ end
 
 function Grid:DFS(slot, path, word)
 
-  for _,dir in ipairs({'n','ne','e','se','s','sw','w','ne'}) do
+  for _,dir in ipairs(_G.TOUTES_DIRECTIONS) do
     local slot2 = slot[dir]
     if slot2 and slot2.tile and (not table.contains(path, slot2)) then
       local w = word .. slot2.tile.letter
@@ -726,13 +746,8 @@ function Grid:DFS(slot, path, word)
           if Util.isWordInDict(word) then
             table.insert(self.foundWords, word)
             -- assert(#path==string.len(word))
-
-            -- self.foundPaths[word] = {}
-            -- for _,s in ipairs(path) do
-            --   table.insert(self.foundPaths[word], s) -- MADE AN INFINITE LOOP self.foundPaths[word] = Util.cloneTable(path)
-            -- end
             self.foundPaths[word] = table.clone(path)
-            assert(#self.foundPaths[word]==string.len(word))
+            -- assert(#self.foundPaths[word]==string.len(word))
           end
         end
       end
@@ -767,7 +782,7 @@ function Grid:hint()
   end
 
   if self.hints == 0 and system.getInfo('environment') == 'simulator' then
-    self.hints = 9
+    self.hints = 10
   end
   if self.hints < 1 then
     Util.sound('failure')
@@ -793,14 +808,13 @@ function Grid:hint()
     end
     timer.cancel(source)
     local timeStop = system.getTimer()
-    trace(#self.foundWords, 'found in time', (timeStop - timeStart) / 1000, 'seconds')
-
-    -- trace(#self.foundWords, 'FOUND WORDS:', unpack(self.foundWords))
 
     if #self.foundWords > 0 then
       Util.sound('found')
 
-      local maxWord, _ = _maxWord()
+      local maxWord, maxScore = _maxWord()
+
+      trace(#self.foundWords, 'found in', (timeStop - timeStart) / 1000, 'seconds, best', maxWord, 'score', maxScore)
 
       local path = self.foundPaths[maxWord]
       -- assert(path)

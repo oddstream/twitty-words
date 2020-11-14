@@ -36,28 +36,24 @@ function Toolbar.new()
   -- o.rect = display.newRect(_G.TWITTY_GROUPS.ui, dim.toolbarX, dim.toolbarY, dim.toolbarWidth, dim.toolbarHeight)
   -- o.rect:setFillColor(unpack(_G.TWITTY_COLORS.uibackground))
 
-  o.left = Tappy.new(_G.TWITTY_GROUPS.ui, dim.halfQ, dim.toolbarY, function()
+  o.swap = Tappy.new(_G.TWITTY_GROUPS.ui, dim.halfQ, dim.toolbarY, function()
     _G.grid:shuffle()
-  end, 'SWAP')
-  o.left:setLabel('⇆')
+  end, '⇆', 'SWAP')
 
   o.hint = Tappy.new(_G.TWITTY_GROUPS.ui, dim.Q + dim.Q, dim.toolbarY, function()
     _G.grid:hint()
-  end, 'HINT')
-  o.hint:setLabel('💡')
+  end, '💡', 'HINT')
 
   o.undo = Tappy.new(_G.TWITTY_GROUPS.ui, dim.toolbarX, dim.toolbarY, function()
     _G.grid:undo()
-  end, 'UNDO')
-  o.undo:setLabel('⎌')
+  end, '⎌', 'UNDO')
 
   -- o.center = display.newText(_G.TWITTY_GROUPS.ui, '', dim.toolbarX, dim.toolbarY, _G.ACME, dim.tileFontSize)
   -- o.center:setFillColor(unpack(_G.TWITTY_COLORS.black))
 
-  o.right = Tappy.new(_G.TWITTY_GROUPS.ui, display.actualContentWidth - dim.halfQ, dim.toolbarY, function()
+  o.result = Tappy.new(_G.TWITTY_GROUPS.ui, display.actualContentWidth - dim.halfQ, dim.toolbarY, function()
     _G.grid:showFoundWords()
-  end, 'RESULT')
-  o.right:setLabel('⚖')
+  end, '⚖', 'RESULT')
 
   return o
 end
@@ -71,26 +67,16 @@ function Toolbar:destroy()
 end
 ]]
 
-function Toolbar:set(pos, s)
-  self[pos].text = s or ''
+function Toolbar:set(tappy, s)
+  self[tappy]:setLabel(s)
 end
 
-function Toolbar:setLeft(s)
-  -- self:set('left', s)
-  self.left:setLabel(s)
+function Toolbar:enable(tappy)
+  self[tappy]:enable()
 end
 
-function Toolbar:setHint(s)
-  self.hint:setLabel(s)
-end
-
--- function Toolbar:setCenter(s)
---   self:set('center', s)
--- end
-
-function Toolbar:setRight(s)
-  -- self:set('right', s)
-  self.right:setLabel(s)
+function Toolbar:disable(tappy)
+  self[tappy]:disable()
 end
 
 return Toolbar

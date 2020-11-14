@@ -1,2 +1,9 @@
+20201113 (2)
+Added marking of hint path root
+Changed ModeMenu banner to TWITTY LITTLE SWORDS
+
+20201112
+Initial release to Play Store (1)
+
 20201011
 Creation

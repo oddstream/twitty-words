@@ -114,6 +114,8 @@ _G.SCRABBLE_SCORES = {
 
 _G.FLIGHT_TIME = 2000
 
+_G.TOUTES_DIRECTIONS = {'n','ne','e','se','s','sw','w','nw'}
+
 local function RGB2DEC(r,g,b)
   local n = 1/255
   return {r*n, g*n, b*n}
