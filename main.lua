@@ -25,15 +25,15 @@ if system.getInfo('platform') == 'win32' or system.getInfo('environment') == 'si
   print('actualContent', display.actualContentWidth, display.actualContentHeight)
   print('safeActualContent', display.safeActualContentWidth, display.safeActualContentHeight)
   print('viewableContent', display.viewableContentWidth, display.viewableContentHeight)
-  print('pixel', display.pixelWidth, display.pixelHeight)
+  print('pixelWidth/Height', display.pixelWidth, display.pixelHeight)
 
-  print('maxTextureSize', system.getInfo('maxTextureSize'))
+  -- print('maxTextureSize', system.getInfo('maxTextureSize'))
 
   print('platformName', system.getInfo('platformName'))
   print('architectureInfo', system.getInfo('architectureInfo'))
   print('model', system.getInfo('model'))
 
-  print('androidDisplayApproximateDpi', system.getInfo('androidDisplayApproximateDpi'))
+  -- print('androidDisplayApproximateDpi', system.getInfo('androidDisplayApproximateDpi'))
 end
 
 --[[
@@ -125,6 +125,7 @@ _G.TWITTY_COLORS = {
   uiforeground = {1,1,1},
   uibackground = {0.1,0.1,0.1},
   uicontrol = RGB2DEC(255, 228, 181),  -- moccasin
+  shadow = {0.1,0.1,0.1},
   -- uicontrol = {51*4/1020,181*4/1020,229*4/1020}, -- color from widget_theme_android_holo_dark@4x.png
 
   -- baize = {240*4/1020, 1, 240*4/1020},  -- Honeydew

@@ -68,15 +68,21 @@ end
 ]]
 
 function Toolbar:set(tappy, s)
-  self[tappy]:setLabel(s)
+  if self[tappy] then
+    self[tappy]:setLabel(s)
+  end
 end
 
 function Toolbar:enable(tappy)
-  self[tappy]:enable()
+  if self[tappy] then
+    self[tappy]:enable()
+  end
 end
 
 function Toolbar:disable(tappy)
-  self[tappy]:disable()
+  if self[tappy] then
+    self[tappy]:disable()
+  end
 end
 
 return Toolbar

@@ -15,42 +15,38 @@ function Dim.new()
   o.numX = 7
   o.numY = 9
 
-  local xQ = math.floor(display.safeActualContentWidth/o.numX)
-  local yQ = math.floor(display.safeActualContentHeight / (o.numY + 1 + 0.5)) -- add for toolbar (1) and statusbar (0.5)
+  local xQ = math.floor(display.actualContentWidth/o.numX)
+  local yQ = math.floor(display.actualContentHeight / (o.numY + 3)) -- add for statusbar, wordbar, toolbar
   -- trace('Dim reports Qx, Qy', xQ, yQ)
 
   o.Q = math.min(xQ, yQ)
   o.halfQ = o.Q/2
-  o.Q3D = o.Q * 0.025
+  o.size3D = o.Q * 0.95
+  o.offset3D = o.Q * 0.025
 
   o.tileFontSize = o.Q * 0.75
 
   -- o.bannerHeight = o.Q
   -- o.bannerX = display.contentCenterX
   -- o.bannerY = topInset - display.screenOriginY + (o.bannerHeight / 2)
-  -- o.bannerWidth = display.safeActualContentWidth
+  -- o.bannerWidth = display.actualContentWidth
 
   o.statusbarHeight = o.Q / 2
   o.statusbarX = display.contentCenterX
   o.statusbarY = topInset - display.screenOriginY + (o.statusbarHeight / 2)
-  o.statusbarWidth = display.safeActualContentWidth
+  o.statusbarWidth = display.actualContentWidth
 
   o.wordbarHeight = o.Q
   o.wordbarX = display.contentCenterX
   o.wordbarY = topInset - display.screenOriginY + o.statusbarHeight + (o.wordbarHeight / 2)
-  o.wordbarWidth = display.safeActualContentWidth
-
-  o.resultsbarHeight = o.Q / 2
-  o.resultsbarX = display.contentCenterX
-  o.resultsbarY = topInset - display.screenOriginY + (o.resultsbarHeight / 2)
-  o.resultsbarWidth = display.safeActualContentWidth
+  o.wordbarWidth = display.actualContentWidth
 
   o.toolbarHeight = o.Q
   o.toolbarX = display.contentCenterX
-  o.toolbarY = display.safeActualContentHeight - (o.toolbarHeight / 2)
-  o.toolbarWidth = display.safeActualContentWidth
+  o.toolbarY = display.actualContentHeight - (o.toolbarHeight / 2)
+  o.toolbarWidth = display.actualContentWidth
 
-  o.baizeHeight = display.safeActualContentHeight - o.statusbarHeight - o.toolbarHeight - o.wordbarHeight
+  o.baizeHeight = display.actualContentHeight - o.statusbarHeight - o.toolbarHeight - o.wordbarHeight
 
   -- o.numX = math.floor(display.actualContentWidth / o.Q)
   -- o.numY = math.floor(contentHeight / o.Q)
@@ -58,12 +54,12 @@ function Dim.new()
   trace('baize height', o.baizeHeight, 'tiles height', o.numY * o.Q)
 
   -- firstTileX, firstTileY is the coord of the centerpoint of the first slot (1,1)
-  o.firstTileX = (display.safeActualContentWidth - (o.numX * o.Q)) / 2
+  o.firstTileX = (display.actualContentWidth - (o.numX * o.Q)) / 2
   o.firstTileX = o.firstTileX + leftInset
 
-  -- o.firstTileY = ((o.toolbarHeight + o.statusbarHeight + (o.Q * o.numY)) - display.safeActualContentHeight) / 2
+  -- o.firstTileY = ((o.toolbarHeight + o.statusbarHeight + (o.Q * o.numY)) - display.actualContentHeight) / 2
   -- o.firstTileY = o.toolbarHeight + (display.actualContentHeight - (o.numY * o.Q)) / 2
-  -- o.firstTileY = (display.safeActualContentHeight - (o.numY * o.Q)) / 2
+  -- o.firstTileY = (display.actualContentHeight - (o.numY * o.Q)) / 2
 
   o.firstTileY = topInset - display.screenOriginY + o.statusbarHeight + o.wordbarHeight + ((o.baizeHeight - (o.numY * o.Q)) / 2)
 

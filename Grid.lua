@@ -99,21 +99,24 @@ end
 
 function Grid:pauseCountdown()
   if self.countdownTimer then
+    trace('pause countdownTimer')
     timer.pause(self.countdownTimer)
   end
 end
 
 function Grid:resumeCountdown()
   if self.countdownTimer then
+    trace('resume countdownTimer')
     timer.resume(self.countdownTimer)
   end
 end
 
 function Grid:cancelCountdown()
   if self.countdownTimer then
+    trace('cancel countdownTimer')
     timer.cancel(self.countdownTimer)
   -- the following produced runtime error, not sure why
-  -- self.countdownTimer = nil
+  self.countdownTimer = nil
   end
 end
 
@@ -160,8 +163,14 @@ function Grid:newGame()
   self.selectedSlots = {}
   self.undoStack = {}
 
+  if self.countdownTimer then
+    trace('WARNING: deleting old countdownTimer')
+    timer.cancel(self.countdownTimer)
+    self.countdownTimer = nil
+  end
+
   if _G.GAME_MODE == 'timed' then
-    self.secondsLeft = 60 * 5
+    self.secondsLeft = 60 * 4
     self.countdownTimer = timer.performWithDelay(1000, self, 0)
   end
 
@@ -170,6 +179,10 @@ function Grid:newGame()
 end
 
 function Grid:updateUI(s, score)
+
+  -- if system.getInfo('environment') == 'simulator' then
+  --   _G.statusbar:setLeft(string.format('%s(%s) %u', _G.GAME_MODE, type(_G.GAME_MODE):sub(1,1), #self.words))
+  -- end
 
   if score and #self.selectedSlots > 0 then
     _G.statusbar:setCenter(string.format('+%u', score))
@@ -693,8 +706,6 @@ end
 
 function Grid:addTiles()
 
-  local dim = _G.DIMENSIONS
-
   local function _tilesInColumn(slot)
     local count = 0
     while slot do
@@ -712,7 +723,7 @@ function Grid:addTiles()
       local slot = column
       while slot and slot.tile == nil and #self.letterPool > 0 do
         if slot:createTile() then
-          slot.tile.grp.y = dim.wordbarY  -- TODO hacky
+          slot.tile.grp.y = -(display.contentHeight / 2)  -- fall from a great height, to create slight delay
           slot.tile:settle()
           tilesAdded = true
         end
@@ -781,17 +792,14 @@ function Grid:hint()
     return maxWord, maxScore
   end
 
-  if self.hints == 0 and system.getInfo('environment') == 'simulator' then
-    self.hints = 10
-  end
   if self.hints < 1 then
     Util.sound('failure')
     return
   end
 
   local function _body(event)
-    local timeStart = system.getTimer()
     local source = event.source
+    local timeStart = system.getTimer()
     for _,slot in ipairs(self.slots) do
       if slot.tile then
         slot.tile:mark()
@@ -799,8 +807,8 @@ function Grid:hint()
 
         self:DFS(slot, {slot}, slot.tile.letter)
 
-        local maxWord, _ = _maxWord()
-        _G.wordbar:setCenter(maxWord)
+        -- local maxWord, _ = _maxWord()
+        -- _G.wordbar:setCenter(maxWord)
 
         slot.tile:unmark()
         coroutine.yield() -- yield to the timer, so UI can update
@@ -821,11 +829,17 @@ function Grid:hint()
       -- assert(#path==string.len(maxWord))
       for _,slot in ipairs(self.slots) do
         if table.contains(path, slot) then
-          slot.tile:select()
+          if slot.tile then -- may have timed out and been deleted
+            slot.tile:select()
+          else
+            break
+          end
         end
       end
 
-      self.hints = self.hints - 1
+      if system.getInfo('environment') ~= 'simulator' then
+        self.hints = self.hints - 1
+      end
 
       self:updateUI(maxWord)
     else
@@ -838,10 +852,14 @@ function Grid:hint()
   self.foundWords = {}
   self.foundPaths = {}
 
+  _G.DICT_TRUE = {}
+  _G.DICT_FALSE = {}
+  _G.DICT_PREFIX_TRUE = {}
+  _G.DICT_PREFIX_FALSE = {}
+
   -- https://coronalabs.com/blog/2015/02/10/tutorial-using-coroutines-in-corona/
 
   timer.performWithDelay(0, coroutine.wrap(_body), 0)
-  local timeStart = system.getTimer()
 
 --[[
   local co = coroutine.create(function()

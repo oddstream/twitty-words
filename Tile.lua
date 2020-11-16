@@ -33,12 +33,14 @@ function Tile.createGraphics(x, y, letter)
   grp.x = x
   grp.y = y
 
+  local radius = dim.Q / 15
+
   -- grp[1]
-  local rectShadow = display.newRoundedRect(grp, dim.Q3D, dim.Q3D, dim.Q * 0.95, dim.Q * 0.95, dim.Q / 15)  -- TODO magic numbers
-  rectShadow:setFillColor(0.2,0.2,0.2)
+  local rectShadow = display.newRoundedRect(grp, dim.offset3D, dim.offset3D, dim.size3D, dim.size3D, radius)
+  rectShadow:setFillColor(unpack(_G.TWITTY_COLORS.shadow))
 
   -- grp[2]
-  local rectBack = display.newRoundedRect(grp, 0, 0, dim.Q * 0.95, dim.Q * 0.95, dim.Q / 15)  -- TODO magic numbers
+  local rectBack = display.newRoundedRect(grp, 0, 0, dim.size3D, dim.size3D, radius)
 --[[
   local paint = {
     type = 'image',
@@ -86,19 +88,19 @@ function Tile:depress()
   rectShadow.x = 0
   rectShadow.y = 0
   local rectBack = self.grp[2]
-  rectBack.x = dim.Q3D
-  rectBack.y = dim.Q3D
+  rectBack.x = dim.offset3D
+  rectBack.y = dim.offset3D
   local textLetter = self.grp[3]
-  textLetter.x = dim.Q3D
-  textLetter.y = dim.Q3D
+  textLetter.x = dim.offset3D
+  textLetter.y = dim.offset3D
 end
 
 function Tile:undepress()
   local dim = _G.DIMENSIONS
 
   local rectShadow = self.grp[1]
-  rectShadow.x = dim.Q3D
-  rectShadow.y = dim.Q3D
+  rectShadow.x = dim.offset3D
+  rectShadow.y = dim.offset3D
   local rectBack = self.grp[2]
   rectBack.x = 0
   rectBack.y = 0

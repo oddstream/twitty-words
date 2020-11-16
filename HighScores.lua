@@ -29,28 +29,40 @@ local function loadScores()
   end
 
   if scoresTable == nil or #scoresTable == 0 then
-    scoresTable = {
-      {score=1000, words={'SHENANIGANS'}},
-      {score=950, words={'BAMBOOZLE'}},
-      {score=900, words={'SERENDIPITY'}},
-      {score=850, words={'BODACIOUS'}},
-      {score=800, words={'VIXENS'}},
-      {score=750, words={'BROUHAHA'}},
-      {score=700, words={'SCRUMPTIOUS'}},
-      {score=650, words={'CANOODLE'}},
-      {score=600, words={'PETRICHOR'}},
-      {score=550, words={'NIMCOMPOOP'}},
-      {score=500, words={'EUPHORIA'}},
-      {score=450, words={'GOGGLES'}},
-      {score=400, words={'GOGGLE'}},
-      {score=300, words={'GUBBINS'}},
-      {score=350, words={'SUPINE'}},
-      {score=250, words={'MALARKEY'}},
-      {score=200, words={'IDYLLIC'}},
-      {score=150, words={'DAINTY'}},
-      {score=100, words={'GNARLY'}},
-      {score=50, words={'GNOME'}},
-    }
+    if _G.GAME_MODE == 'timed' then
+      scoresTable = {
+        {score=1000, words={'SHENANIGANS'}},
+        {score=950, words={'BAMBOOZLE'}},
+        {score=900, words={'SERENDIPITY'}},
+        {score=850, words={'BODACIOUS'}},
+        {score=800, words={'VIXENS'}},
+        {score=750, words={'BROUHAHA'}},
+        {score=700, words={'SCRUMPTIOUS'}},
+        {score=650, words={'CANOODLE'}},
+        {score=600, words={'PETRICHOR'}},
+        {score=550, words={'NIMCOMPOOP'}},
+        {score=500, words={'EUPHORIA'}},
+        {score=450, words={'GOGGLES'}},
+        {score=400, words={'GOGGLE'}},
+        {score=300, words={'GUBBINS'}},
+        {score=350, words={'SUPINE'}},
+        {score=250, words={'MALARKEY'}},
+        {score=200, words={'IDYLLIC'}},
+        {score=150, words={'DAINTY'}},
+        {score=100, words={'GNARLY'}},
+        {score=50, words={'GNOME'}},
+      }
+    elseif _G.GAME_MODE == 'untimed' then
+      scoresTable = {}
+      for score = 1000, 50, -50 do
+        table.insert(scoresTable, {score=score, words={'BADGER'}})
+      end
+    else  -- probably _G.GAME_MODE == 12
+      scoresTable = {}
+      for score = 1000, 50, -50 do
+        table.insert(scoresTable, {score=score, words={'LLAMA'}})
+      end
+    end
   end
   return scoresTable
 end
@@ -230,7 +242,7 @@ function scene:show(event)
 
     -- create a group for the tappy so it doesn't scroll with the background
     toolbarGroup = display:newGroup()
-    local tappy = Tappy.new(toolbarGroup, display.safeActualContentWidth - dim.halfQ, dim.toolbarY, function()
+    local tappy = Tappy.new(toolbarGroup, display.actualContentWidth - dim.halfQ, dim.toolbarY, function()
       Util.sound('ui')
       composer.gotoScene('Twitty', {effect='slideLeft'})
     end, '★', 'NEW')

@@ -42,6 +42,10 @@ function Wordbar:setCenter(s)
 
   local dim = _G.DIMENSIONS
 
+  if not self.center then -- timed out, object deleted
+    return
+  end
+
   while self.center.numChildren > 0 do
     self.center[1]:removeSelf()
   end

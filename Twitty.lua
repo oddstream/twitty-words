@@ -49,7 +49,7 @@ end
 function scene:create(event)
   local sceneGroup = self.view
 
-  trace('Must scene:create')
+  trace('Twitty scene:create')
   -- display.setDefault('background', unpack(_G.TWITTY_COLORS.baize))
 
   _G.TWITTY_GROUPS.grid = self.view -- TODO referenced by Tile
@@ -70,7 +70,7 @@ function scene:show(event)
   local sceneGroup = self.view
   local phase = event.phase
 
-  trace('Must scene:show', phase)
+  trace('Twitty scene:show', phase)
 
   if phase == 'will' then
     -- Code here runs when the scene is still off screen (but is about to come on screen)
@@ -93,7 +93,7 @@ function scene:hide(event)
   local sceneGroup = self.view
   local phase = event.phase
 
-  trace('Must scene:hide', phase)
+  trace('Twitty scene:hide', phase)
 
   if phase == 'will' then
     -- Code here runs when the scene is on screen (but is about to go off screen)
@@ -105,7 +105,9 @@ function scene:hide(event)
     -- end
   elseif phase == 'did' then
     -- Code here runs immediately after the scene goes entirely off screen
---[[
+    _G.grid:destroy()
+    composer.removeScene('Twitty')
+  --[[
     if profileThreshold > 0 then
       debug.sethook()   -- turn off the hook
       for func, count in pairs(Counters) do
@@ -121,9 +123,7 @@ end
 function scene:destroy(event)
   local sceneGroup = self.view
   -- Code here runs prior to the removal of scene's view
-  trace('Must scene:destroy')
-  _G.grid:destroy()
-  composer.removeScene('Twitty')
+  trace('Twitty scene:destroy')
 
 end
 

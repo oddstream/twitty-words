@@ -123,7 +123,7 @@ function scene:create(event)
 
 --[[
   local finishButton = widget.newButton({
-    x = display.safeActualContentWidth - dim.halfQ,
+    x = display.actualContentWidth - dim.halfQ,
     y = dim.toolbarY,
     onRelease = function()
       composer.hideOverlay()
@@ -140,7 +140,7 @@ function scene:create(event)
   sceneGroup:insert(finishButton)
 ]]
 
-  local tappyFinish = Tappy.new(toolbarGroup, display.safeActualContentWidth - dim.halfQ, dim.toolbarY, function()
+  local tappyFinish = Tappy.new(toolbarGroup, display.actualContentWidth - dim.halfQ, dim.toolbarY, function()
     Util.sound('ui')
     composer.hideOverlay()
     _G.grid:gameOver()

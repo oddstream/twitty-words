@@ -63,12 +63,16 @@ end
 ]]
 
 function Statusbar:set(pos, s)
-  self[pos].text = s or ''
+  if self[pos] and self[pos].text then  -- may have timed out and been deleted
+    self[pos].text = s or ''
+  end
 end
 
 function Statusbar:setLeft(s)
   -- self:set('left', s)
-  self.left:setLabel(s)
+  if self.left then
+    self.left:setLabel(s)
+  end
 end
 
 function Statusbar:setCenter(s)

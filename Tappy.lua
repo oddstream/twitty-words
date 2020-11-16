@@ -32,9 +32,9 @@ function Tappy:_createGraphics(x, y, label, description)
 
   if description then
     self.letterNormalY = -(dim.Q / 8)
-    self.letterDepressedY = self.letterNormalY + dim.Q3D
+    self.letterDepressedY = self.letterNormalY + dim.offset3D
     self.descriptionNormalY = dim.Q / 3
-    self.descriptionDepressedY = self.descriptionNormalY + dim.Q3D
+    self.descriptionDepressedY = self.descriptionNormalY + dim.offset3D
 
     grp[3].y = self.letterNormalY
     local txt = display.newText({
@@ -48,7 +48,7 @@ function Tappy:_createGraphics(x, y, label, description)
     txt:setFillColor(unpack(_G.TWITTY_COLORS.black))
   else
     self.letterNormalY = 0
-    self.letterDepressedY = dim.Q3D
+    self.letterDepressedY = dim.offset3D
   end
 
   return grp
@@ -87,7 +87,7 @@ function Tappy:disable()
 end
 
 function Tappy:depress()
-  -- TODO this is the same as Tile:depress
+  -- this is the same as Tile:depress, with description
   local dim = _G.DIMENSIONS
 
   local rectShadow = self.grp[1]
@@ -95,27 +95,27 @@ function Tappy:depress()
   rectShadow.y = 0
 
   local rectBack = self.grp[2]
-  rectBack.x = dim.Q3D
-  rectBack.y = dim.Q3D
+  rectBack.x = dim.offset3D
+  rectBack.y = dim.offset3D
 
   local textLetter = self.grp[3]
-  textLetter.x = dim.Q3D
+  textLetter.x = dim.offset3D
   textLetter.y = self.letterDepressedY
 
   if self.description then
     local textDesc = self.grp[4]
-    textDesc.x = dim.Q3D
+    textDesc.x = dim.offset3D
     textDesc.y = self.descriptionDepressedY
   end
 end
 
 function Tappy:undepress()
-  -- TODO this is the same as Tile:undepress
+  -- this is the same as Tile:undepress, with description
   local dim = _G.DIMENSIONS
 
   local rectShadow = self.grp[1]
-  rectShadow.x = dim.Q3D
-  rectShadow.y = dim.Q3D
+  rectShadow.x = dim.offset3D
+  rectShadow.y = dim.offset3D
 
   local rectBack = self.grp[2]
   rectBack.x = 0
