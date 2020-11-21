@@ -154,12 +154,13 @@ function Util.isWordInDict(word)
   -- return true
 
 end
+
 --[[
 function Util.isWordPrefixInDictionary(word)
 
-  if table.contains(_G.DICTIONARY_TRUE, word) then return true end
-  if table.contains(_G.DICTIONARY_PREFIX_TRUE, word) then return true end
-  if table.contains(_G.DICTIONARY_PREFIX_FALSE, word) then return false end
+  -- if table.contains(_G.DICTIONARY_TRUE, word) then return true end
+  -- if table.contains(_G.DICTIONARY_PREFIX_TRUE, word) then return true end
+  -- if table.contains(_G.DICTIONARY_PREFIX_FALSE, word) then return false end
 
   local word2 = string.gsub(word, ' ', '%%u')
   local first,last = string.find(_G.DICTIONARY, '[^%u]' .. word2)
@@ -169,16 +170,23 @@ function Util.isWordPrefixInDictionary(word)
 
   if first then
     table.insert(_G.DICTIONARY_PREFIX_TRUE, word)
-    -- trace(word, '> FOUND IN PREFIX CACHE')
+    -- trace(word, '> FOUND IN PREFIX DICTIONARY')
   else
     table.insert(_G.DICTIONARY_PREFIX_FALSE, word)
-    -- trace(word, '> NOT FOUND IN PREFIX CACHE')
+    -- trace(word, '> NOT FOUND IN PREFIX DICTIONARY')
+  end
+
+  if first then
+    trace('PREFIX FOUND', word2)
+  else
+    trace('PREFIX NOT FOUND', word2)
   end
 
   return first ~= nil
   -- return true
 end
 ]]
+
 function Util.isWordPrefixInDict(word)
 
   if table.contains(_G.DICT_TRUE, word) then return true end

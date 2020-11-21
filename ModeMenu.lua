@@ -72,7 +72,7 @@ function scene:create(event)
   _titleRow(y, 'SWORDS')
 
   y = (display.actualContentHeight / 2)
-  _tappyRow(y, 'VACATE', 'untimed')
+  _tappyRow(y, 'CASUAL', 'untimed')
   y = y + dim.Q * 0.75
   local help1 = display.newText(sceneGroup, 'Clear all tiles in your own time', display.contentCenterX, y, _G.ROBOTO_MEDIUM, dim.tileFontSize / 3)
   help1:setFillColor(0,0,0)

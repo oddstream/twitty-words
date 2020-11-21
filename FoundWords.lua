@@ -32,17 +32,18 @@ local function backTouch(event)
   elseif event.phase == 'moved' then
     -- trace('touch moved, start', event.xStart, event.yStart, 'now', event.x, event.y)
 
-    -- grp.x = event.x - event.xStart
+    grp.x = event.x - event.xStart
     grp.y = event.y - event.yStart
+
   elseif event.phase == 'ended' then
     -- trace('touch ended', event.x, event.y)
 
-    transition.moveTo(grp, {
-      y = 0,
-      transition = easing.outQuart,
-    })
+    transition.moveTo(grp, {x = 0, y = 0, transition = easing.outQuad })
+
   elseif event.phase == 'cancelled' then
     -- trace('touch cancelled', event.x, event.yet)
+
+    transition.moveTo(grp, {x = 0, y = 0, transition = easing.outQuad })
 
   end
 

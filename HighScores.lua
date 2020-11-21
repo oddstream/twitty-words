@@ -29,39 +29,50 @@ local function loadScores()
   end
 
   if scoresTable == nil or #scoresTable == 0 then
-    if _G.GAME_MODE == 'timed' then
-      scoresTable = {
-        {score=1000, words={'SHENANIGANS'}},
-        {score=950, words={'BAMBOOZLE'}},
-        {score=900, words={'SERENDIPITY'}},
-        {score=850, words={'BODACIOUS'}},
-        {score=800, words={'VIXENS'}},
-        {score=750, words={'BROUHAHA'}},
-        {score=700, words={'SCRUMPTIOUS'}},
-        {score=650, words={'CANOODLE'}},
-        {score=600, words={'PETRICHOR'}},
-        {score=550, words={'NIMCOMPOOP'}},
-        {score=500, words={'EUPHORIA'}},
-        {score=450, words={'GOGGLES'}},
-        {score=400, words={'GOGGLE'}},
-        {score=300, words={'GUBBINS'}},
-        {score=350, words={'SUPINE'}},
-        {score=250, words={'MALARKEY'}},
-        {score=200, words={'IDYLLIC'}},
-        {score=150, words={'DAINTY'}},
-        {score=100, words={'GNARLY'}},
-        {score=50, words={'GNOME'}},
-      }
-    elseif _G.GAME_MODE == 'untimed' then
-      scoresTable = {}
-      for score = 1000, 50, -50 do
-        table.insert(scoresTable, {score=score, words={'BADGER'}})
-      end
-    else  -- probably _G.GAME_MODE == 12
-      scoresTable = {}
-      for score = 1000, 50, -50 do
-        table.insert(scoresTable, {score=score, words={'LLAMA'}})
-      end
+
+    local interestingWords = {
+      -- maximum length without overflowing to right is 11
+      'TELEVISION',
+      'SERENDIPITY',
+      'SHENANIGANS',
+      'BAMBOOZLE',
+      'BODACIOUSLY',
+      'VIXENISH',
+      'BROUHAHA',
+      'SCRUMPTIOUS',
+      'CANOODLE',
+      'PETRICHOR',
+      'NIMCOMPOOP',
+      'MALARKEY',
+      'ZOOMING',
+      'ZOOMORPHISM',
+      'SOUTHERN',
+      'NETWORKERS',
+      'DAUGHTERS',
+      'CONTAINERS',
+      'INCLUDING',
+      'BADGER',
+      'RACCOON',
+      'ZOMBIES',
+      'QUIVERS',
+      'ALPHABETS',
+      'ALPENSTOCKS',
+      'ALTIMETRIC',
+      'ALTORUFFLED',
+      'ALUMSTONES',
+      'MOSQUITO',
+      'SIAMEZING',
+      'SLEEZIEST',
+      'ANOVULATION',
+      'ANTICRUELTY',
+      'ODDSMAKERS',
+      'OENOPHILIST',
+    }
+
+    scoresTable = {}
+    for score = 1000, 50, -50 do
+      local word = table.remove(interestingWords, math.random(1,#interestingWords))
+      table.insert(scoresTable, {score=score, words={word}})
     end
   end
   return scoresTable
@@ -91,16 +102,18 @@ local function backTouch(event)
   elseif event.phase == 'moved' then
     -- trace('touch moved, start', event.xStart, event.yStart, 'now', event.x, event.y)
 
+    grp.x = event.x - event.xStart
     grp.y = event.y - event.yStart
+
   elseif event.phase == 'ended' then
     -- trace('touch ended', event.x, event.y)
 
-    transition.moveTo(grp, {
-      y = 0,
-      transition = easing.outQuart,
-    })
+    transition.moveTo(grp, {x = 0, y = 0, transition = easing.outQuad })
+
   elseif event.phase == 'cancelled' then
     -- trace('touch cancelled', event.x, event.yet)
+
+    transition.moveTo(grp, {x = 0, y = 0, transition = easing.outQuad })
 
   end
 

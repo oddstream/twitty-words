@@ -13,7 +13,7 @@ function Dim.new()
   local topInset, leftInset, bottomInset, rightInset = display.getSafeAreaInsets()
 
   o.numX = 7
-  o.numY = 9
+  o.numY = 7
 
   local xQ = math.floor(display.actualContentWidth/o.numX)
   local yQ = math.floor(display.actualContentHeight / (o.numY + 3)) -- add for statusbar, wordbar, toolbar

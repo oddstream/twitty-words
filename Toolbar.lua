@@ -42,18 +42,15 @@ function Toolbar.new()
 
   o.hint = Tappy.new(_G.TWITTY_GROUPS.ui, dim.Q + dim.Q, dim.toolbarY, function()
     _G.grid:hint()
-  end, '💡', 'HINT')
+  end, ' 💡 ', 'HINT')
 
   o.undo = Tappy.new(_G.TWITTY_GROUPS.ui, dim.toolbarX, dim.toolbarY, function()
     _G.grid:undo()
   end, '⎌', 'UNDO')
 
-  -- o.center = display.newText(_G.TWITTY_GROUPS.ui, '', dim.toolbarX, dim.toolbarY, _G.ACME, dim.tileFontSize)
-  -- o.center:setFillColor(unpack(_G.TWITTY_COLORS.black))
-
   o.result = Tappy.new(_G.TWITTY_GROUPS.ui, display.actualContentWidth - dim.halfQ, dim.toolbarY, function()
     _G.grid:showFoundWords()
-  end, '⚖', 'RESULT')
+  end, ' ⚖ ', 'RESULT')  -- make string longer to trick into scaling down glyph size
 
   return o
 end
@@ -61,9 +58,6 @@ end
 --[[
 function Toolbar:destroy()
   display.remove(self.rect)
-  display.remove(self.left)
-  display.remove(self.center)
-  display.remove(self.right)
 end
 ]]
 

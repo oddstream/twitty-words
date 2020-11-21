@@ -128,24 +128,22 @@ function Grid:gameOver()
 
   self:cancelCountdown()
 
-  local deductions = self:calcResidualScore()
+  local deductions = 0
+  if type(_G.GAME_MODE) ~= 'number' then
+    deductions = self:calcResidualScore()
+  end
 
   self:deleteTiles()
 
-  -- run the garbage collector
+  composer.gotoScene('HighScores', { params={score=self.score - deductions, words=self.words} })
+
   do
-    local last_using = composer.getVariable('last_using')
-    if not last_using then
-      last_using = 0
-    end
     local before = collectgarbage('count')
     collectgarbage('collect')
     local after = collectgarbage('count')
-    print('collected', math.floor(before - after), 'KBytes, using', math.floor(after), 'KBytes', 'leaked', after-last_using)
-    composer.setVariable('last_using', after)
+    print('collected', math.floor(before - after), 'KBytes, now using', math.floor(after), 'KBytes')
   end
 
-  composer.gotoScene('HighScores', { params={score=self.score - deductions, words=self.words} })
 end
 
 function Grid:newGame()
@@ -200,15 +198,15 @@ function Grid:updateUI(s, score)
     _G.toolbar:set('swap', '⇆')
     _G.toolbar:disable('swap')
   else
-    _G.toolbar:set('swap', string.format('⇆%u', self.swaps))
+    _G.toolbar:set('swap', string.format('⇆ %u', self.swaps))
     _G.toolbar:enable('swap')
   end
 
   if self.hints == 0 then
-    _G.toolbar:set('hint', '💡')
+    _G.toolbar:set('hint', ' 💡 ')
     _G.toolbar:disable('hint')
   else
-    _G.toolbar:set('hint', string.format('💡%u', self.hints))
+    _G.toolbar:set('hint', string.format('💡 %u', self.hints))
     _G.toolbar:enable('hint')
   end
 
@@ -300,11 +298,9 @@ end
 
 function Grid:calcResidualScore()
   local score = 0
-  if type(_G.GAME_MODE) ~= 'number' then
-    for _,slot in ipairs(self.slots) do
-      if slot.tile then
-        score = score + _G.SCRABBLE_SCORES[slot.tile.letter]
-      end
+  for _,slot in ipairs(self.slots) do
+    if slot.tile then
+      score = score + _G.SCRABBLE_SCORES[slot.tile.letter]
     end
   end
   return score
@@ -657,16 +653,8 @@ function Grid:compactColumns()
   end
 end
 
-function Grid:shuffle()
-
-  if self.swaps == 0 then
-    return
-  end
-
-  local tiles = self:getTiles()
-  if #tiles < 3 then
-    return
-  end
+--[[
+function Grid:shuffle1(tiles)
 
   local function _reslot(slot)
     slot.tile.slot = slot
@@ -678,26 +666,72 @@ function Grid:shuffle()
     })
   end
 
-  Util.sound('shuffle')
-
-  table.insert(self.undoStack, self:createSaveable())
-
-  -- https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
-  -- https://stackoverflow.com/questions/35572435/how-do-you-do-the-fisher-yates-shuffle-in-lua
-
-  for i=#tiles, 1, -1 do
-
-    local j = math.random(i)
-    -- find a random slot with a tile
-
-    local slot1 = tiles[i].slot
-    local slot2 = tiles[j].slot
-
+  while #tiles > 1 do
+    local slot1 = table.remove(tiles).slot
+    local slot2 = table.remove(tiles).slot
     -- swap the tiles (with transition)
     slot1.tile, slot2.tile = slot2.tile, slot1.tile
     _reslot(slot1)
     _reslot(slot2)
   end
+  assert(#tiles==0 or #tiles==1)
+  -- if #tiles == 1, that's okay; one didn't have a partner to swap with, so stays put
+end
+]]
+
+function Grid:shuffle2(tiles)
+
+  for y = self.height, 1, -1 do
+    for x = 1, self.width do
+      local dst = self:findSlot(x,y)
+      dst:position()  -- restore pre-compacted position
+      local tile = table.remove(tiles)
+      if tile then
+        dst.tile = tile
+        tile.slot = dst
+        transition.moveTo(tile.grp, {
+          x = dst.center.x,
+          y = dst.center.y,
+          time = _G.FLIGHT_TIME,
+          transition = easing.outQuart,
+        })
+      else
+        dst.tile = nil
+      end
+    end
+  end
+
+end
+
+function Grid:shuffle()
+
+  if self.swaps == 0 then
+    return
+  end
+
+  local tiles = self:getTiles()
+  if #tiles < 3 then
+    return
+  end
+
+  self:deselectAllSlots()
+
+  table.insert(self.undoStack, self:createSaveable())
+
+  Util.sound('shuffle')
+
+  -- https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
+  -- https://stackoverflow.com/questions/35572435/how-do-you-do-the-fisher-yates-shuffle-in-lua
+  for i=#tiles, 1, -1 do
+    local j = math.random(i)
+    tiles[i], tiles[j] = tiles[j], tiles[i]
+  end
+
+  -- if self:countTiles() == self.width * self.height then
+  --   self:shuffle1(tiles)
+  -- else
+    self:shuffle2(tiles)
+  -- end
 
   self.swaps = self.swaps - 1
   self:updateUI()
@@ -739,16 +773,19 @@ function Grid:addTiles()
 
 end
 
-function Grid:DFS(slot, path, word)
+function Grid:DFS(path, word)
+
+  local slot = path[#path]
 
   for _,dir in ipairs(_G.TOUTES_DIRECTIONS) do
+
     local slot2 = slot[dir]
     if slot2 and slot2.tile and (not table.contains(path, slot2)) then
       local w = word .. slot2.tile.letter
       -- if string.len(w) < 10 then
         if Util.isWordPrefixInDict(w) then
           table.insert(path, slot2)
-          self:DFS(slot2, path, w)
+          self:DFS(path, w)
         end
       -- end
     else  -- end of the path
@@ -800,20 +837,26 @@ function Grid:hint()
   local function _body(event)
     local source = event.source
     local timeStart = system.getTimer()
+
     for _,slot in ipairs(self.slots) do
       if slot.tile then
         slot.tile:mark()
-        coroutine.yield() -- yield to the timer, so UI can update
 
-        self:DFS(slot, {slot}, slot.tile.letter)
+        coroutine.yield() -- yield to the timer, so UI can update; adds about 1.5 seconds
 
+        self:DFS({slot}, slot.tile.letter)
+
+        -- showing the word as we go adds 3 seconds
         -- local maxWord, _ = _maxWord()
         -- _G.wordbar:setCenter(maxWord)
 
         slot.tile:unmark()
-        coroutine.yield() -- yield to the timer, so UI can update
+
+        -- second call to coroutine.yield adds 2-ish seconds
+        -- coroutine.yield() -- yield to the timer, so UI can update
       end
     end
+
     timer.cancel(source)
     local timeStop = system.getTimer()
 
@@ -836,6 +879,9 @@ function Grid:hint()
           end
         end
       end
+
+      -- uncomment the following if you want to do anything with selecetd slots
+      -- self.selectedSlots = table.clone(path)
 
       if system.getInfo('environment') ~= 'simulator' then
         self.hints = self.hints - 1

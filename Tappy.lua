@@ -58,13 +58,16 @@ function Tappy:setLabel(label)
   local dim = _G.DIMENSIONS
 
   if self.grp and self.grp[3] and self.grp[3].text then  -- timer may have elapsed
-    self.grp[3].text = label
+    local item = self.grp[3]
+    item.text = label
     if label then
       -- To change the font size of a text object after it has been created, set the object.size property, not object.fontSize.
-      if string.len(label) == 1 then
-        self.grp[3].size = dim.tileFontSize
+      if string.len(label) > 3 then
+        item.size = dim.tileFontSize * 0.5
+      elseif string.len(label) > 1 then
+        item.size = dim.tileFontSize * 0.666
       else
-        self.grp[3].size = dim.tileFontSize * 0.666
+        item.size = dim.tileFontSize
       end
     end
   end

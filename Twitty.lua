@@ -12,6 +12,8 @@ local widget = require('widget')
 
 widget.setTheme('widget_theme_android_holo_dark')
 
+-- local gpgs = require 'plugin.gpgs.v2'
+
 --[[
 -----------------------------
 local profileThreshold = 0
@@ -126,7 +128,15 @@ function scene:destroy(event)
   trace('Twitty scene:destroy')
 
 end
-
+--[[
+local function gpgsListener(event)
+  trace('gpgs.init event properties:')
+  trace(event.name)
+  trace(event.isError)
+  trace(event.errorMessage)
+  trace(event.errorCodeend)
+end
+]]
 function scene:key(event)
   local phase = event.phase
 
@@ -137,6 +147,11 @@ function scene:key(event)
       _G.grid:deleteTiles()
       composer.gotoScene('ModeMenu')
       return true -- override the key
+--[[
+    elseif event.keyName == 'g' then
+      trace('calling gpgs.init')
+      gpgs.init(gpgsListener)
+]]
     elseif event.keyName == 'h' then
       _G.grid:hint()
     elseif event.keyName == 's' then
