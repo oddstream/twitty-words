@@ -69,7 +69,7 @@ function scene:create(event)
 
   y = y + dim.Q
 
-  _titleRow(y, 'SWORDS')
+  _titleRow(y, 'WORD S')
 
   y = (display.actualContentHeight / 2)
   _tappyRow(y, 'CASUAL', 'untimed')

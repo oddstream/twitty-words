@@ -248,6 +248,25 @@ if not table.clone then
   end
 end
 
+if not string.split then
+  function _G.string:split( inSplitPattern )
+    -- https://docs.coronalabs.com/tutorial/data/luaStringMagic/index.html
+
+    local outResults = {}
+    local theStart = 1
+    local theSplitStart, theSplitEnd = string.find( self, inSplitPattern, theStart )
+
+    while theSplitStart do
+        table.insert( outResults, string.sub( self, theStart, theSplitStart-1 ) )
+        theStart = theSplitEnd + 1
+        theSplitStart, theSplitEnd = string.find( self, inSplitPattern, theStart )
+    end
+
+    table.insert( outResults, string.sub( self, theStart ) )
+    return outResults
+  end
+end
+
 _G.DIMENSIONS = Dim.new()
 -- grid (of slots) has no graphical elements, and does not change size, so persists across all games
 _G.grid = Grid.new(_G.DIMENSIONS.numX, _G.DIMENSIONS.numY)

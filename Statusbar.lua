@@ -3,6 +3,7 @@
 local composer = require 'composer'
 local widget = require 'widget'
 
+local Public = require 'Public'
 local Util = require 'Util'
 
 local Statusbar = {}
@@ -56,7 +57,7 @@ function Statusbar.new()
     y = dim.statusbarY,
     onRelease = function()
       Util.sound('ui')
-      trace('oddstream games')
+      Public.showLeaderboard()
     end,
     label = '...',  -- raccoon looks clunky on Chromebook '🦝'
     labelColor = { default=_G.TWITTY_COLORS.uiforeground, over=_G.TWITTY_COLORS.uicontrol },

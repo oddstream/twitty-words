@@ -20,10 +20,10 @@ local function loadDictionaries()
     io.close(file)
     trace('dictionary length', string.len(_G.DICTIONARY))
   end
-  _G.DICTIONARY_TRUE = {}
-  _G.DICTIONARY_FALSE = {}
-  _G.DICTIONARY_PREFIX_TRUE = {}
-  _G.DICTIONARY_PREFIX_FALSE = {}
+  -- _G.DICTIONARY_TRUE = {}
+  -- _G.DICTIONARY_FALSE = {}
+  -- _G.DICTIONARY_PREFIX_TRUE = {}
+  -- _G.DICTIONARY_PREFIX_FALSE = {}
 
   -- https://raw.githubusercontent.com/sapbmw/The-Oxford-3000/master/The_Oxford_3000.txt
   -- filePath = system.pathForFile('Oxford3000.txt', system.ResourceDirectory)

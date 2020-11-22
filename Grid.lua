@@ -439,16 +439,15 @@ function Grid:testSelection()
       table.insert(self.undoStack, self:createSaveable())
       if t1.letter ~= t2.letter then
 
-          Util.sound('swap')
+        Util.sound('swap')
 
-          s1.tile, s2.tile = s2.tile, s1.tile
-          t1.slot = s2
-          t1:settle()
-          t2.slot = s1
-          t2:settle()
+        s1.tile, s2.tile = s2.tile, s1.tile
+        t1.slot = s2
+        t1:settle()
+        t2.slot = s1
+        t2:settle()
 
-        self.swaps = self.swaps - 1
-        self:updateUI()
+        self.selectedSlots[#self.selectedSlots]:flyAwaySwaps(-1) -- this decrements swaps
       end
     else
       Util.sound('shake')
@@ -478,8 +477,11 @@ function Grid:testSelection()
         end
       end
 
-      self.selectedSlots[1]:flyAwaySwaps() -- this increments swaps
-      self.selectedSlots[1]:flyAwayScore(score) -- this increments score
+      do
+        local src = self.selectedSlots[#self.selectedSlots]
+        src:flyAwaySwaps(1) -- this increments swaps
+        src:flyAwayScore(score) -- this increments score
+      end
 
       self.selectedSlots = {}
 
@@ -898,8 +900,8 @@ function Grid:hint()
   self.foundWords = {}
   self.foundPaths = {}
 
-  _G.DICT_TRUE = {}
-  _G.DICT_FALSE = {}
+  -- _G.DICT_TRUE = {}
+  -- _G.DICT_FALSE = {}
   _G.DICT_PREFIX_TRUE = {}
   _G.DICT_PREFIX_FALSE = {}
 

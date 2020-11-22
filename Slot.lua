@@ -86,10 +86,11 @@ function Slot:testSelection()
   self.grid:testSelection()
 end
 
-function Slot:flyAwaySwaps()
+function Slot:flyAwaySwaps(n)
   local dim = _G.DIMENSIONS
 
-  local grp = Tile.createGraphics(self.center.x, self.center.y, '+1')
+  local grp = Tile.createGraphics(self.center.x, self.center.y, string.format('%+d', n))
+  grp.xScale, grp.yScale = 0.5, 0.5
 
   transition.moveTo(grp, {
     x = dim.halfQ,
@@ -97,12 +98,15 @@ function Slot:flyAwaySwaps()
     time = _G.FLIGHT_TIME,
     transition = easing.outQuad,
     onComplete = function()
-      self.grid.swaps = self.grid.swaps + 1
+      self.grid.swaps = self.grid.swaps + n
       transition.scaleTo(grp, {
         xScale = 0.1,
         yScale = 0.1,
         time = 500,
-        onComplete = function() display.remove(grp) end
+        onComplete = function()
+          display.remove(grp)
+          self.grid:updateUI()
+        end
       })
     end,
   })

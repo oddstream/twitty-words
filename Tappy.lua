@@ -74,18 +74,22 @@ function Tappy:setLabel(label)
 end
 
 function Tappy:enable()
-  self.disabled = false
-  self.grp[3]:setFillColor(unpack(_G.TWITTY_COLORS.black))
-  if self.description then
-    self.grp[4]:setFillColor(unpack(_G.TWITTY_COLORS.black))
+  if self.grp and self.grp[3] then
+    self.disabled = false
+    self.grp[3]:setFillColor(unpack(_G.TWITTY_COLORS.black))
+    if self.description then
+      self.grp[4]:setFillColor(unpack(_G.TWITTY_COLORS.black))
+    end
   end
 end
 
 function Tappy:disable()
-  self.disabled = true
-  self.grp[3]:setFillColor(unpack(_G.TWITTY_COLORS.gray))
-  if self.description then
-    self.grp[4]:setFillColor(unpack(_G.TWITTY_COLORS.gray))
+  if self.grp and self.grp[3] then
+    self.disabled = true
+    self.grp[3]:setFillColor(unpack(_G.TWITTY_COLORS.gray))
+    if self.description then
+      self.grp[4]:setFillColor(unpack(_G.TWITTY_COLORS.gray))
+    end
   end
 end
 

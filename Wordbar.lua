@@ -46,6 +46,10 @@ function Wordbar:setCenter(s)
     return
   end
 
+  if not self.center.numChildren then -- timed out, object deleted
+    return
+  end
+
   while self.center.numChildren > 0 do
     self.center[1]:removeSelf()
   end

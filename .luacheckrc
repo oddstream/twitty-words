@@ -27,7 +27,7 @@ read_globals = {
   "table",
   "math",
   "trace",
-  "colors",
+  "string",
 }
 
 globals = {

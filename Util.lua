@@ -1,7 +1,5 @@
 -- Util.lua
 
-local json = require 'json'
-
 local Util = {}
 Util.__index = Util
 
