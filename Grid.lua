@@ -172,6 +172,8 @@ function Grid:newGame()
     self.countdownTimer = timer.performWithDelay(1000, self, 0)
   end
 
+  Util.resetDictionaries()
+
   -- update ui
   self:updateUI()
 end
@@ -735,6 +737,8 @@ function Grid:shuffle()
     self:shuffle2(tiles)
   -- end
 
+  Util.resetDictionaries()
+
   self.swaps = self.swaps - 1
   self:updateUI()
 
@@ -899,11 +903,6 @@ function Grid:hint()
   self:deselectAllSlots()
   self.foundWords = {}
   self.foundPaths = {}
-
-  -- _G.DICT_TRUE = {}
-  -- _G.DICT_FALSE = {}
-  _G.DICT_PREFIX_TRUE = {}
-  _G.DICT_PREFIX_FALSE = {}
 
   -- https://coronalabs.com/blog/2015/02/10/tutorial-using-coroutines-in-corona/
 

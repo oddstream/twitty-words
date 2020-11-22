@@ -217,6 +217,13 @@ function Util.isWordPrefixInDict(word)
   -- return true
 end
 
+function Util.resetDictionaries()
+  _G.DICT_TRUE = {}
+  _G.DICT_FALSE = {}
+  _G.DICT_PREFIX_TRUE = {}
+  _G.DICT_PREFIX_FALSE = {}
+end
+
 -- don't use this on a table that contains tables
 -- function Util.cloneTable(t)
 --   return json.decode( json.encode( t ) )

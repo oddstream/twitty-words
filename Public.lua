@@ -48,6 +48,7 @@ end
 
 function Public.showLeaderboard()
   -- gpgs.init(initListener) -- never gets called, read somewhere it's no longer needed
+  gpgs.enableDebug()
   gpgs.login({userInitiated=false, listener=loginListener})
 
   gpgs.logout()

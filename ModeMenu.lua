@@ -65,11 +65,11 @@ function scene:create(event)
 
   y = y + dim.Q
 
-  _titleRow(y, 'LITTLE')
+  _titleRow(y, ({'LITTLE', 'LYTTLE'})[math.random(1, 2)])
 
   y = y + dim.Q
 
-  _titleRow(y, 'WORD S')
+  _titleRow(y, ({'WORDES', 'SWORDS', 'WOORDS', 'VVORDS'})[math.random(1, 4)])
 
   y = (display.actualContentHeight / 2)
   _tappyRow(y, 'CASUAL', 'untimed')
