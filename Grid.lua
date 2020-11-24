@@ -139,7 +139,7 @@ function Grid:gameOver()
 
   self:deleteTiles()
 
-  if _G.GAME_MODE == 'robot' then
+  if _G.GAME_MODE == 'ROBOTO' then
     local msg
     if self.humanScore > self.robotScore then
       msg = 'You won'
@@ -148,7 +148,8 @@ function Grid:gameOver()
     else
       msg = 'Game tied'
     end
-    native.showAlert('Game Over', msg, {'OK'}, function()
+    msg = string.format('%s %u : %u', msg, self.humanScore, self.robotScore)
+    native.showAlert('Game Over', msg, {'★'}, function()
       composer.gotoScene('Twitty', {effect='slideLeft'})
     end)
   else
@@ -177,7 +178,7 @@ function Grid:newGame()
   self.robotScore = 0
   self.humanFoundWords = {}
   self.robotFoundWords = {}
-  self.hints = 3
+  self.hints = 1
   self.selectedSlots = {}
   self.undoStack = {}
 
@@ -187,7 +188,7 @@ function Grid:newGame()
     self.countdownTimer = nil
   end
 
-  if _G.GAME_MODE == 'timed' then
+  if _G.GAME_MODE == 'URGENT' then
     self.secondsLeft = 60 * 4
     self.countdownTimer = timer.performWithDelay(1000, self, 0)
   end
@@ -211,17 +212,13 @@ function Grid:updateUI(word)
     return count
   end
 
-  -- if system.getInfo('environment') == 'simulator' then
-  --   _G.statusbar:setLeft(string.format('%s(%s) %u', _G.GAME_MODE, type(_G.GAME_MODE):sub(1,1), #self..humanFoundWords))
-  -- end
-
-  if _G.GAME_MODE == 'robot' then
+  if _G.GAME_MODE == 'ROBOTO' then
     _G.statusbar:setCenter(string.format('%u : %u', self.humanScore, self.robotScore))  -- or '%+d'
   else
     _G.statusbar:setCenter(string.format('SCORE %u', self.humanScore))  -- or '%+d'
   end
 
-  if _G.GAME_MODE == 'untimed' or _G.GAME_MODE == 'robot' then
+  if _G.GAME_MODE == 'CASUAL' or _G.GAME_MODE == 'ROBOTO' then
     _G.statusbar:setRight(string.format('%u of %u', _countFoundLetters(), string.len(_G.SCRABBLE_LETTERS)))
   elseif type(_G.GAME_MODE) == 'number' then
     _G.statusbar:setRight(string.format('%u of %u', #self.humanFoundWords, _G.GAME_MODE))
@@ -229,25 +226,10 @@ function Grid:updateUI(word)
 
   _G.wordbar:setCenter(word)
 
-  if self.hints == 0 then
-    _G.toolbar:set('hint', ' 💡 ')
-    _G.toolbar:disable('hint')
-  else
-    _G.toolbar:set('hint', string.format('💡 %u', self.hints))
-    _G.toolbar:enable('hint')
-  end
+  _G.toolbar:enable('hint', self.hints > 0)
+  _G.toolbar:enable('undo', #self.undoStack > 0)
+  _G.toolbar:enable('result', #self.humanFoundWords > 0)
 
-  if #self.undoStack > 0 then
-    _G.toolbar:enable('undo')
-  else
-    _G.toolbar:disable('undo')
-  end
-
-  if #self.humanFoundWords > 0 then
-    _G.toolbar:enable('result')
-  else
-    _G.toolbar:disable('result')
-  end
 end
 
 function Grid:createLetterPool()
@@ -396,7 +378,6 @@ function Grid:deselectAllSlots()
 end
 
 function Grid:selectSlot(slot)
-  assert(slot.tile)
 
   local function _connected(a, b)
     for _,dir in ipairs(_G.TOUTES_DIRECTIONS) do
@@ -404,7 +385,7 @@ function Grid:selectSlot(slot)
         return true
       end
     end
-    trace('not connected')
+    -- trace('not connected')
     return false
   end
 
@@ -434,10 +415,10 @@ function Grid:selectSlot(slot)
     end
 
     if #self.selectedSlots > 2 then
-      local _, score = self:getSelectedWord()
       local dim = _G.DIMENSIONS
+      local _, score = self:getSelectedWord()
       local src = self.selectedSlots[#self.selectedSlots]
-      local b = Bubble.new(src.center.x + dim.halfQ/2, src.center.y - dim.halfQ/2, string.format('%+d', score))
+      local b = Bubble.new(src.center.x - dim.quarterQ, src.center.y - dim.quarterQ, string.format('%+d', score))
       b:fadeOut()
     end
 
@@ -448,7 +429,7 @@ end
 
 function Grid:testSelection()
 
-  if _G.GAME_MODE == 'robot' and self.whoseTurnNext == 'robot' then
+  if _G.GAME_MODE == 'ROBOTO' and self.whoseTurnNext == 'robot' then
     Util.sound('failure')
     return
   end
@@ -502,7 +483,7 @@ function Grid:testSelection()
           self:gameOver()
         elseif type(_G.GAME_MODE) == 'number' and #self.humanFoundWords == _G.GAME_MODE then
           self:gameOver()
-        elseif _G.GAME_MODE == 'robot' then
+        elseif _G.GAME_MODE == 'ROBOTO' then
           self.whoseTurnNext = 'robot'
           self:robot()
         end
@@ -870,7 +851,6 @@ function Grid:hint(who)
     local timeStop = system.getTimer()
 
     if #self.hintWords > 0 then
-      Util.sound('found')
 
       local maxWord, maxScore = _maxWord()
 
@@ -898,11 +878,19 @@ function Grid:hint(who)
         end
       end
 
+      Util.sound('found')
       self:updateUI(maxWord)
     else
       Util.sound('failure')
       self:updateUI()
     end
+
+    if who == 'robot' then
+      self.whoseTurnNext = 'human'
+      _G.TWITTY_SELECTED_COLOR = _G.TWITTY_COLORS.selected
+      trace('selected', unpack(_G.TWITTY_SELECTED_COLOR))
+    end
+
   end
 
   self:deselectAllSlots()
@@ -913,45 +901,22 @@ function Grid:hint(who)
 
   timer.performWithDelay(0, coroutine.wrap(_body), 0)
 
---[[
-  local co = coroutine.create(function()
-
-    for _,slot in ipairs(self.slots) do
-      if slot.tile then
-        self:DFS(slot, {slot}, slot.tile.letter)
-        coroutine.yield()
-      end
-    end
-
-  end)
-
-  while coroutine.status(co) == 'suspended' do
-
-    -- local maxWord, maxScore = _maxWord()
-
-    -- trace('MAX WORD', maxWord, 'SCORE', maxScore)
-
-    -- _G.wordbar:setCenter(tostring(#self.hintWords))
-    -- timer.performWithDelay(30, function() coroutine.resume(co) end)
-    coroutine.resume(co)
-  end
-
-  -- trace(coroutine.status(co))
-]]
-
 end
 
 function Grid:robot()
 
-  if _G.GAME_MODE ~= 'robot' then
+  if _G.GAME_MODE ~= 'ROBOTO' then
     return
   end
 
-  self:hint('robot')
-  self.whoseTurnNext = 'human'
+  _G.TWITTY_SELECTED_COLOR = _G.TWITTY_COLORS.roboto
+  trace('roboto', unpack(_G.TWITTY_SELECTED_COLOR))
+
+  self:hint('robot')  -- this ends in it's own time
 end
 
 function Grid:flyAwaySelectedSlots(score, who)
+
   local n = 1
   for _,slot in ipairs(self.selectedSlots) do
     slot.tile:flyAway(n, #self.selectedSlots) -- calls Tile:delete()
@@ -966,15 +931,16 @@ function Grid:flyAwaySelectedSlots(score, who)
     b:flyTo(dim.statusbarX, dim.statusbarY)
     if who == 'robot' then self.robotScore = self.robotScore + score else self.humanScore = self.humanScore + score end
   end
-  -- src:flyAwayScore(score, who) -- this increments humanScore
 
   self.selectedSlots = {}
+
 end
 
 function Grid:_robot(word, score)
 
-  trace('robot post hint #selected slots', #self.selectedSlots)
+  -- trace('robot post hint #selected slots', #self.selectedSlots)
 
+  -- don't create an undoable save point here
   -- table.insert(self.undoStack, self:createSaveable())
 
   self:flyAwaySelectedSlots(score, 'robot')
@@ -987,10 +953,6 @@ function Grid:_robot(word, score)
   if #self.letterPool > 0 then
     self:addTiles()
   end
-
-  timer.performWithDelay(_G.FLIGHT_TIME, function()
-    self:updateUI()
-  end)
 
 end
 

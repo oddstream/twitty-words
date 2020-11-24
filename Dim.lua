@@ -20,7 +20,8 @@ function Dim.new()
   -- trace('Dim reports Qx, Qy', xQ, yQ)
 
   o.Q = math.min(xQ, yQ)
-  o.halfQ = o.Q/2
+  o.halfQ = o.Q * 0.5
+  o.quarterQ = o.Q * 0.24
   o.size3D = o.Q * 0.95
   o.offset3D = o.Q * 0.025
 

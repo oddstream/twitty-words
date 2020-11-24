@@ -12,8 +12,7 @@ function Tile.new(slot, letter)
 
   o.letter = letter
 
-  o.grp = o.createGraphics(slot.center.x, slot.center.y, o.letter)
-  _G.TWITTY_GROUPS.grid:insert(o.grp)
+  o.grp = o.createGraphics(_G.TWITTY_GROUPS.grid, slot.center.x, slot.center.y, o.letter)
 
   -- don't add event listers here, as tiles are also used for displaying found words and high scores
 
@@ -26,12 +25,13 @@ function Tile:addEventListener()
   self.grp:addEventListener('touch', self)
 end
 
-function Tile.createGraphics(x, y, letter)
+function Tile.createGraphics(parent, x, y, letter)
   local dim = _G.DIMENSIONS
 
   local grp = display.newGroup()
   grp.x = x
   grp.y = y
+  parent:insert(grp)
 
   local radius = dim.Q / 15
 
@@ -154,7 +154,7 @@ end
 
 function Tile:select()
   self.selected = true
-  self.grp[2]:setFillColor(unpack(_G.TWITTY_COLORS.selected))
+  self.grp[2]:setFillColor(unpack(_G.TWITTY_SELECTED_COLOR))
   self:depress()
 end
 
@@ -165,7 +165,7 @@ function Tile:deselect()
 end
 
 function Tile:mark()
-  self.grp[2]:setFillColor(unpack(_G.TWITTY_COLORS.selected))
+  self.grp[2]:setFillColor(unpack(_G.TWITTY_SELECTED_COLOR))
 end
 
 function Tile:unmark()
@@ -176,8 +176,10 @@ function Tile:delete()
   -- When you remove a display object, event listeners that are attached to it — tap and touch listeners,
   -- for example — are also freed from memory.
   -- self.grp:removeEventListener('touch', self)
-  display.remove(self.grp)
-  self.grp = nil
+  if self.grp then
+    display.remove(self.grp)
+    self.grp = nil
+  end
 end
 
 function Tile:shake()
@@ -202,7 +204,7 @@ function Tile:flyAway(n, wordLength)
 
   transition.moveTo(self.grp, {
     -- x = (dim.halfQ + (dim.Q * (n-1))) + ((display.actualContentWidth / 2) - ((dim.Q * wordLength) / 2)),
-    x = (dim.halfQ / 2) + (dim.halfQ * (n-1)) + ((display.actualContentWidth / 2) - ((dim.halfQ * wordLength) / 2)),
+    x = dim.quarterQ + (dim.halfQ * (n-1)) + ((display.actualContentWidth / 2) - ((dim.halfQ * wordLength) / 2)),
     y = dim.wordbarY,
     time = _G.FLIGHT_TIME,
     transition = easing.outQuad,

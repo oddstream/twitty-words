@@ -65,8 +65,7 @@ function scene:create(event)
   sceneGroup:addEventListener('touch', backTouch)
 
   local function _createTile(x, y, txt)
-    local grp = Tile.createGraphics(x, y, txt)
-    sceneGroup:insert(grp)
+    local grp = Tile.createGraphics(sceneGroup, x, y, txt)
     grp:scale(0.5, 0.5)
     return grp
   end
@@ -170,7 +169,7 @@ function scene:create(event)
     y = y + dim.halfQ
   end
 
-  if _G.GAME_MODE == 'robot' then
+  if _G.GAME_MODE == 'ROBOTO' then
     y = y + dim.Q
     for i,word in ipairs(_G.grid.robotFoundWords) do
       _displayRow(y, i, word)

@@ -26,18 +26,15 @@ function scene:create(event)
 
   local function _titleRow(y, s)
     local titleGroup = display.newGroup()
-    local quarterQ = dim.halfQ / 2
-    -- the first tile is dim.halfQ/2 over to the right
-    titleGroup.x = display.contentCenterX - (string.len(s) * quarterQ) - quarterQ
+    -- the first tile is dim.quarterQ over to the right
+    titleGroup.x = display.contentCenterX - (string.len(s) * dim.quarterQ) - dim.quarterQ
     titleGroup.y = y
     sceneGroup:insert(titleGroup)
 
     local x = dim.halfQ
     for i=1, string.len(s) do
-      local tileGroup = Tile.createGraphics(x, 0, string.sub(s, i, i))
+      local tileGroup = Tile.createGraphics(titleGroup, x, 0, string.sub(s, i, i))
       tileGroup:scale(0.5, 0.5)
-      -- tileGroup.alpha = 0.5
-      titleGroup:insert(tileGroup)
       x = x + dim.halfQ
     end
   end
@@ -75,13 +72,13 @@ function scene:create(event)
   _titleRow(y, ({'WORDES', 'SWORDS', 'WOORDS', 'VVORDS'})[math.random(1, 4)])
 
   y = (display.actualContentHeight / 2) - (dim.Q * 2)
-  _tappyRow(y, 'CASUAL', 'untimed')
+  _tappyRow(y, 'CASUAL', 'CASUAL')
   y = y + dim.Q * 0.75
   local help1 = display.newText(sceneGroup, 'Get your best score in your own time', display.contentCenterX, y, _G.ROBOTO_MEDIUM, dim.tileFontSize / 3)
   help1:setFillColor(0,0,0)
 
   y = (display.actualContentHeight / 2)
-  _tappyRow(y, 'URGENT', 'timed')
+  _tappyRow(y, 'URGENT', 'URGENT')
   y = y + dim.Q * 0.75
   local help2 = display.newText(sceneGroup, 'Get your best score in four minutes', display.contentCenterX, y, _G.ROBOTO_MEDIUM, dim.tileFontSize / 3)
   help2:setFillColor(0,0,0)
@@ -93,7 +90,7 @@ function scene:create(event)
   help3:setFillColor(0,0,0)
 
   y = (display.actualContentHeight / 2) + (dim.Q * 4)
-  _tappyRow(y, 'ROBOTO', 'robot')
+  _tappyRow(y, 'ROBOTO', 'ROBOTO')
   y = y + dim.Q * 0.75
   local help4 = display.newText(sceneGroup, 'Play against a robot', display.contentCenterX, y, _G.ROBOTO_MEDIUM, dim.tileFontSize / 3)
   help4:setFillColor(0,0,0)

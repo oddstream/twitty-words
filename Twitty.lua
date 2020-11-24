@@ -62,6 +62,8 @@ function scene:create(event)
   sceneGroup:insert(_G.TWITTY_GROUPS.ui)
 
   _G.statusbar = Statusbar.new()
+  _G.statusbar:setLeft('☰ ' .. _G.GAME_MODE)
+
   _G.wordbar = Wordbar.new()
   _G.toolbar = Toolbar.new()
   -- scene remains in memory once created, ie it's only created once when app is run

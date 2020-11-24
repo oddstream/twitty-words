@@ -3,7 +3,6 @@
 local composer = require 'composer'
 local widget = require 'widget'
 
-local Public = require 'Public'
 local Util = require 'Util'
 
 local Statusbar = {}

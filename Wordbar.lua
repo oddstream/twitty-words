@@ -31,8 +31,7 @@ end
 ]]
 
 local function _createTile(group, x, y, txt)
-  local grp = Tile.createGraphics(x, y, txt)
-  group:insert(grp)
+  local grp = Tile.createGraphics(group, x, y, txt)
   grp:scale(0.5, 0.5)
   return grp
 end
@@ -65,7 +64,7 @@ function Wordbar:setCenter(s)
       x = x + dim.halfQ
     end
     -- the first tile is dim.halfQ over to the right
-    self.center.x = display.contentCenterX - (string.len(s) * dim.halfQ / 2) - (dim.halfQ / 2)
+    self.center.x = display.contentCenterX - (string.len(s) * dim.quarterQ) - dim.quarterQ
   end
 
 end

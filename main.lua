@@ -138,6 +138,7 @@ _G.TWITTY_COLORS = {
   baize = RGB2DEC(210, 180, 140), -- Tan
   selected = RGB2DEC(255, 215, 0),  -- Gold
   tappy = RGB2DEC(255, 228, 181), -- Moccasin
+  roboto = RGB2DEC(135, 206, 250), -- LightSkyBlue
 
   -- baize = RGB2DEC(135, 206, 250), -- LightSkyBlue
   -- selected = RGB2DEC(30, 144, 255),  -- Dodgerblue
@@ -163,6 +164,8 @@ _G.TWITTY_COLORS = {
   gray = {0.5,0.5,0.5},
   black = {0,0,0},
 }
+
+_G.TWITTY_SELECTED_COLOR = _G.TWITTY_COLORS.selected
 
 _G.TWITTY_GROUPS = {
   grid = nil,
@@ -280,7 +283,7 @@ end
 _G.DIMENSIONS = Dim.new()
 -- grid (of slots) has no graphical elements, and does not change size, so persists across all games
 _G.grid = Grid.new(_G.DIMENSIONS.numX, _G.DIMENSIONS.numY)
-_G.GAME_MODE = 'timed'  -- 'untimed' | 'timed' | 'robot' | <number>
+_G.GAME_MODE = 'URGENT'  -- 'CASUAL' | 'URGENT' | 'ROBOTO' | <number>
 
 -- for k,v in pairs( _G ) do
 --   print( k , v )

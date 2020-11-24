@@ -208,8 +208,7 @@ function scene:show(event)
     end
 
     local function _createTile(x, y, txt, selected)
-      local grp = Tile.createGraphics(x, y, txt)
-      sceneGroup:insert(grp)
+      local grp = Tile.createGraphics(sceneGroup, x, y, txt)
       grp:scale(0.5, 0.5)
       if selected then
         grp[2]:setFillColor(unpack(_G.TWITTY_COLORS.moccasin))

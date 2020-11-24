@@ -15,9 +15,8 @@ function Tappy.new(group, x, y, cmd, label, description)
   o.description = description
   o.label = label
 
-  o.grp = o:_createGraphics(x, y, o.label, o.description)
+  o.grp = o:_createGraphics(o.group, x, y, o.label, o.description)
   o.grp[2]:setFillColor(unpack(_G.TWITTY_COLORS.tappy))
-  o.group:insert(o.grp)
 
   -- removed the tap listener below; creates false hit when coming back from FoundWords
   -- o.grp:addEventListener('tap', o)
@@ -26,9 +25,10 @@ function Tappy.new(group, x, y, cmd, label, description)
   return o
 end
 
-function Tappy:_createGraphics(x, y, label, description)
+function Tappy:_createGraphics(parent, x, y, label, description)
   local dim = _G.DIMENSIONS
-  local grp = Tile.createGraphics(x, y, label)
+  local grp = Tile.createGraphics(parent, x, y, label)
+
 
   if description then
     self.letterNormalY = -(dim.Q / 8)
@@ -73,24 +73,19 @@ function Tappy:setLabel(label)
   end
 end
 
-function Tappy:enable()
-  if self.grp and self.grp[3] then
-    self.disabled = false
-    self.grp[3]:setFillColor(unpack(_G.TWITTY_COLORS.black))
-    if self.description then
-      self.grp[4]:setFillColor(unpack(_G.TWITTY_COLORS.black))
-    end
-  end
-end
+function Tappy:enable(enabled)
+  assert(type(enabled)=='boolean')
 
-function Tappy:disable()
+  self.disabled = not enabled
+
   if self.grp and self.grp[3] then
-    self.disabled = true
-    self.grp[3]:setFillColor(unpack(_G.TWITTY_COLORS.gray))
+    local color = enabled and _G.TWITTY_COLORS.black or _G.TWITTY_COLORS.gray
+    self.grp[3]:setFillColor(unpack(color))
     if self.description then
-      self.grp[4]:setFillColor(unpack(_G.TWITTY_COLORS.gray))
+      self.grp[4]:setFillColor(unpack(color))
     end
   end
+
 end
 
 function Tappy:depress()

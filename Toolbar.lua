@@ -75,15 +75,9 @@ function Toolbar:set(tappy, s)
   end
 end
 
-function Toolbar:enable(tappy)
+function Toolbar:enable(tappy, enabled)
   if self[tappy] then
-    self[tappy]:enable()
-  end
-end
-
-function Toolbar:disable(tappy)
-  if self[tappy] then
-    self[tappy]:disable()
+    self[tappy]:enable(enabled)
   end
 end
 
