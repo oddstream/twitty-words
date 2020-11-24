@@ -34,6 +34,35 @@ local function loadDictionaries()
     trace('dict length', string.len(_G.DICT))
   end
 
+  -- double the speed of searching the hint dictionary by slicing it up into 26 sub dictionaries
+  -- still need original (A-Z) dictionary for words that start with blank tile
+
+  local A2Z = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+  local index = {}
+  for i=1, 26 do
+    local letter = A2Z:sub(i,i)
+    first,last = string.find(_G.DICT, '\n' .. letter)
+    index[letter] = first
+  end
+
+  -- for key,value in pairs(index) do
+  --   trace(key, value)
+  -- end
+
+  _G.DICTIDX = {}
+  for i=1, 25 do
+    local letter = A2Z:sub(i,i)
+    local nextLetter = A2Z:sub(i+1,i+1)
+    _G.DICTIDX[letter] = string.sub(_G.DICT, index[letter], index[nextLetter])
+  end
+  _G.DICTIDX['Z'] = string.sub(_G.DICT, index['Z'])
+
+  -- trace('------')
+  -- trace(_G.DICTIDX['A'])
+  -- trace('------')
+  -- trace(_G.DICTIDX['Z'])
+  -- trace('------')
+
 --[[
   -- cannot search a table for a wildcard, so cannot do this
   _G.HINTWORDSTABLE = {}
@@ -42,21 +71,6 @@ local function loadDictionaries()
       table.insert(_G.HINTWORDSTABLE, line)
     end
   end
-]]
-
---[[
-  local pos = {}
-  local subs = {}
-  local A2Z = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-  for i=1, 26 do
-    local letter = string.sub(A2Z, i, i)
-    pos[letter], _ = string.find(_G.DICT, '\n' .. letter)
-    trace(letter, pos[letter])
-  end
-
-  local firstQ, lastQ = string.find(_G.DICT, '(\nQ)')
-  local firstR, lastR = string.find(_G.DICT, '(\nR)')
-  trace(string.sub(_G.DICT, firstQ, firstR))
 ]]
 
 end
@@ -68,7 +82,6 @@ end
 
 function scene:create(event)
   local sceneGroup = self.view
-  -- display.setDefault('background', unpack(_G.TWITTY_COLORS.baize))
 end
 
 function scene:show(event)

@@ -134,7 +134,16 @@ function Util.isWordInDict(word)
   -- if _G.DICT_FALSE[word] then return false end
 
   local word2 = string.gsub(word, ' ', '%%u')
-  local first,last = string.find(_G.DICT, '[^%u]' .. word2 .. '[^%u]')
+
+  local first, last
+  local initialLetter = string.sub(word,1,1)
+  if initialLetter == ' ' then
+    first,last = string.find(_G.DICT, '[^%u]' .. word2 .. '[^%u]')
+  else
+    assert(_G.DICTIDX[initialLetter], '<' .. initialLetter .. '>')
+    first,last = string.find(_G.DICTIDX[initialLetter], '[^%u]' .. word2 .. '[^%u]')
+  end
+
   -- if first then
   --   trace('found', string.sub(_G.DICT, first+1, last-1))
   -- end
@@ -196,8 +205,14 @@ function Util.isWordPrefixInDict(word)
   if table.contains(_G.DICT_PREFIX_FALSE, word) then return false end
   -- if _G.DICT_PREFIX_FALSE[word] then return false end
 
+  local initialLetter = string.sub(word,1,1)
   local word2 = string.gsub(word, ' ', '%%u')
-  local first,last = string.find(_G.DICT, '[^%u]' .. word2)
+  local first,last
+  if initialLetter == ' ' then
+    first, last = string.find(_G.DICT, '[^%u]' .. word2)
+  else
+    first, last = string.find(_G.DICTIDX[initialLetter], '[^%u]' .. word2)
+  end
 
   -- if first then
   --   trace('found', string.sub(_G.DICT, first+1, last-1))

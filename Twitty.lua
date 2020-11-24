@@ -52,7 +52,6 @@ function scene:create(event)
   local sceneGroup = self.view
 
   trace('Twitty scene:create')
-  -- display.setDefault('background', unpack(_G.TWITTY_COLORS.baize))
 
   _G.TWITTY_GROUPS.grid = self.view -- TODO referenced by Tile
 

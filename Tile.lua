@@ -165,7 +165,7 @@ function Tile:deselect()
 end
 
 function Tile:mark()
-  self.grp[2]:setFillColor(unpack(_G.TWITTY_COLORS.marked))
+  self.grp[2]:setFillColor(unpack(_G.TWITTY_COLORS.selected))
 end
 
 function Tile:unmark()

@@ -133,28 +133,33 @@ _G.TWITTY_COLORS = {
   -- baize = {255*4/1020, 245*4/1020, 238*4/1020},  -- SeaShell
   -- baize = {248*4/1020, 248*4/1020, 255*4/1020},  -- GhostWhite
 
-  baize = RGB2DEC(210, 180, 140), -- Tan
-  -- selected = {1,0.8,0},
-  -- back = {100*4/1020,147*4/1020,237*4/1020}, -- CornFlowerBlue
-  -- tile = {1, 245*4/1020, 238*4/1020}, -- Seashell
   tile = {1, 1, 0.94}, -- ivory
-  selected = RGB2DEC(255, 228, 181),  -- Moccasin
-  marked = RGB2DEC(255, 228, 181), -- Moccasin
+
+  baize = RGB2DEC(210, 180, 140), -- Tan
+  selected = RGB2DEC(255, 215, 0),  -- Gold
   tappy = RGB2DEC(255, 228, 181), -- Moccasin
 
+  -- baize = RGB2DEC(135, 206, 250), -- LightSkyBlue
+  -- selected = RGB2DEC(30, 144, 255),  -- Dodgerblue
+  -- tappy = RGB2DEC(30, 144, 255),
+
+  -- baize = RGB2DEC(0, 128, 0), -- Green
+  -- selected = RGB2DEC(102, 205, 170),  -- MediumAquamarine
+  -- tappy = RGB2DEC(102, 205, 170),
+
   ivory = {1, 1, 0.94},
-  gold = {1, 0.84, 0},
   moccasin = RGB2DEC(255, 228, 181),
+  -- gold = {1, 0.84, 0},
 
   white = {1,1,1},
-  offwhite = {0.91,0.9,0.9},
-  aqua = {0,1,1},
-  red = {1,0,0},
-  orange = {1,0.65,0},
-  pink = RGB2DEC(1,192,203),
-  blue = {0,0,1},
-  green = {0,1,0},
-  purple = {0.5,0,0.5},
+  -- offwhite = {0.91,0.9,0.9},
+  -- aqua = {0,1,1},
+  -- red = {1,0,0},
+  -- orange = {1,0.65,0},
+  -- pink = RGB2DEC(1,192,203),
+  -- blue = {0,0,1},
+  -- green = {0,1,0},
+  -- purple = {0.5,0,0.5},
   gray = {0.5,0.5,0.5},
   black = {0,0,0},
 }
@@ -194,6 +199,11 @@ _G.TWITTY_SOUNDS = {
     audio.loadSound('assets/back_002.ogg'),
     audio.loadSound('assets/back_003.ogg'),
     audio.loadSound('assets/back_004.ogg'),
+  },
+
+  pluck = {
+    audio.loadSound('assets/pluck_001.ogg'),
+    audio.loadSound('assets/pluck_002.ogg'),
   },
 }
 
@@ -270,7 +280,7 @@ end
 _G.DIMENSIONS = Dim.new()
 -- grid (of slots) has no graphical elements, and does not change size, so persists across all games
 _G.grid = Grid.new(_G.DIMENSIONS.numX, _G.DIMENSIONS.numY)
-_G.GAME_MODE = 'timed'  -- 'untimed' | 'timed' | <number>
+_G.GAME_MODE = 'timed'  -- 'untimed' | 'timed' | 'robot' | <number>
 
 -- for k,v in pairs( _G ) do
 --   print( k , v )

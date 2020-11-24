@@ -49,25 +49,26 @@ function Statusbar.new()
   o.center:setFillColor(unpack(_G.TWITTY_COLORS.uiforeground))
   o.center.anchorX = 0.5
 
-  -- o.right = display.newText(_G.TWITTY_GROUPS.ui, '🦝', dim.statusbarWidth - halfFontSize, dim.statusbarY, _G.ACME, fontSize)
-  -- o.right:setFillColor(unpack(_G.TWITTY_COLORS.uiforeground))
-  -- o.right.anchorX = 1
-  o.right = widget.newButton({
-    x = dim.statusbarWidth - halfFontSize,
-    y = dim.statusbarY,
-    onRelease = function()
-      Util.sound('ui')
-      Public.showLeaderboard()
-    end,
-    label = '...',  -- raccoon looks clunky on Chromebook '🦝'
-    labelColor = { default=_G.TWITTY_COLORS.uiforeground, over=_G.TWITTY_COLORS.uicontrol },
-    labelAlign = 'right',
-    font = _G.ACME,
-    fontSize = fontSize,
-    textOnly = true,
-  })
+  o.right = display.newText(_G.TWITTY_GROUPS.ui, '🦝', dim.statusbarWidth - halfFontSize, dim.statusbarY, _G.ACME, fontSize)
+  o.right:setFillColor(unpack(_G.TWITTY_COLORS.uiforeground))
   o.right.anchorX = 1
-  _G.TWITTY_GROUPS.ui:insert(o.right)
+
+  -- o.right = widget.newButton({
+  --   x = dim.statusbarWidth - halfFontSize,
+  --   y = dim.statusbarY,
+  --   onRelease = function()
+  --     Util.sound('ui')
+  --     Public.showLeaderboard()
+  --   end,
+  --   label = '...',  -- raccoon looks clunky on Chromebook '🦝'
+  --   labelColor = { default=_G.TWITTY_COLORS.uiforeground, over=_G.TWITTY_COLORS.uicontrol },
+  --   labelAlign = 'right',
+  --   font = _G.ACME,
+  --   fontSize = fontSize,
+  --   textOnly = true,
+  -- })
+  -- o.right.anchorX = 1
+  -- _G.TWITTY_GROUPS.ui:insert(o.right)
 
   return o
 end
@@ -99,10 +100,10 @@ function Statusbar:setCenter(s)
 end
 
 function Statusbar:setRight(s)
-  -- self:set('right', s)
-  if self.right then
-    self.right:setLabel(s)
-  end
+  self:set('right', s)
+  -- if self.right then
+  --   self.right:setLabel(s)
+  -- end
 end
 
 return Statusbar

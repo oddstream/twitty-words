@@ -71,6 +71,28 @@ function scene:create(event)
     return grp
   end
 
+  local function _displayRow(y, i, word)
+    local score = 0
+    local xNumber = dim.firstTileX + dim.halfQ
+    local xScore = dim.firstTileX + dim.halfQ
+    local xLetter = dim.firstTileX + (dim.halfQ * 3)
+
+    if type(_G.GAME_MODE) == 'number' then
+      _createTile(xNumber, y, tostring(i))
+      xScore = xScore + dim.halfQ * 2
+      xLetter = xLetter + dim.halfQ * 2
+    end
+
+    for j=1, string.len(word) do
+      local letter = string.sub(word, j, j)
+      score = score + _G.SCRABBLE_SCORES[letter]
+      _createTile(xLetter, y, letter)
+      xLetter = xLetter + dim.halfQ
+    end
+
+    _createTile(xScore, y, tostring(score * string.len(word)))
+  end
+
   -- don't need this if using a bitmap background
   -- the background needs to be tall enough to display #_G.grid.words
   -- local backHeight = (#_G.grid.words * dim.halfQ) + display.actualContentHeight
@@ -141,37 +163,26 @@ function scene:create(event)
   sceneGroup:insert(finishButton)
 ]]
 
+  local y = dim.halfQ
+
+  for i,word in ipairs(_G.grid.humanFoundWords) do
+    _displayRow(y, i, word)
+    y = y + dim.halfQ
+  end
+
+  if _G.GAME_MODE == 'robot' then
+    y = y + dim.Q
+    for i,word in ipairs(_G.grid.robotFoundWords) do
+      _displayRow(y, i, word)
+      y = y + dim.halfQ
+    end
+  end
+
   local tappyFinish = Tappy.new(toolbarGroup, display.actualContentWidth - dim.halfQ, dim.toolbarY, function()
     Util.sound('ui')
     composer.hideOverlay()
     _G.grid:gameOver()
-    end, '→', 'FINISH') -- '⯈' didn't appear on the phone
-
-  local y = dim.halfQ
-
-  for i,word in ipairs(_G.grid.words) do
-
-    local score = 0
-    local xNumber = dim.firstTileX + dim.halfQ
-    local xScore = dim.firstTileX + dim.halfQ
-    local xLetter = dim.firstTileX + (dim.halfQ * 3)
-
-    if type(_G.GAME_MODE) == 'number' then
-      _createTile(xNumber, y, tostring(i))
-      xScore = xScore + dim.halfQ * 2
-      xLetter = xLetter + dim.halfQ * 2
-    end
-
-    for j=1, string.len(word) do
-      local letter = string.sub(word, j, j)
-      score = score + _G.SCRABBLE_SCORES[letter]
-      _createTile(xLetter, y, letter)
-      xLetter = xLetter + dim.halfQ
-    end
-
-    _createTile(xScore, y, tostring(score * string.len(word)))
-    y = y + dim.halfQ
-  end
+    end, ' ⚖ ', 'FINISH') -- '⯈' didn't appear on the phone
 
 end
 

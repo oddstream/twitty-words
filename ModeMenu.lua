@@ -26,16 +26,19 @@ function scene:create(event)
 
   local function _titleRow(y, s)
     local titleGroup = display.newGroup()
-    -- the first tile is dim.halfQ over to the right
-    titleGroup.x = display.contentCenterX - (string.len(s) * dim.halfQ) - dim.halfQ
+    local quarterQ = dim.halfQ / 2
+    -- the first tile is dim.halfQ/2 over to the right
+    titleGroup.x = display.contentCenterX - (string.len(s) * quarterQ) - quarterQ
     titleGroup.y = y
     sceneGroup:insert(titleGroup)
 
-    local x = dim.Q
+    local x = dim.halfQ
     for i=1, string.len(s) do
       local tileGroup = Tile.createGraphics(x, 0, string.sub(s, i, i))
+      tileGroup:scale(0.5, 0.5)
+      -- tileGroup.alpha = 0.5
       titleGroup:insert(tileGroup)
-      x = x + dim.Q
+      x = x + dim.halfQ
     end
   end
 
@@ -63,31 +66,37 @@ function scene:create(event)
 
   _titleRow(y, 'TWITTY')
 
-  y = y + dim.Q
+  y = y + dim.halfQ
 
   _titleRow(y, ({'LITTLE', 'LYTTLE'})[math.random(1, 2)])
 
-  y = y + dim.Q
+  y = y + dim.halfQ
 
   _titleRow(y, ({'WORDES', 'SWORDS', 'WOORDS', 'VVORDS'})[math.random(1, 4)])
 
-  y = (display.actualContentHeight / 2)
+  y = (display.actualContentHeight / 2) - (dim.Q * 2)
   _tappyRow(y, 'CASUAL', 'untimed')
   y = y + dim.Q * 0.75
-  local help1 = display.newText(sceneGroup, 'Clear all tiles in your own time', display.contentCenterX, y, _G.ROBOTO_MEDIUM, dim.tileFontSize / 3)
+  local help1 = display.newText(sceneGroup, 'Get your best score in your own time', display.contentCenterX, y, _G.ROBOTO_MEDIUM, dim.tileFontSize / 3)
   help1:setFillColor(0,0,0)
 
-  y = (display.actualContentHeight / 2) + dim.Q + dim.Q
+  y = (display.actualContentHeight / 2)
   _tappyRow(y, 'URGENT', 'timed')
   y = y + dim.Q * 0.75
   local help2 = display.newText(sceneGroup, 'Get your best score in four minutes', display.contentCenterX, y, _G.ROBOTO_MEDIUM, dim.tileFontSize / 3)
   help2:setFillColor(0,0,0)
 
-  y = (display.actualContentHeight / 2) + dim.Q + dim.Q + dim.Q + dim.Q
+  y = (display.actualContentHeight / 2) + (dim.Q * 2)
   _tappyRow(y, 'TWELVE', 12)
   y = y + dim.Q * 0.75
   local help3 = display.newText(sceneGroup, 'Get your best score with twelve words', display.contentCenterX, y, _G.ROBOTO_MEDIUM, dim.tileFontSize / 3)
   help3:setFillColor(0,0,0)
+
+  y = (display.actualContentHeight / 2) + (dim.Q * 4)
+  _tappyRow(y, 'ROBOTO', 'robot')
+  y = y + dim.Q * 0.75
+  local help4 = display.newText(sceneGroup, 'Play against a robot', display.contentCenterX, y, _G.ROBOTO_MEDIUM, dim.tileFontSize / 3)
+  help4:setFillColor(0,0,0)
 
 end
 

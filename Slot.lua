@@ -83,9 +83,11 @@ end
 ]]
 
 function Slot:testSelection()
+  -- pass this up the chain
   self.grid:testSelection()
 end
 
+--[[
 function Slot:flyAwaySwaps(n)
   local dim = _G.DIMENSIONS
 
@@ -111,8 +113,12 @@ function Slot:flyAwaySwaps(n)
     end,
   })
 end
+]]
 
-function Slot:flyAwayScore(score)
+--[[
+function Slot:flyAwayScore(score, who)
+
+  who = who or 'human'
   local dim = _G.DIMENSIONS
 
   -- force display of sign, in case score is negative
@@ -127,7 +133,7 @@ function Slot:flyAwayScore(score)
     time = _G.FLIGHT_TIME,
     transition = easing.outQuad,
     onComplete = function()
-      self.grid.score = self.grid.score + score
+      self.grid[who .. 'Score'] = self.grid[who .. 'Score'] + score
       transition.scaleTo(grp, {
         xScale = 0.1,
         yScale = 0.1,
@@ -137,5 +143,6 @@ function Slot:flyAwayScore(score)
     end,
   })
 end
+]]
 
 return Slot

@@ -2,6 +2,7 @@
 
 local composer = require('composer')
 
+local Bubble = require 'Bubble'
 local Slot = require 'Slot'
 local Util = require 'Util'
 
@@ -11,13 +12,14 @@ local Grid = {
   width = nil,      -- number of columns
   height = nil,      -- number of rows
 
-  undoStack = {},
   letterPool = nil,
 
+  whoseTurnNext = nil,
+  humanFoundWords = nil,
+  robotFoundWords = nil,
   selectedSlots = nil,  -- table of selected slots, in order they were selected
-  score = nil,
-  words = nil,
-  swaps = nil,
+  humanScore = nil,
+  robotScore = nil,
 
   countdownTimer = nil,  -- timer
   secondsLeft = nil,
@@ -50,10 +52,11 @@ function Grid:createSaveable()
     end
     o.state = state
   end
-  o.words = table.clone(self.words)
-  o.swaps = self.swaps
+  o.humanFoundWords = table.clone(self.humanFoundWords)
+  o.robotFoundWords = table.clone(self.robotFoundWords)
   -- self.hints is not covered by the unconditional undo guarantee
-  o.score = self.score  -- TODO could recalc this
+  o.humanScore = self.humanScore  -- TODO could recalc this
+  o.robotScore = self.robotScore  -- TODO could recalc this
   return o
 end
 
@@ -62,10 +65,11 @@ function Grid:replaceWithSaved(saved)
 
   self.letterPool = saved.letterPool
   self:createTilesFromSaved(saved.state)
-  self.words = saved.words
-  self.swaps = saved.swaps
+  self.humanFoundWords = saved.humanFoundWords
+  self.robotFoundWords = saved.robotFoundWords
   -- self.hints is not covered by the unconditional undo guarantee
-  self.score = saved.score  -- TODO could recalc this
+  self.humanScore = saved.humanScore  -- TODO could recalc this
+  self.robotScore = saved.robotScore  -- TODO could recalc this
 
   self:updateUI()
 end
@@ -135,7 +139,21 @@ function Grid:gameOver()
 
   self:deleteTiles()
 
-  composer.gotoScene('HighScores', { params={score=self.score - deductions, words=self.words} })
+  if _G.GAME_MODE == 'robot' then
+    local msg
+    if self.humanScore > self.robotScore then
+      msg = 'You won'
+    elseif self.humanScore < self.robotScore then
+      msg = 'You lost'
+    else
+      msg = 'Game tied'
+    end
+    native.showAlert('Game Over', msg, {'OK'}, function()
+      composer.gotoScene('Twitty', {effect='slideLeft'})
+    end)
+  else
+    composer.gotoScene('HighScores', { params={score=self.humanScore - deductions, words=self.humanFoundWords} })
+  end
 
   do
     local before = collectgarbage('count')
@@ -154,9 +172,11 @@ function Grid:newGame()
   self:createTiles()
 
   -- reset our variables
-  self.score = 0
-  self.words = {}
-  self.swaps = 1
+  self.whoseTurnNext = 'human'
+  self.humanScore = 0
+  self.robotScore = 0
+  self.humanFoundWords = {}
+  self.robotFoundWords = {}
   self.hints = 3
   self.selectedSlots = {}
   self.undoStack = {}
@@ -178,31 +198,36 @@ function Grid:newGame()
   self:updateUI()
 end
 
-function Grid:updateUI(s, score)
+function Grid:updateUI(word)
+
+  local function _countFoundLetters()
+    local count = 0
+    for _,w in ipairs(self.humanFoundWords) do
+      count = count + string.len(w)
+    end
+    for _,w in ipairs(self.robotFoundWords) do
+      count = count + string.len(w)
+    end
+    return count
+  end
 
   -- if system.getInfo('environment') == 'simulator' then
-  --   _G.statusbar:setLeft(string.format('%s(%s) %u', _G.GAME_MODE, type(_G.GAME_MODE):sub(1,1), #self.words))
+  --   _G.statusbar:setLeft(string.format('%s(%s) %u', _G.GAME_MODE, type(_G.GAME_MODE):sub(1,1), #self..humanFoundWords))
   -- end
 
-  if score and #self.selectedSlots > 0 then
-    _G.statusbar:setCenter(string.format('+%u', score))
+  if _G.GAME_MODE == 'robot' then
+    _G.statusbar:setCenter(string.format('%u : %u', self.humanScore, self.robotScore))  -- or '%+d'
   else
-    _G.statusbar:setCenter(string.format('%u', self.score))  -- or '%+d'
+    _G.statusbar:setCenter(string.format('SCORE %u', self.humanScore))  -- or '%+d'
   end
 
-  if type(_G.GAME_MODE) == 'number' then
-    _G.statusbar:setRight(string.format('%u of %u', #self.words, _G.GAME_MODE))
+  if _G.GAME_MODE == 'untimed' or _G.GAME_MODE == 'robot' then
+    _G.statusbar:setRight(string.format('%u of %u', _countFoundLetters(), string.len(_G.SCRABBLE_LETTERS)))
+  elseif type(_G.GAME_MODE) == 'number' then
+    _G.statusbar:setRight(string.format('%u of %u', #self.humanFoundWords, _G.GAME_MODE))
   end
 
-  _G.wordbar:setCenter(s)
-
-  if self.swaps == 0 then
-    _G.toolbar:set('swap', '⇆')
-    _G.toolbar:disable('swap')
-  else
-    _G.toolbar:set('swap', string.format('⇆ %u', self.swaps))
-    _G.toolbar:enable('swap')
-  end
+  _G.wordbar:setCenter(word)
 
   if self.hints == 0 then
     _G.toolbar:set('hint', ' 💡 ')
@@ -218,7 +243,7 @@ function Grid:updateUI(s, score)
     _G.toolbar:disable('undo')
   end
 
-  if #self.words > 0 then
+  if #self.humanFoundWords > 0 then
     _G.toolbar:enable('result')
   else
     _G.toolbar:disable('result')
@@ -245,7 +270,7 @@ function Grid:createLetterPool()
 
 end
 
-function Grid:sortWords()
+function Grid:sortWords(foundWords)
 
   local function wordScoreComp(a, b)
     local function calcScore(s)
@@ -258,7 +283,7 @@ function Grid:sortWords()
     return calcScore(a) > calcScore(b)
   end
 
-  table.sort(self.words, wordScoreComp)
+  table.sort(foundWords, wordScoreComp)
 end
 
 function Grid:iterator(fn)
@@ -407,58 +432,50 @@ function Grid:selectSlot(slot)
         end
       end
     end
+
+    if #self.selectedSlots > 2 then
+      local _, score = self:getSelectedWord()
+      local dim = _G.DIMENSIONS
+      local src = self.selectedSlots[#self.selectedSlots]
+      local b = Bubble.new(src.center.x + dim.halfQ/2, src.center.y - dim.halfQ/2, string.format('%+d', score))
+      b:fadeOut()
+    end
+
   end
 
   self:updateUI(self:getSelectedWord())
 end
 
---[[
-function Grid:tapped(slot)
-  if not table.contains(self.selectedSlots, slot) then
-    table.insert(self.selectedSlots, slot)
-trace('added', slot.tile.letter, '#self.selectedSlots now', #self.selectedSlots)
-    if #self.selectedSlots == 2 and self.swaps > 0 then
-      local t1 = self.selectedSlots[1].tile
-      local t2 = self.selectedSlots[2].tile
-trace('swapping', t1.letter, t2.letter)
-
-      self:deselectAllSlots()
-
-      self.swaps = self.swaps - 1
-      _self:updateUI()
-    end
-  end
-end
-]]
-
 function Grid:testSelection()
+
+  if _G.GAME_MODE == 'robot' and self.whoseTurnNext == 'robot' then
+    Util.sound('failure')
+    return
+  end
+
   if #self.selectedSlots == 2 then
     local s1 = self.selectedSlots[1]
     local s2 = self.selectedSlots[2]
     local t1 = s1.tile
     local t2 = s2.tile
-    if self.swaps > 0 then
-      table.insert(self.undoStack, self:createSaveable())
-      if t1.letter ~= t2.letter then
 
-        Util.sound('swap')
+    table.insert(self.undoStack, self:createSaveable())
+    if t1.letter ~= t2.letter then
 
-        s1.tile, s2.tile = s2.tile, s1.tile
-        t1.slot = s2
-        t1:settle()
-        t2.slot = s1
-        t2:settle()
+      Util.sound('swap')
 
-        self.selectedSlots[#self.selectedSlots]:flyAwaySwaps(-1) -- this decrements swaps
-      end
-    else
-      Util.sound('shake')
-      t1:shake()
-      t2:shake()
+      s1.tile, s2.tile = s2.tile, s1.tile
+      t1.slot = s2
+      t1:settle()
+      t2.slot = s1
+      t2:settle()
+
     end
+    self:updateUI()
     self:deselectAllSlots()
   elseif #self.selectedSlots > 2 then
     local word, score = self:getSelectedWord()
+
     if Util.isWordInDictionary(word) then
     -- if true then
       -- trace(score, word)
@@ -466,26 +483,11 @@ function Grid:testSelection()
       Util.sound('found')
 
       table.insert(self.undoStack, self:createSaveable())
-      table.insert(self.words, word)
+      table.insert(self.humanFoundWords, word)
       -- updateUI later when score has transitioned
-      self:sortWords()
+      self:sortWords(self.humanFoundWords)
 
-      do
-        local n = 1
-        for _,slot in ipairs(self.selectedSlots) do
-          slot.tile:flyAway(n, #self.selectedSlots) -- calls Tile:delete()
-          slot.tile = nil
-          n = n + 1
-        end
-      end
-
-      do
-        local src = self.selectedSlots[#self.selectedSlots]
-        src:flyAwaySwaps(1) -- this increments swaps
-        src:flyAwayScore(score) -- this increments score
-      end
-
-      self.selectedSlots = {}
+      self:flyAwaySelectedSlots(score, 'human')
 
       self:dropColumns()
       self:compactColumns()
@@ -495,11 +497,14 @@ function Grid:testSelection()
 
       -- wait for tile transitions to finish (and tiles be deleted) before updating UI and checking for end of game
       timer.performWithDelay(_G.FLIGHT_TIME, function()
-        self:updateUI(word, score)
+        self:updateUI(word)
         if self:countTiles() < 3 then -- will end automatically with 0, 1 or 2 tiles
           self:gameOver()
-        elseif type(_G.GAME_MODE) == 'number' and #self.words == _G.GAME_MODE then
+        elseif type(_G.GAME_MODE) == 'number' and #self.humanFoundWords == _G.GAME_MODE then
           self:gameOver()
+        elseif _G.GAME_MODE == 'robot' then
+          self.whoseTurnNext = 'robot'
+          self:robot()
         end
       end)
     else  -- word not in dictionary
@@ -709,10 +714,6 @@ end
 
 function Grid:shuffle()
 
-  if self.swaps == 0 then
-    return
-  end
-
   local tiles = self:getTiles()
   if #tiles < 3 then
     return
@@ -739,7 +740,6 @@ function Grid:shuffle()
 
   Util.resetDictionaries()
 
-  self.swaps = self.swaps - 1
   self:updateUI()
 
 end
@@ -796,12 +796,12 @@ function Grid:DFS(path, word)
       -- end
     else  -- end of the path
       if string.len(word) > 2 then
-        if not table.contains(self.foundWords, word) then
+        if not table.contains(self.hintWords, word) then
           if Util.isWordInDict(word) then
-            table.insert(self.foundWords, word)
+            table.insert(self.hintWords, word)
             -- assert(#path==string.len(word))
-            self.foundPaths[word] = table.clone(path)
-            -- assert(#self.foundPaths[word]==string.len(word))
+            self.hintPaths[word] = table.clone(path)
+            -- assert(#self.hintPaths[word]==string.len(word))
           end
         end
       end
@@ -812,7 +812,9 @@ function Grid:DFS(path, word)
 
 end
 
-function Grid:hint()
+function Grid:hint(who)
+
+  who = who or 'human'
 
   local function _calcScore(s)
     local score = 0
@@ -825,7 +827,7 @@ function Grid:hint()
   local function _maxWord()
     local maxScore = 0
     local maxWord = ''
-    for _,word in ipairs(self.foundWords) do
+    for _,word in ipairs(self.hintWords) do
       local score = _calcScore(word)
       if score > maxScore then
         maxScore = score
@@ -835,7 +837,7 @@ function Grid:hint()
     return maxWord, maxScore
   end
 
-  if self.hints < 1 then
+  if who == 'human' and self.hints < 1 then
     Util.sound('failure')
     return
   end
@@ -846,6 +848,7 @@ function Grid:hint()
 
     for _,slot in ipairs(self.slots) do
       if slot.tile then
+        Util.sound('pluck')
         slot.tile:mark()
 
         coroutine.yield() -- yield to the timer, so UI can update; adds about 1.5 seconds
@@ -866,14 +869,14 @@ function Grid:hint()
     timer.cancel(source)
     local timeStop = system.getTimer()
 
-    if #self.foundWords > 0 then
+    if #self.hintWords > 0 then
       Util.sound('found')
 
       local maxWord, maxScore = _maxWord()
 
-      trace(#self.foundWords, 'found in', (timeStop - timeStart) / 1000, 'seconds, best', maxWord, 'score', maxScore)
+      trace(#self.hintWords, 'found in', (timeStop - timeStart) / 1000, 'seconds, best', maxWord, 'score', maxScore)
 
-      local path = self.foundPaths[maxWord]
+      local path = self.hintPaths[maxWord]
       -- assert(path)
       -- assert(#path==string.len(maxWord))
       for _,slot in ipairs(self.slots) do
@@ -886,11 +889,13 @@ function Grid:hint()
         end
       end
 
-      -- uncomment the following if you want to do anything with selecetd slots
-      -- self.selectedSlots = table.clone(path)
-
-      if system.getInfo('environment') ~= 'simulator' then
-        self.hints = self.hints - 1
+      if who == 'robot' then
+        self.selectedSlots = table.clone(path)
+        self:_robot(maxWord, maxScore)
+      else
+        if system.getInfo('environment') ~= 'simulator' then
+          self.hints = self.hints - 1
+        end
       end
 
       self:updateUI(maxWord)
@@ -901,8 +906,8 @@ function Grid:hint()
   end
 
   self:deselectAllSlots()
-  self.foundWords = {}
-  self.foundPaths = {}
+  self.hintWords = {}
+  self.hintPaths = {}
 
   -- https://coronalabs.com/blog/2015/02/10/tutorial-using-coroutines-in-corona/
 
@@ -926,13 +931,66 @@ function Grid:hint()
 
     -- trace('MAX WORD', maxWord, 'SCORE', maxScore)
 
-    -- _G.wordbar:setCenter(tostring(#self.foundWords))
+    -- _G.wordbar:setCenter(tostring(#self.hintWords))
     -- timer.performWithDelay(30, function() coroutine.resume(co) end)
     coroutine.resume(co)
   end
 
   -- trace(coroutine.status(co))
 ]]
+
+end
+
+function Grid:robot()
+
+  if _G.GAME_MODE ~= 'robot' then
+    return
+  end
+
+  self:hint('robot')
+  self.whoseTurnNext = 'human'
+end
+
+function Grid:flyAwaySelectedSlots(score, who)
+  local n = 1
+  for _,slot in ipairs(self.selectedSlots) do
+    slot.tile:flyAway(n, #self.selectedSlots) -- calls Tile:delete()
+    slot.tile = nil
+    n = n + 1
+  end
+
+  do
+    local dim = _G.DIMENSIONS
+    local src = self.selectedSlots[#self.selectedSlots]
+    local b = Bubble.new(src.center.x, src.center.y, string.format('%+d', score))
+    b:flyTo(dim.statusbarX, dim.statusbarY)
+    if who == 'robot' then self.robotScore = self.robotScore + score else self.humanScore = self.humanScore + score end
+  end
+  -- src:flyAwayScore(score, who) -- this increments humanScore
+
+  self.selectedSlots = {}
+end
+
+function Grid:_robot(word, score)
+
+  trace('robot post hint #selected slots', #self.selectedSlots)
+
+  -- table.insert(self.undoStack, self:createSaveable())
+
+  self:flyAwaySelectedSlots(score, 'robot')
+
+  table.insert(self.robotFoundWords, word)
+  self:sortWords(self.robotFoundWords)
+
+  self:dropColumns()
+  self:compactColumns()
+  if #self.letterPool > 0 then
+    self:addTiles()
+  end
+
+  timer.performWithDelay(_G.FLIGHT_TIME, function()
+    self:updateUI()
+  end)
 
 end
 
