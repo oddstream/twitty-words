@@ -76,6 +76,8 @@ if nil == _G.BOLDFONT then  _G.ROBOTO_MEDIUM = native.systemFontBold end
 -- a global object containing useful precalculated dimensions
 _G.DIMENSIONS = {}
 
+_G.TWITTY_VERSION = '2020.11.25.0 α'
+
 _G.ACME = 'assets/Acme-Regular.ttf'
 _G.ROBOTO_MEDIUM = 'assets/Roboto-Medium.ttf'
 _G.ROBOTO_BOLD = 'assets/Roboto-Bold.ttf'
@@ -202,11 +204,6 @@ _G.TWITTY_SOUNDS = {
     audio.loadSound('assets/back_002.ogg'),
     audio.loadSound('assets/back_003.ogg'),
     audio.loadSound('assets/back_004.ogg'),
-  },
-
-  pluck = {
-    audio.loadSound('assets/pluck_001.ogg'),
-    audio.loadSound('assets/pluck_002.ogg'),
   },
 }
 

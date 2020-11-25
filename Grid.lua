@@ -148,7 +148,7 @@ function Grid:gameOver()
     else
       msg = 'Game tied'
     end
-    msg = string.format('%s %u : %u', msg, self.humanScore, self.robotScore)
+    msg = string.format('%s %u : %u. Imagine an impressive game over scene here.', msg, self.humanScore, self.robotScore)
     native.showAlert('Game Over', msg, {'★'}, function()
       composer.gotoScene('Twitty', {effect='slideLeft'})
     end)
@@ -196,6 +196,7 @@ function Grid:newGame()
   Util.resetDictionaries()
 
   -- update ui
+  Util.sound('found') -- make a happy sound
   self:updateUI()
 end
 
@@ -213,9 +214,9 @@ function Grid:updateUI(word)
   end
 
   if _G.GAME_MODE == 'ROBOTO' then
-    _G.statusbar:setCenter(string.format('%u : %u', self.humanScore, self.robotScore))  -- or '%+d'
+    _G.statusbar:setCenter(string.format('%d : %d', self.humanScore, self.robotScore))  -- or '%+d'
   else
-    _G.statusbar:setCenter(string.format('SCORE %u', self.humanScore))  -- or '%+d'
+    _G.statusbar:setCenter(string.format('SCORE %d', self.humanScore))  -- or '%+d'
   end
 
   if _G.GAME_MODE == 'CASUAL' or _G.GAME_MODE == 'ROBOTO' then
@@ -418,7 +419,7 @@ function Grid:selectSlot(slot)
       local dim = _G.DIMENSIONS
       local _, score = self:getSelectedWord()
       local src = self.selectedSlots[#self.selectedSlots]
-      local b = Bubble.new(src.center.x - dim.quarterQ, src.center.y - dim.quarterQ, string.format('%+d', score))
+      local b = Bubble.new(src.center.x, src.center.y - dim.halfQ, string.format('%+d', score))
       b:fadeOut()
     end
 
@@ -429,12 +430,22 @@ end
 
 function Grid:testSelection()
 
+  local dim = _G.DIMENSIONS
+
   if _G.GAME_MODE == 'ROBOTO' and self.whoseTurnNext == 'robot' then
     Util.sound('failure')
     return
   end
 
   if #self.selectedSlots == 2 then
+
+    local function _subtractLetterValue(slot)
+      local score = _G.SCRABBLE_SCORES[slot.tile.letter]
+      local b = Bubble.new(slot.center.x, slot.center.y, string.format('-%d', score))
+      b:flyTo(dim.statusbarX, dim.statusbarY)
+      self.humanScore = self.humanScore - score
+    end
+
     local s1 = self.selectedSlots[1]
     local s2 = self.selectedSlots[2]
     local t1 = s1.tile
@@ -446,10 +457,16 @@ function Grid:testSelection()
       Util.sound('swap')
 
       s1.tile, s2.tile = s2.tile, s1.tile
+
       t1.slot = s2
       t1:settle()
+
+      _subtractLetterValue(s1)
+
       t2.slot = s1
       t2:settle()
+
+      _subtractLetterValue(s2)
 
     end
     self:updateUI()
@@ -829,7 +846,7 @@ function Grid:hint(who)
 
     for _,slot in ipairs(self.slots) do
       if slot.tile then
-        Util.sound('pluck')
+        Util.sound('select')
         slot.tile:mark()
 
         coroutine.yield() -- yield to the timer, so UI can update; adds about 1.5 seconds
@@ -888,7 +905,7 @@ function Grid:hint(who)
     if who == 'robot' then
       self.whoseTurnNext = 'human'
       _G.TWITTY_SELECTED_COLOR = _G.TWITTY_COLORS.selected
-      trace('selected', unpack(_G.TWITTY_SELECTED_COLOR))
+      -- trace('selected', unpack(_G.TWITTY_SELECTED_COLOR))
     end
 
   end
@@ -910,9 +927,10 @@ function Grid:robot()
   end
 
   _G.TWITTY_SELECTED_COLOR = _G.TWITTY_COLORS.roboto
-  trace('roboto', unpack(_G.TWITTY_SELECTED_COLOR))
+  -- trace('roboto', unpack(_G.TWITTY_SELECTED_COLOR))
 
-  self:hint('robot')  -- this ends in it's own time
+  self:hint('robot')  -- this ends in it's own time ...
+  -- ... so don't put any code here
 end
 
 function Grid:flyAwaySelectedSlots(score, who)

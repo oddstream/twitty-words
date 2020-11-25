@@ -95,6 +95,8 @@ function scene:create(event)
   local help4 = display.newText(sceneGroup, 'Play against a robot', display.contentCenterX, y, _G.ROBOTO_MEDIUM, dim.tileFontSize / 3)
   help4:setFillColor(0,0,0)
 
+  local ver = display.newText(sceneGroup, _G.TWITTY_VERSION, display.contentCenterX, display.contentHeight - dim.tileFontSize / 3, _G.ROBOTO_MEDIUM, dim.tileFontSize / 3)
+  ver:setFillColor(0,0,0)
 end
 
 -- show()

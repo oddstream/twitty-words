@@ -155,6 +155,13 @@ function scene:key(event)
 ]]
     elseif event.keyName == 'h' then
       _G.grid:hint()
+    elseif event.keyName == 'g' then
+      do
+        local before = collectgarbage('count')
+        collectgarbage('collect')
+        local after = collectgarbage('count')
+        print('collected', math.floor(before - after), 'KBytes, now using', math.floor(after), 'KBytes')
+      end
     elseif event.keyName == 's' then
       _G.grid:shuffle()
     elseif event.keyName == 'u' then
