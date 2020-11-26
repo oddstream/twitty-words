@@ -10,10 +10,17 @@ local destination = nil
 local function loadDictionaries()
   -- look for dictionary file in resource directory (the one containing main.lua)
 
-  local filePath = system.pathForFile('Collins Scrabble Words (2019).txt', system.ResourceDirectory)
-  local file = io.open(filePath)
+  local A2Z = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+  local index = {}
+
+  -- https://boardgames.stackexchange.com/questions/38366/latest-collins-scrabble-words-list-in-text-file
+  -- local filePath = system.pathForFile('Collins Scrabble Words (2019).txt', system.ResourceDirectory)
+
+  -- https://github.com/dwyl/english-words
+  local filePath = system.pathForFile('words_alpha.txt', system.ResourceDirectory)
+  local file, msg = io.open(filePath)
   if not file then
-    trace('ERROR: Cannot open', filePath)
+    trace('ERROR: Cannot open', filePath, msg)
   else
     trace('opened', filePath)
     _G.DICTIONARY = file:read('*a')
@@ -21,12 +28,35 @@ local function loadDictionaries()
     trace('dictionary length', string.len(_G.DICTIONARY))
   end
 
+--[[
+  -- building DICTIONARYIDX increases memory use from 4000 to 11000 KBytes
+
+  for i=1, 26 do
+    local letter = A2Z:sub(i,i)
+    local first, last = string.find(_G.DICTIONARY, '\n' .. letter)
+    assert(first, letter) -- no words beginning with letter
+    index[letter] = first
+  end
+
+  -- for key,value in pairs(index) do
+  --   trace(key, value)
+  -- end
+
+  _G.DICTIONARYIDX = {}
+  for i=1, 25 do
+    local letter = A2Z:sub(i,i)
+    local nextLetter = A2Z:sub(i+1,i+1)
+    _G.DICTIONARYIDX[letter] = string.sub(_G.DICTIONARY, index[letter], index[nextLetter])
+  end
+  _G.DICTIONARYIDX['Z'] = string.sub(_G.DICTIONARY, index['Z'])
+]]
+
   -- https://raw.githubusercontent.com/sapbmw/The-Oxford-3000/master/The_Oxford_3000.txt
-  -- filePath = system.pathForFile('Oxford3000.txt', system.ResourceDirectory)
+  -- filePath = system.pathForFile('assets/junk/Oxford3000.txt', system.ResourceDirectory)
   filePath = system.pathForFile('1000 words.txt', system.ResourceDirectory)
-  file = io.open(filePath)
+  file, msg = io.open(filePath)
   if not file then
-    trace('ERROR: Cannot open', filePath)
+    trace('ERROR: Cannot open', filePath, msg)
   else
     trace('opened', filePath)
     _G.DICT = file:read('*a')
@@ -37,11 +67,10 @@ local function loadDictionaries()
   -- double the speed of searching the hint dictionary by slicing it up into 26 sub dictionaries
   -- still need original (A-Z) dictionary for words that start with blank tile
 
-  local A2Z = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-  local index = {}
   for i=1, 26 do
     local letter = A2Z:sub(i,i)
-    first,last = string.find(_G.DICT, '\n' .. letter)
+    local first, last = string.find(_G.DICT, '\n' .. letter)
+    assert(first, letter) -- no words beginning with letter
     index[letter] = first
   end
 

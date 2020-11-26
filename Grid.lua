@@ -55,8 +55,8 @@ function Grid:createSaveable()
   o.humanFoundWords = table.clone(self.humanFoundWords)
   o.robotFoundWords = table.clone(self.robotFoundWords)
   -- self.hints is not covered by the unconditional undo guarantee
-  o.humanScore = self.humanScore  -- TODO could recalc this
-  o.robotScore = self.robotScore  -- TODO could recalc this
+  o.humanScore = self.humanScore  -- could recalc this
+  o.robotScore = self.robotScore  -- could recalc this
   return o
 end
 
@@ -68,8 +68,8 @@ function Grid:replaceWithSaved(saved)
   self.humanFoundWords = saved.humanFoundWords
   self.robotFoundWords = saved.robotFoundWords
   -- self.hints is not covered by the unconditional undo guarantee
-  self.humanScore = saved.humanScore  -- TODO could recalc this
-  self.robotScore = saved.robotScore  -- TODO could recalc this
+  self.humanScore = saved.humanScore  -- could recalc this
+  self.robotScore = saved.robotScore  -- could recalc this
 
   self:updateUI()
 end
@@ -439,13 +439,6 @@ function Grid:testSelection()
 
   if #self.selectedSlots == 2 then
 
-    local function _subtractLetterValue(slot)
-      local score = _G.SCRABBLE_SCORES[slot.tile.letter]
-      local b = Bubble.new(slot.center.x, slot.center.y, string.format('-%d', score))
-      b:flyTo(dim.statusbarX, dim.statusbarY)
-      self.humanScore = self.humanScore - score
-    end
-
     local s1 = self.selectedSlots[1]
     local s2 = self.selectedSlots[2]
     local t1 = s1.tile
@@ -461,12 +454,15 @@ function Grid:testSelection()
       t1.slot = s2
       t1:settle()
 
-      _subtractLetterValue(s1)
-
       t2.slot = s1
       t2:settle()
 
-      _subtractLetterValue(s2)
+      do
+        local score = _G.SCRABBLE_SCORES[t1.letter] + _G.SCRABBLE_SCORES[t2.letter]
+        local b = Bubble.new(s2.center.x, s2.center.y, string.format('-%d', score))
+        b:flyTo(dim.statusbarX, dim.statusbarY)
+        self.humanScore = self.humanScore - score
+      end
 
     end
     self:updateUI()
@@ -885,6 +881,13 @@ function Grid:hint(who)
           end
         end
       end
+
+      -- do
+      --   local dim = _G.DIMENSIONS
+      --   local src = path[#path]
+      --   local b = Bubble.new(src.center.x, src.center.y - dim.halfQ, string.format('%+d', maxScore))
+      --   b:fadeOut()
+      -- end
 
       if who == 'robot' then
         self.selectedSlots = table.clone(path)

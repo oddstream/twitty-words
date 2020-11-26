@@ -48,7 +48,7 @@ settings =
     suspendWhenMinimized = true,
     titleText =
     {
-      default = 'Find Words On Tiles'
+      default = 'Twitty Little Words'
     }
   },
 

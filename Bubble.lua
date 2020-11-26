@@ -16,8 +16,8 @@ function Bubble.new(x, y, label)
   _G.TWITTY_GROUPS.grid:insert(o.grp)
   o.grp.x, o.grp.y = x, y
 
-  o.circle = display.newCircle(o.grp, 0, 0,dim.Q / 4)
-  o.circle:setFillColor(unpack(_G.TWITTY_COLORS.uibackground))
+  o.circle = display.newCircle(o.grp, 0, 0,dim.quarterQ)
+  o.circle:setFillColor(unpack(_G.TWITTY_SELECTED_COLOR))
 
   o.label = display.newText({
     parent = o.grp,
@@ -25,21 +25,21 @@ function Bubble.new(x, y, label)
     x = 0,
     y = 0,
     font = _G.ACME,
-    fontSize = dim.Q / 4,
+    fontSize = dim.quarterQ,
     align = 'center',
   })
-  o.label:setFillColor(unpack(_G.TWITTY_COLORS.uiforeground))
+  o.label:setFillColor(0,0,0)
 
   return o
 
 end
 
 function Bubble:fadeOut()
-  transition.scaleTo(self.grp, {xScale=0.1, yScale=0.1, time=_G.FLIGHT_TIME / 2, onComplete=function() self.grp:removeSelf() end})
+  transition.scaleTo(self.grp, {xScale=0.1, yScale=0.1, time=_G.FLIGHT_TIME / 2, transition=easing.inQuart, onComplete=function() self.grp:removeSelf() end})
 end
 
 function Bubble:flyTo(x, y)
-  transition.moveTo(self.grp, {x=x, y=y, time=_G.FLIGHT_TIME, transition=easing.outQuart, onComplete=function() self.grp:removeSelf() end})
+  transition.moveTo(self.grp, {x=x, y=y, time=_G.FLIGHT_TIME * 2, transition=easing.outQuart, onComplete=function() self.grp:removeSelf() end})
 end
 
 return Bubble

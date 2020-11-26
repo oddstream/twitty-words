@@ -37,23 +37,17 @@ function Util.clamp(value, min, max)
 end
 
 function Util.setBackground(group)
+
   display.setDefault('background', unpack(_G.TWITTY_COLORS.baize))
-  -- display.setDefault('textureWrapX', 'repeat')
-  -- display.setDefault('textureWrapY', 'repeat')
-  -- -- dependant on scale = 'letterbox' in config.lua
-  -- local bg = display.newImage(group, 'assets/pexels-pixabay-301717.jpg') --, display.actualContentWidth, display.actualContentHeight)
-  local bg = display.newRect(group, display.contentCenterX, display.contentCenterY, display.contentWidth, display.contentHeight * 3)
-  -- bg.x = display.contentCenterX
-  -- bg.y = display.contentCenterY
-  -- bg.rotation = 90
+  -- tried a bitmap (wood effect) background
+  -- it didn't scale well
+  -- couldn't get textureWrapX/Y to work
+
+  -- make background wide/high enough that scrolling it doesn't show edges
+  local bg = display.newRect(group, display.contentCenterX, display.contentCenterY, display.contentWidth * 3, display.contentHeight * 3)
   bg:setFillColor(unpack(_G.TWITTY_COLORS.baize))
   bg.alpha = 0.95
-  -- bg.fill = {
-  --   type = 'image',
-  --   filename = 'assets/raccoon256.png'
-  -- }
-  -- bg.fill.scaleX = display.contentWidth / display.contentHeight / 2
-  -- bg.fill.scaleY = display.contentWidth / display.contentHeight / 3
+
 end
 
 --[[

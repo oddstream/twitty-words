@@ -51,22 +51,21 @@ local function loadScores()
       'DAUGHTERS',
       'CONTAINERS',
       'INCLUDING',
-      'BADGER',
-      'RACCOON',
+      'RACCOONS',
       'ZOMBIES',
       'QUIVERS',
       'ALPHABETS',
       'ALPENSTOCKS',
-      'ALTIMETRIC',
-      'ALTORUFFLED',
       'ALUMSTONES',
       'MOSQUITO',
       'SIAMEZING',
       'SLEEZIEST',
-      'ANOVULATION',
       'ANTICRUELTY',
       'ODDSMAKERS',
-      'OENOPHILIST',
+      'VIEWPOINT',
+      'YEARLINGS',
+      'WAVEFRONT',
+      'MAGAZINES',
     }
 
     scoresTable = {}
@@ -207,6 +206,20 @@ function scene:show(event)
       end
     end
 
+    local function _banner(y, s)
+      local txt = display.newText({
+        parent = sceneGroup,
+        text = s,
+        x = display.contentCenterX,
+        y = y,
+        font = _G.ACME,
+        fontSize = dim.halfQ,
+        align = 'center',
+      })
+      -- txt.anchorX = 0
+      txt:setFillColor(0,0,0)
+    end
+
     local function _createTile(x, y, txt, selected)
       local grp = Tile.createGraphics(sceneGroup, x, y, txt)
       grp:scale(0.5, 0.5)
@@ -225,8 +238,11 @@ function scene:show(event)
       end
     end
 
-    -- local y = dim.bannerY + dim.Q
     local y = dim.halfQ
+
+    _banner(y, 'HIGH SCORES')
+
+    y = y + dim.Q
 
     for i = 1, 20 do
       if scoresTable[i] then

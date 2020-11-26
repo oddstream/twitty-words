@@ -64,6 +64,20 @@ function scene:create(event)
   Util.setBackground(sceneGroup)
   sceneGroup:addEventListener('touch', backTouch)
 
+  local function _banner(y, s)
+    local txt = display.newText({
+      parent = sceneGroup,
+      text = s,
+      x = display.contentCenterX,
+      y = y,
+      font = _G.ACME,
+      fontSize = dim.halfQ,
+      align = 'center',
+    })
+    -- txt.anchorX = 0
+    txt:setFillColor(0,0,0)
+  end
+
   local function _createTile(x, y, txt)
     local grp = Tile.createGraphics(sceneGroup, x, y, txt)
     grp:scale(0.5, 0.5)
@@ -164,12 +178,18 @@ function scene:create(event)
 
   local y = dim.halfQ
 
+  _banner(y, 'WORDS YOU FOUND')
+
+  y = y + dim.Q
+
   for i,word in ipairs(_G.grid.humanFoundWords) do
     _displayRow(y, i, word)
     y = y + dim.halfQ
   end
 
   if _G.GAME_MODE == 'ROBOTO' then
+    y = y + dim.Q
+    _banner(y, 'WORDS ROBOTO FOUND')
     y = y + dim.Q
     for i,word in ipairs(_G.grid.robotFoundWords) do
       _displayRow(y, i, word)

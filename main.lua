@@ -76,8 +76,6 @@ if nil == _G.BOLDFONT then  _G.ROBOTO_MEDIUM = native.systemFontBold end
 -- a global object containing useful precalculated dimensions
 _G.DIMENSIONS = {}
 
-_G.TWITTY_VERSION = '2020.11.25.0 α'
-
 _G.ACME = 'assets/Acme-Regular.ttf'
 _G.ROBOTO_MEDIUM = 'assets/Roboto-Medium.ttf'
 _G.ROBOTO_BOLD = 'assets/Roboto-Bold.ttf'
@@ -176,7 +174,12 @@ _G.TWITTY_GROUPS = {
 
 _G.TWITTY_SOUNDS = {
   complete = audio.loadSound('assets/complete.wav'),
-  failure = audio.loadSound('assets/error_008.ogg'),
+
+  failure = {
+    audio.loadSound('assets/error_006.ogg'),
+    audio.loadSound('assets/error_007.ogg'),
+    audio.loadSound('assets/error_008.ogg'),
+  },
 
   select = {
     audio.loadSound('assets/click1.ogg'),
@@ -186,8 +189,26 @@ _G.TWITTY_SOUNDS = {
     audio.loadSound('assets/click5.ogg'),
   },
 
-  shuffle = audio.loadSound('assets/maximize_004.ogg'),
-  swap = audio.loadSound('assets/minimize_007.ogg'),
+  shuffle = {
+    audio.loadSound('assets/maximize_004.ogg'),
+    audio.loadSound('assets/maximize_005.ogg'),
+    audio.loadSound('assets/maximize_006.ogg'),
+    audio.loadSound('assets/maximize_007.ogg'),
+    audio.loadSound('assets/maximize_008.ogg'),
+    audio.loadSound('assets/maximize_009.ogg'),
+  },
+
+  swap = {
+    audio.loadSound('assets/minimize_001.ogg'),
+    audio.loadSound('assets/minimize_002.ogg'),
+    audio.loadSound('assets/minimize_003.ogg'),
+    audio.loadSound('assets/minimize_004.ogg'),
+    audio.loadSound('assets/minimize_005.ogg'),
+    audio.loadSound('assets/minimize_006.ogg'),
+    audio.loadSound('assets/minimize_007.ogg'),
+    audio.loadSound('assets/minimize_008.ogg'),
+    audio.loadSound('assets/minimize_009.ogg'),
+  },
 
   found = {
     audio.loadSound('assets/confirmation_001.ogg'),
@@ -195,6 +216,7 @@ _G.TWITTY_SOUNDS = {
     audio.loadSound('assets/confirmation_003.ogg'),
     audio.loadSound('assets/confirmation_004.ogg'),
   },
+
   shake = audio.loadSound('assets/error_008.ogg'),
 
   timer = audio.loadSound('assets/question_004.ogg'),
@@ -285,5 +307,7 @@ _G.GAME_MODE = 'URGENT'  -- 'CASUAL' | 'URGENT' | 'ROBOTO' | <number>
 -- for k,v in pairs( _G ) do
 --   print( k , v )
 -- end
+
+_G.TWITTY_VERSION = '2020.11.26.1 α'
 
 composer.gotoScene('Splash', {params={scene='ModeMenu'}})
