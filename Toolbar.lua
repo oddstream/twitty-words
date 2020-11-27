@@ -38,15 +38,15 @@ function Toolbar.new()
 
   o.shuffle = Tappy.new(_G.TWITTY_GROUPS.ui, dim.halfQ, dim.toolbarY, function()
     _G.grid:shuffle()
-  end, '🔀', 'SHUFFLE') -- '🗘' doesn't display on phone
+  end, 'Sh', 'SHUFFLE') -- '🗘' doesn't display on phone, 🔀 doesn't display on Chromebook
 
   o.hint = Tappy.new(_G.TWITTY_GROUPS.ui, dim.Q + dim.Q, dim.toolbarY, function()
     _G.grid:hint()
-  end, ' 💡 ', 'HINT')
+  end, 'Hi', 'HINT')  -- 💡
 
   o.undo = Tappy.new(_G.TWITTY_GROUPS.ui, dim.toolbarX, dim.toolbarY, function()
     _G.grid:undo()
-  end, '⎌', 'UNDO')
+  end, 'Un', 'UNDO') -- '⎌'
 
 --[[
   if system.getInfo('environment') == 'simulator' then
@@ -58,7 +58,7 @@ function Toolbar.new()
 
   o.result = Tappy.new(_G.TWITTY_GROUPS.ui, display.actualContentWidth - dim.halfQ, dim.toolbarY, function()
     _G.grid:showFoundWords()
-  end, ' ⚖ ', 'WORDS')  -- make string longer to trick into scaling down glyph size
+  end, 'Wo', 'WORDS')  -- make ' ⚖ ' string longer to trick into scaling down glyph size
 
   return o
 end

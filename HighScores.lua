@@ -38,6 +38,7 @@ local function loadScores()
       'BAMBOOZLE',
       'BODACIOUSLY',
       'VIXENISH',
+      'ZIPPERS',
       'BROUHAHA',
       'SCRUMPTIOUS',
       'CANOODLE',
@@ -137,35 +138,7 @@ function scene:create(event)
 
   trace('HighScores scene:create')
   Util.setBackground(sceneGroup)
-  sceneGroup:addEventListener('touch', backTouch)
 
-  -- local backHeight = (20 * dim.halfQ) + display.actualContentHeight
-  -- need a background rect for the touch to work when touching the, er, background (otherwise can only touch/vscroll tiles)
-  -- local rectBackground = display.newRect(backGroup, display.actualContentWidth / 2, display.actualContentHeight / 2, display.actualContentWidth, backHeight)
-  -- rectBackground:setFillColor(unpack(_G.TWITTY_COLORS.baize))
-
---[[
-  -- a rect for the results tool bar
-  local rectToolbar = display.newRect(sceneGroup, dim.bannerX, dim.bannerY, dim.bannerWidth, dim.bannerHeight)
-  rectToolbar:setFillColor(unpack(_G.TWITTY_COLORS.uibackground))
-
-  local newButton = widget.newButton({
-    x = dim.halfQ,
-    y = dim.bannerY,
-    onRelease = function()
-      Util.sound('ui')
-      composer.gotoScene('Twitty', {effect='slideLeft'})
-    end,
-    label = '< NEW GAME',
-    labelColor = { default=_G.TWITTY_COLORS.uiforeground, over=_G.TWITTY_COLORS.uicontrol },
-    labelAlign = 'left',
-    font = _G.ACME,
-    fontSize = dim.bannerHeight / 2,
-    textOnly = true,
-  })
-  newButton.anchorX = 0
-  sceneGroup:insert(newButton)
-]]
 end
 
 
@@ -263,7 +236,11 @@ function scene:show(event)
       end
     end
 
-    -- Runtime:addEventListener('key', scene)
+    sceneGroup:addEventListener('touch', backTouch)
+
+    if not Runtime:addEventListener('key', scene) then
+      trace('ERROR: could not addEventListener key in HighScores scene:show')
+    end
 
   elseif phase == 'did' then
     -- Code here runs when the scene is entirely on screen
@@ -273,7 +250,7 @@ function scene:show(event)
     local tappy = Tappy.new(toolbarGroup, display.actualContentWidth - dim.halfQ, dim.toolbarY, function()
       Util.sound('ui')
       composer.gotoScene('Twitty', {effect='slideLeft'})
-    end, '★', 'NEW')
+    end, 'Ne', 'NEW') -- '★'
 
   end
 end
@@ -287,7 +264,11 @@ function scene:hide(event)
 
   if phase == 'will' then
     -- Code here runs when the scene is on screen (but is about to go off screen)
-    -- Runtime:removeEventListener('key', scene)
+    sceneGroup:removeEventListener('touch', backTouch)
+
+    if not Runtime:removeEventListener('key', scene) then
+      trace('ERROR: could not removeEventListener key in HighScores scene:hide')
+    end
 
   elseif phase == 'did' then
     -- Code here runs immediately after the scene goes entirely off screen
@@ -304,15 +285,16 @@ function scene:destroy(event)
   trace('HighScores scene:destroy')
 end
 
--- function scene:key(event)
---   local phase = event.phase
---   if phase == 'up' then
---     if event.keyName == 'back' or event.keyName == 'deleteBack' then
---       composer.gotoScene('Twitty', {effect='slideLeft'})
---       return true -- override the key
---     end
---   end
--- end
+function scene:key(event)
+  local phase = event.phase
+  if phase == 'up' then
+    if event.keyName == 'back' or event.keyName == 'deleteBack' then
+      Util.sound('ui')
+      composer.gotoScene('Twitty', {effect='slideLeft'})
+      return true -- override the key
+    end
+  end
+end
 
 -- -----------------------------------------------------------------------------------
 -- Scene event function listeners

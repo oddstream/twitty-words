@@ -62,7 +62,6 @@ function scene:create(event)
   -- sceneGroup.height = display.actualContentHeight * 2
   -- trace('scene height is', sceneGroup.height)
   Util.setBackground(sceneGroup)
-  sceneGroup:addEventListener('touch', backTouch)
 
   local function _banner(y, s)
     local txt = display.newText({
@@ -143,7 +142,7 @@ function scene:create(event)
     Util.sound('ui')
     composer.hideOverlay('slideLeft')
     _G.grid:resumeCountdown()
-    end, '←', 'BACK')
+    end, '<', 'BACK') -- '←'
 
   --[[
   local scales = display.newText({
@@ -201,7 +200,7 @@ function scene:create(event)
     Util.sound('ui')
     composer.hideOverlay()
     _G.grid:gameOver()
-    end, ' ⚖ ', 'FINISH') -- '⯈' didn't appear on the phone
+    end, 'Fin', 'FINISH') -- '⯈' didn't appear on the phone, ' ⚖ '
 
 end
 
@@ -213,7 +212,11 @@ function scene:show(event)
 
   if phase == 'will' then
     -- Code here runs when the scene is still off screen (but is about to come on screen)
-    -- assert(Runtime:addEventListener('key', scene))
+    sceneGroup:addEventListener('touch', backTouch)
+
+    if not Runtime:addEventListener('key', scene) then
+      trace('ERROR: could not addEventListener key in FoundWords scene:show')
+    end
   elseif phase == 'did' then
     -- Code here runs when the scene is entirely on screen
   end
@@ -226,7 +229,11 @@ function scene:hide(event)
 
   if phase == 'will' then
     -- Code here runs when the scene is on screen (but is about to go off screen)
-    -- Runtime.removeEventListener('key', scene)
+    sceneGroup:removeEventListener('touch', backTouch)
+
+    if not Runtime:removeEventListener('key', scene) then
+      trace('ERROR: could not removeEventListener key in FoundWords scene:hide')
+    end
 
   elseif phase == 'did' then
     -- Code here runs immediately after the scene goes entirely off screen
@@ -242,15 +249,15 @@ function scene:destroy(event)
   -- Code here runs prior to the removal of scene's view
 end
 
--- function scene:key(event)
---   local phase = event.phase
---   if phase == 'up' then
---     if event.keyName == 'back' or event.keyName == 'deleteBack' then
---       composer.hideOverlay()
---       return true -- override the key
---     end
---   end
--- end
+function scene:key(event)
+  local phase = event.phase
+  if phase == 'up' then
+    if event.keyName == 'back' or event.keyName == 'deleteBack' then
+      composer.hideOverlay()
+      return true -- override the key
+    end
+  end
+end
 
 -- -----------------------------------------------------------------------------------
 -- Scene event function listeners

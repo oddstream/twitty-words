@@ -78,12 +78,17 @@ function scene:show(event)
   if phase == 'will' then
     -- Code here runs when the scene is still off screen (but is about to come on screen)
 
+    if not Runtime:addEventListener('key', scene) then
+      trace('ERROR: could not addEventListener key in Twitty scene:show')
+    end
+    -- if not Runtime:addEventListener('system', scene) then
+    --   trace('ERROR: could not addEventListener system in scene:show')
+    -- end
+
     _G.grid:newGame()
 
   elseif phase == 'did' then
     -- Code here runs when the scene is entirely on screen
-    Runtime:addEventListener('key', scene)
-    -- Runtime:addEventListener('system', scene)
 --[[
     if profileThreshold > 0 then
       debug.sethook(hook, "c")  -- turn on the hook
@@ -101,7 +106,7 @@ function scene:hide(event)
   if phase == 'will' then
     -- Code here runs when the scene is on screen (but is about to go off screen)
     if not Runtime:removeEventListener('key', scene) then
-      trace('ERROR: could not removeEventListener key in scene:hide')
+      trace('ERROR: could not removeEventListener key in Twitty scene:hide')
     end
     -- if not Runtime:removeEventListener('system', scene) then
     --   trace('ERROR: could not removeEventListener system in scene:hide')
@@ -129,30 +134,16 @@ function scene:destroy(event)
   trace('Twitty scene:destroy')
 
 end
---[[
-local function gpgsListener(event)
-  trace('gpgs.init event properties:')
-  trace(event.name)
-  trace(event.isError)
-  trace(event.errorMessage)
-  trace(event.errorCodeend)
-end
-]]
+
 function scene:key(event)
   local phase = event.phase
 
   if phase == 'up' then
     if event.keyName == 'back' or event.keyName == 'deleteBack' then
       Util.sound('ui')
-      _G.grid:cancelCountdown()
-      _G.grid:deleteTiles()
+      _G.grid:cancelGame()
       composer.gotoScene('ModeMenu')
       return true -- override the key
---[[
-    elseif event.keyName == 'g' then
-      trace('calling gpgs.init')
-      gpgs.init(gpgsListener)
-]]
     elseif event.keyName == 'h' then
       _G.grid:hint()
     elseif event.keyName == 'g' then
@@ -181,6 +172,7 @@ function scene:key(event)
   end
 end
 
+--[[
 function scene:system(event)
   -- print( "System event name and type: " .. event.name, event.type )
   if event.type == 'applicationExit' then
@@ -190,6 +182,7 @@ function scene:system(event)
     _G.grid:resumeCountdown()
   end
 end
+]]
 
 -- -----------------------------------------------------------------------------------
 -- Scene event function listeners

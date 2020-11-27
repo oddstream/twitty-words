@@ -96,8 +96,12 @@ function Grid:timer(event)
     math.floor(self.secondsLeft / 60),
     math.floor(self.secondsLeft % 60)))
 
-    if self.secondsLeft == 0 then
-    self:gameOver()
+  if self.secondsLeft == 0 then
+    self:pauseCountdown() -- stop multiple calls here
+    native.showAlert(system.getInfo('appName'),
+    'Game over because you ran out of time',
+    {'OK'},
+    function() self:gameOver() end)
   end
 end
 
@@ -165,6 +169,21 @@ function Grid:gameOver()
 
 end
 
+function Grid:cancelGame()
+
+  self:cancelCountdown()
+
+  self:deleteTiles()
+
+  do
+    local before = collectgarbage('count')
+    collectgarbage('collect')
+    local after = collectgarbage('count')
+    print('collected', math.floor(before - after), 'KBytes, now using', math.floor(after), 'KBytes')
+  end
+
+end
+
 function Grid:newGame()
 
   self:createLetterPool()
@@ -182,6 +201,7 @@ function Grid:newGame()
   self.selectedSlots = {}
   self.undoStack = {}
 
+  -- maybe start a countdown timer
   if self.countdownTimer then
     trace('WARNING: deleting old countdownTimer')
     timer.cancel(self.countdownTimer)
@@ -190,6 +210,12 @@ function Grid:newGame()
 
   if _G.GAME_MODE == 'URGENT' then
     self.secondsLeft = 60 * 4
+  elseif _G.GAME_MODE == 'ROBOTO' then
+    self.secondsLeft = 60 * 3
+  else
+    self.secondsLeft = 0
+  end
+  if self.secondsLeft > 0 then
     self.countdownTimer = timer.performWithDelay(1000, self, 0)
   end
 
@@ -219,8 +245,9 @@ function Grid:updateUI(word)
     _G.statusbar:setCenter(string.format('SCORE %d', self.humanScore))  -- or '%+d'
   end
 
-  if _G.GAME_MODE == 'CASUAL' or _G.GAME_MODE == 'ROBOTO' then
-    _G.statusbar:setRight(string.format('%u of %u', _countFoundLetters(), string.len(_G.SCRABBLE_LETTERS)))
+  if _G.GAME_MODE == 'CASUAL' then
+    --string.len(_G.SCRABBLE_LETTERS) == 100, so ...
+    _G.statusbar:setRight(string.format('%u%%', _countFoundLetters()))
   elseif type(_G.GAME_MODE) == 'number' then
     _G.statusbar:setRight(string.format('%u of %u', #self.humanFoundWords, _G.GAME_MODE))
   end
@@ -493,9 +520,15 @@ function Grid:testSelection()
       timer.performWithDelay(_G.FLIGHT_TIME, function()
         self:updateUI(word)
         if self:countTiles() < 3 then -- will end automatically with 0, 1 or 2 tiles
-          self:gameOver()
+          native.showAlert(system.getInfo('appName'),
+          'Game over because there are too few tiles left',
+          {'OK'},
+          function() self:gameOver() end)
         elseif type(_G.GAME_MODE) == 'number' and #self.humanFoundWords == _G.GAME_MODE then
-          self:gameOver()
+          native.showAlert(system.getInfo('appName'),
+          'Game over because you found ' .. tostring(#self.humanFoundWords) .. ' words',
+          {'OK'},
+          function() self:gameOver() end)
         elseif _G.GAME_MODE == 'ROBOTO' then
           self.whoseTurnNext = 'robot'
           self:robot()
@@ -832,6 +865,7 @@ function Grid:hint(who)
   end
 
   if who == 'human' and self.hints < 1 then
+    -- shouldn't happen because hints tappy will be disabled
     Util.sound('failure')
     return
   end
@@ -841,19 +875,23 @@ function Grid:hint(who)
     local timeStart = system.getTimer()
 
     for _,slot in ipairs(self.slots) do
-      if slot.tile then
+      if slot.tile and slot.tile.letter ~= ' ' then
         Util.sound('select')
         slot.tile:mark()
 
         coroutine.yield() -- yield to the timer, so UI can update; adds about 1.5 seconds
 
-        self:DFS({slot}, slot.tile.letter)
+        -- also, the timer may have finished during the yield and deleted the scene/tiles
+
+        if slot.tile then
+          self:DFS({slot}, slot.tile.letter)
 
         -- showing the word as we go adds 3 seconds
         -- local maxWord, _ = _maxWord()
         -- _G.wordbar:setCenter(maxWord)
 
-        slot.tile:unmark()
+          slot.tile:unmark()
+        end
 
         -- second call to coroutine.yield adds 2-ish seconds
         -- coroutine.yield() -- yield to the timer, so UI can update
@@ -893,6 +931,13 @@ function Grid:hint(who)
         self.selectedSlots = table.clone(path)
         self:_robot(maxWord, maxScore)
       else
+        -- local dim = _G.DIMENSIONS
+        -- local tax = math.floor(self.humanScore * 0.1)
+        -- if tax > 0 then
+        --   local b = Bubble.new(_G.toolbar.hint.grp.x, _G.toolbar.hint.grp.y, string.format('%+d', -tax))
+        --   b:flyTo(dim.statusbarX, dim.statusbarY)
+        --   self.humanScore = self.humanScore - tax
+        -- end
         if system.getInfo('environment') ~= 'simulator' then
           self.hints = self.hints - 1
         end

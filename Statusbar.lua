@@ -28,8 +28,7 @@ function Statusbar.new()
     y = dim.statusbarY,
     onRelease = function()
       Util.sound('ui')
-      _G.grid:cancelCountdown()
-      _G.grid:deleteTiles()
+      _G.grid:cancelGame()
       composer.gotoScene('ModeMenu')
     end,
     label = '☰',

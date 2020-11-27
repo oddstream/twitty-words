@@ -20,6 +20,8 @@ local Util = require 'Util'
 -- create()
 function scene:create(event)
 
+  trace('ModeMenu scene:create')
+
   local dim = _G.DIMENSIONS
   local sceneGroup = self.view
   -- Code here runs when the scene is first created but has not yet appeared on screen
@@ -92,7 +94,7 @@ function scene:create(event)
   y = (display.actualContentHeight / 2) + (dim.Q * 4)
   _tappyRow(y, 'ROBOTO', 'ROBOTO')
   y = y + dim.Q * 0.75
-  local help4 = display.newText(sceneGroup, 'Play against a robot', display.contentCenterX, y, _G.ROBOTO_MEDIUM, dim.tileFontSize / 3)
+  local help4 = display.newText(sceneGroup, 'Play a timed game against a robot', display.contentCenterX, y, _G.ROBOTO_MEDIUM, dim.tileFontSize / 3)
   help4:setFillColor(0,0,0)
 
   local ver = display.newText(sceneGroup, _G.TWITTY_VERSION, display.contentCenterX, display.contentHeight - dim.tileFontSize / 3, _G.ROBOTO_MEDIUM, dim.tileFontSize / 3)
@@ -104,8 +106,13 @@ function scene:show(event)
   local sceneGroup = self.view
   local phase = event.phase
 
+  trace('ModeMenu scene:show', event.phase)
+
   if phase == 'will' then
     -- Code here runs when the scene is still off screen (but is about to come on screen)
+    if not Runtime:addEventListener('key', scene) then
+      trace('ERROR: could not addEventListener key in ModeMenu scene:show')
+    end
   elseif phase == 'did' then
     -- Code here runs when the scene is entirely on screen
   end
@@ -116,8 +123,13 @@ function scene:hide(event)
   local sceneGroup = self.view
   local phase = event.phase
 
+  trace('ModeMenu scene:hide', event.phase)
+
   if phase == 'will' then
     -- Code here runs when the scene is on screen (but is about to go off screen)
+    if not Runtime:removeEventListener('key', scene) then
+      trace('ERROR: could not removeEventListener key in ModeMenu scene:hide')
+    end
   elseif phase == 'did' then
     -- Code here runs immediately after the scene goes entirely off screen
   end
@@ -127,7 +139,32 @@ end
 function scene:destroy(event)
   local sceneGroup = self.view
   -- Code here runs prior to the removal of scene's view
+  trace('ModeMenu scene:destroy')
   composer.removeScene('ModeMenu')
+end
+
+function scene:key(event)
+  local phase = event.phase
+
+  local function _exitListener(_event)
+    if _event.action == 'clicked' then
+      if _event.index == 1 then
+        native.requestExit()
+      end
+    end
+  end
+
+  if phase == 'up' then
+    if event.keyName == 'back' or event.keyName == 'deleteBack' then
+      native.showAlert(
+        system.getInfo('appName'),
+        'Do you want to exit ' .. system.getInfo('appName') .. '?',
+        {'Yes', 'No'},
+        _exitListener)
+      return true -- override the key
+    end
+  end
+
 end
 
 -- -----------------------------------------------------------------------------------

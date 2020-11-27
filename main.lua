@@ -289,9 +289,9 @@ if not string.split then
     local theSplitStart, theSplitEnd = string.find( self, inSplitPattern, theStart )
 
     while theSplitStart do
-        table.insert( outResults, string.sub( self, theStart, theSplitStart-1 ) )
-        theStart = theSplitEnd + 1
-        theSplitStart, theSplitEnd = string.find( self, inSplitPattern, theStart )
+      table.insert( outResults, string.sub( self, theStart, theSplitStart-1 ) )
+      theStart = theSplitEnd + 1
+      theSplitStart, theSplitEnd = string.find( self, inSplitPattern, theStart )
     end
 
     table.insert( outResults, string.sub( self, theStart ) )
@@ -308,6 +308,6 @@ _G.GAME_MODE = 'URGENT'  -- 'CASUAL' | 'URGENT' | 'ROBOTO' | <number>
 --   print( k , v )
 -- end
 
-_G.TWITTY_VERSION = '2020.11.26.1 α'
+_G.TWITTY_VERSION = '2020.11.27.1 α'
 
 composer.gotoScene('Splash', {params={scene='ModeMenu'}})

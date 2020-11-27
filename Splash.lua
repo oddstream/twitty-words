@@ -136,7 +136,7 @@ function scene:show(event)
   elseif phase == 'did' then
     destination = event.params.scene
     -- Code here runs when the scene is entirely on screen
-    tim = timer.performWithDelay(1000, gotoDestination, 1)
+    tim = timer.performWithDelay(500, gotoDestination, 1)
   end
 end
 
