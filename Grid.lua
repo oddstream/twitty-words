@@ -144,18 +144,7 @@ function Grid:gameOver()
   self:deleteTiles()
 
   if _G.GAME_MODE == 'ROBOTO' then
-    local msg
-    if self.humanScore > self.robotScore then
-      msg = 'You won'
-    elseif self.humanScore < self.robotScore then
-      msg = 'You lost'
-    else
-      msg = 'Game tied'
-    end
-    msg = string.format('%s %u : %u. Imagine an impressive game over scene here.', msg, self.humanScore, self.robotScore)
-    native.showAlert('Game Over', msg, {'★'}, function()
-      composer.gotoScene('Twitty', {effect='slideLeft'})
-    end)
+    composer.gotoScene('RobotEnd', { params={humanScore=self.humanScore, humanFoundWords=self.humanFoundWords, robotScore=self.robotScore, robotFoundWords=self.robotFoundWords} })
   else
     composer.gotoScene('HighScores', { params={score=self.humanScore - deductions, words=self.humanFoundWords} })
   end

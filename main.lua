@@ -308,6 +308,6 @@ _G.GAME_MODE = 'URGENT'  -- 'CASUAL' | 'URGENT' | 'ROBOTO' | <number>
 --   print( k , v )
 -- end
 
-_G.TWITTY_VERSION = '2020.11.27.1 α'
+_G.TWITTY_VERSION = '2020.11.27.2 α'
 
 composer.gotoScene('Splash', {params={scene='ModeMenu'}})
