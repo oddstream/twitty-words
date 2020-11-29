@@ -94,10 +94,10 @@ function scene:create(event)
   y = (display.actualContentHeight / 2) + (dim.Q * 4)
   _tappyRow(y, 'ROBOTO', 'ROBOTO')
   y = y + dim.Q * 0.75
-  local help4 = display.newText(sceneGroup, 'Play a timed game against a robot', display.contentCenterX, y, _G.ROBOTO_MEDIUM, dim.tileFontSize / 3)
+  local help4 = display.newText(sceneGroup, 'Play against a sneaky robot', display.contentCenterX, y, _G.ROBOTO_MEDIUM, dim.tileFontSize / 3)
   help4:setFillColor(0,0,0)
 
-  local ver = display.newText(sceneGroup, _G.TWITTY_VERSION, display.contentCenterX, display.contentHeight - dim.tileFontSize / 3, _G.ROBOTO_MEDIUM, dim.tileFontSize / 3)
+  local ver = display.newText(sceneGroup, system.getInfo('appVersionString'), display.contentCenterX, display.contentHeight - dim.tileFontSize / 3, _G.ROBOTO_MEDIUM, dim.tileFontSize / 3)
   ver:setFillColor(0,0,0)
 end
 
@@ -156,8 +156,8 @@ function scene:key(event)
 
   if phase == 'up' then
     if event.keyName == 'back' or event.keyName == 'deleteBack' then
-      native.showAlert(
-        system.getInfo('appName'),
+      Util.showAlert(
+        self.view,
         'Do you want to exit ' .. system.getInfo('appName') .. '?',
         {'Yes', 'No'},
         _exitListener)

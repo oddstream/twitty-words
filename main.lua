@@ -32,7 +32,8 @@ if system.getInfo('platform') == 'win32' or system.getInfo('environment') == 'si
   print('platformName', system.getInfo('platformName'))
   print('architectureInfo', system.getInfo('architectureInfo'))
   print('model', system.getInfo('model'))
-
+  print('appName', system.getInfo('appName'))
+  print('appVersionString', system.getInfo('appVersionString'))
   -- print('androidDisplayApproximateDpi', system.getInfo('androidDisplayApproximateDpi'))
 end
 
@@ -307,7 +308,5 @@ _G.GAME_MODE = 'URGENT'  -- 'CASUAL' | 'URGENT' | 'ROBOTO' | <number>
 -- for k,v in pairs( _G ) do
 --   print( k , v )
 -- end
-
-_G.TWITTY_VERSION = '2020.11.27.2 α'
 
 composer.gotoScene('Splash', {params={scene='ModeMenu'}})

@@ -142,7 +142,7 @@ function scene:key(event)
     if event.keyName == 'back' or event.keyName == 'deleteBack' then
       Util.sound('ui')
       _G.grid:cancelGame()
-      composer.gotoScene('ModeMenu')
+      composer.gotoScene('ModeMenu', {effect='slideLeft'})
       return true -- override the key
     elseif event.keyName == 'h' then
       _G.grid:hint()

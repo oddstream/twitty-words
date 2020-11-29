@@ -56,6 +56,7 @@ function Tile.createGraphics(parent, x, y, letter)
   -- if alpha == 0, we don't get tap events
   -- set fill color AFTER applying paint
   rectBack:setFillColor(unpack(_G.TWITTY_COLORS.tile))
+  -- rectBack:setFillColor(math.random(),math.random(),math.random())
 
   -- grp[3]
   local tileFontSize = dim.tileFontSize

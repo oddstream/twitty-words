@@ -2,12 +2,12 @@ settings =
 {
   plugins =
   {
-
+--[[
     ["plugin.gpgs.v2"] = {
         publisherId = "com.coronalabs",
         supportedPlatforms = {["android"] = true, ["android-kindle"] = true}
     },
-
+]]
 --[[
     ["plugin.bit"] =
     {

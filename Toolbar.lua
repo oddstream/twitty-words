@@ -1,6 +1,7 @@
 -- Toolbar.lua
 
 local Tappy = require 'Tappy'
+local Util = require 'Util'
 
 --[[
   varargs
@@ -48,13 +49,11 @@ function Toolbar.new()
     _G.grid:undo()
   end, 'Un', 'UNDO') -- '⎌'
 
---[[
   if system.getInfo('environment') == 'simulator' then
     o.robot = Tappy.new(_G.TWITTY_GROUPS.ui, display.actualContentWidth - dim.Q - dim.Q, dim.toolbarY, function()
-      _G.grid:robot()
-    end, ' 🤖 ', 'ROBOT')
+      local al = Util.showAlert(_G.TWITTY_GROUPS.grid, 'Are you sure you want a message?', {'Yes','No','Maybe'}, function(event) trace(event.index) end)
+    end, ' 🐛 ', 'DEBUG')
   end
-]]
 
   o.result = Tappy.new(_G.TWITTY_GROUPS.ui, display.actualContentWidth - dim.halfQ, dim.toolbarY, function()
     _G.grid:showFoundWords()

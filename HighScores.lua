@@ -67,6 +67,7 @@ local function loadScores()
       'YEARLINGS',
       'WAVEFRONT',
       'MAGAZINES',
+      'VAGABONDS',
     }
 
     scoresTable = {}

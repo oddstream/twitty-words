@@ -135,46 +135,6 @@ function scene:create(event)
   sceneGroup:insert(backButton)
 ]]
 
-    -- create a group for the tappy so it doesn't scroll with the background
-  toolbarGroup = display:newGroup()
-
-  local tappyBack = Tappy.new(toolbarGroup, dim.halfQ, dim.toolbarY, function()
-    Util.sound('ui')
-    composer.hideOverlay('slideLeft')
-    _G.grid:resumeCountdown()
-    end, '<', 'BACK') -- '←'
-
-  --[[
-  local scales = display.newText({
-    parent = toolbarGroup,
-    x = dim.toolbarX,
-    y = dim.toolbarY,
-    text = '⚖',
-    font = _G.ACME,
-    fontSize = dim.toolbarHeight / 2,
-  })
-  scales:setFillColor(unpack(_G.TWITTY_COLORS.black))
-]]
-
---[[
-  local finishButton = widget.newButton({
-    x = display.actualContentWidth - dim.halfQ,
-    y = dim.toolbarY,
-    onRelease = function()
-      composer.hideOverlay()
-      _G.grid:gameOver()
-    end,
-    label = 'FINISH >',
-    labelColor = { default=_G.TWITTY_COLORS.uiforeground, over=_G.TWITTY_COLORS.uicontrol },
-    labelAlign = 'right',
-    font = _G.ACME,
-    fontSize = dim.toolbarHeight / 2,
-    textOnly = true,
-  })
-  finishButton.anchorX = 1
-  sceneGroup:insert(finishButton)
-]]
-
   local y = dim.halfQ
 
   _banner(y, 'WORDS YOU FOUND')
@@ -196,11 +156,21 @@ function scene:create(event)
     end
   end
 
+    -- create a group for the tappy so it doesn't scroll with the background
+  toolbarGroup = display:newGroup()
+
+  local tappyBack = Tappy.new(toolbarGroup, dim.halfQ, dim.toolbarY, function()
+    Util.sound('ui')
+    composer.hideOverlay('slideLeft')
+    _G.grid:resumeCountdown()
+    end, '<', 'BACK') -- '←'
+
   local tappyFinish = Tappy.new(toolbarGroup, display.actualContentWidth - dim.halfQ, dim.toolbarY, function()
     Util.sound('ui')
-    composer.hideOverlay()
+    composer.hideOverlay('slideLeft')
     _G.grid:gameOver()
     end, 'Fin', 'FINISH') -- '⯈' didn't appear on the phone, ' ⚖ '
+  -- tappyFinish:enable(_G.grid.humanCanFinish)
 
 end
 
@@ -253,7 +223,8 @@ function scene:key(event)
   local phase = event.phase
   if phase == 'up' then
     if event.keyName == 'back' or event.keyName == 'deleteBack' then
-      composer.hideOverlay()
+      Util.sound('ui')
+      composer.hideOverlay('slideLeft')
       return true -- override the key
     end
   end

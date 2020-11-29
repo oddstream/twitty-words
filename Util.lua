@@ -1,5 +1,7 @@
 -- Util.lua
 
+local widget = require 'widget'
+
 local Util = {}
 Util.__index = Util
 
@@ -237,5 +239,81 @@ end
 -- function Util.cloneTable(t)
 --   return json.decode( json.encode( t ) )
 -- end
+
+function Util.showAlert(parent, message, buttonLabels, listener)
+
+  local dim = _G.DIMENSIONS
+
+  buttonLabels = buttonLabels or {'OK'}
+
+  local grp = display.newGroup()
+  parent:insert(grp)
+  grp.x, grp.y = display.contentCenterX, display.contentCenterY
+
+  -- rip from function Tile.createGraphics()
+
+  local radius = dim.Q / 15
+  local width = display.contentWidth * 0.666
+  local height = width / 1.61803398875 / 2
+  local messageFontSize = 32
+  local buttonFontSize = 56
+  local buttonWidth = buttonFontSize * 3
+
+  -- grp[1]
+  local rectShadow = display.newRoundedRect(grp, dim.offset3D, dim.offset3D, width, height, radius)
+  rectShadow:setFillColor(unpack(_G.TWITTY_COLORS.shadow))
+
+  -- grp[2]
+  local rectBack = display.newRoundedRect(grp, 0, 0, width, height, radius)
+  rectBack:setFillColor(unpack(_G.TWITTY_COLORS.selected))
+
+  -- grp[3]
+  local textMessage = display.newText(grp, message, 0, -height/4, _G.ROBOTO_MEDIUM, messageFontSize)
+  textMessage:setFillColor(0,0,0)
+
+  local buttonGroup = display.newGroup()
+  grp:insert(buttonGroup)
+
+  local x = -(#buttonLabels * buttonWidth)
+  x = x / 2
+  x = x + buttonWidth / 2
+
+  for i,buttonLabel in pairs(buttonLabels) do
+    -- local rect = display.newRect(grp, x, height/2, buttonWidth, buttonFontSize)
+    -- rect:setFillColor(math.random(),math.random(),math.random())
+    -- rect.anchorY = 1
+
+    local button = widget.newButton({
+      x = x,
+      y = height/2 - (buttonFontSize/2),
+      onRelease = function()
+        -- display.getCurrentStage():setFocus(nil)
+        if listener then
+          if type(listener) == 'function' then listener({action='clicked', index=i})
+          elseif type(listener) == 'table' then trace('ERROR: table listener not supported')
+          else trace('ERROR: listener type not supported', type(listener)) end
+        end
+        grp:removeSelf()
+      end,
+      label = buttonLabel,
+      labelColor = { default=_G.TWITTY_COLORS.black, over=_G.TWITTY_COLORS.shadow },
+      labelAlign = 'center',
+      font = _G.ACME,
+      fontSize = buttonFontSize,
+      textOnly = true,
+    })
+    grp:insert(button)
+    button.anchorY = 1
+
+    x = x + buttonWidth
+  end
+
+  -- https://docs.coronalabs.com/api/type/EventDispatcher/dispatchEvent.html
+
+  -- display.getCurrentStage():setFocus(grp)
+
+  return grp
+
+end
 
 return Util

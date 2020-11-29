@@ -14,12 +14,13 @@ local Grid = {
 
   letterPool = nil,
 
-  whoseTurnNext = nil,
   humanFoundWords = nil,
   robotFoundWords = nil,
   selectedSlots = nil,  -- table of selected slots, in order they were selected
   humanScore = nil,
   robotScore = nil,
+
+  -- humanCanFinish = true,
 
   countdownTimer = nil,  -- timer
   secondsLeft = nil,
@@ -98,7 +99,7 @@ function Grid:timer(event)
 
   if self.secondsLeft == 0 then
     self:pauseCountdown() -- stop multiple calls here
-    native.showAlert(system.getInfo('appName'),
+    Util.showAlert(_G.TWITTY_GROUPS.grid,
     'Game over because you ran out of time',
     {'OK'},
     function() self:gameOver() end)
@@ -149,13 +150,6 @@ function Grid:gameOver()
     composer.gotoScene('HighScores', { params={score=self.humanScore - deductions, words=self.humanFoundWords} })
   end
 
-  do
-    local before = collectgarbage('count')
-    collectgarbage('collect')
-    local after = collectgarbage('count')
-    print('collected', math.floor(before - after), 'KBytes, now using', math.floor(after), 'KBytes')
-  end
-
 end
 
 function Grid:cancelGame()
@@ -164,24 +158,17 @@ function Grid:cancelGame()
 
   self:deleteTiles()
 
-  do
-    local before = collectgarbage('count')
-    collectgarbage('collect')
-    local after = collectgarbage('count')
-    print('collected', math.floor(before - after), 'KBytes, now using', math.floor(after), 'KBytes')
-  end
-
 end
 
 function Grid:newGame()
 
-  self:createLetterPool()
+  self.letterPool = {}
+  self:fillLetterPool()
 
   -- create tiles
   self:createTiles()
 
   -- reset our variables
-  self.whoseTurnNext = 'human'
   self.humanScore = 0
   self.robotScore = 0
   self.humanFoundWords = {}
@@ -199,8 +186,6 @@ function Grid:newGame()
 
   if _G.GAME_MODE == 'URGENT' then
     self.secondsLeft = 60 * 4
-  elseif _G.GAME_MODE == 'ROBOTO' then
-    self.secondsLeft = 60 * 3
   else
     self.secondsLeft = 0
   end
@@ -213,6 +198,51 @@ function Grid:newGame()
   -- update ui
   Util.sound('found') -- make a happy sound
   self:updateUI()
+
+  do
+    local before = collectgarbage('count')
+    collectgarbage('collect')
+    local after = collectgarbage('count')
+    print('collected', math.floor(before - after), 'KBytes, now using', math.floor(after), 'KBytes')
+  end
+
+end
+
+function Grid:afterMove(word)
+
+  if not word then self:deselectAllSlots() end
+
+  self:updateUI(word)
+
+  if self:countTiles() < 3 then -- will end automatically with 0, 1 or 2 tiles
+
+    Util.showAlert(_G.TWITTY_GROUPS.grid,
+      'Game over because there are too few tiles left',
+      {'OK'},
+      function() self:gameOver() end)
+
+  elseif type(_G.GAME_MODE) == 'number' and #self.humanFoundWords == _G.GAME_MODE then
+
+    Util.showAlert(_G.TWITTY_GROUPS.grid,
+      'Game over because you found ' .. tostring(#self.humanFoundWords) .. ' words',
+      {'OK'},
+      function() self:gameOver() end)
+
+  elseif _G.GAME_MODE == 'ROBOTO' then
+
+    if #self.letterPool == 0 then
+      self:fillLetterPool()
+    end
+
+    if self.humanScore > 100 or self.robotScore > 100 then
+      Util.showAlert(_G.TWITTY_GROUPS.grid,
+        'Game over because points target reached',
+        {'OK'},
+        function() self:gameOver() end)
+    end
+
+  end
+
 end
 
 function Grid:updateUI(word)
@@ -249,9 +279,7 @@ function Grid:updateUI(word)
 
 end
 
-function Grid:createLetterPool()
-
-  self.letterPool = {}
+function Grid:fillLetterPool()
 
   for i=1, string.len(_G.SCRABBLE_LETTERS) do
     local letter = string.sub(_G.SCRABBLE_LETTERS, i, i)
@@ -448,11 +476,6 @@ function Grid:testSelection()
 
   local dim = _G.DIMENSIONS
 
-  if _G.GAME_MODE == 'ROBOTO' and self.whoseTurnNext == 'robot' then
-    Util.sound('failure')
-    return
-  end
-
   if #self.selectedSlots == 2 then
 
     local s1 = self.selectedSlots[1]
@@ -481,9 +504,11 @@ function Grid:testSelection()
       end
 
     end
-    self:updateUI()
-    self:deselectAllSlots()
+
+    self:updateUI()  -- not really a move, was it?
+
   elseif #self.selectedSlots > 2 then
+
     local word, score = self:getSelectedWord()
 
     if Util.isWordInDictionary(word) then
@@ -494,7 +519,6 @@ function Grid:testSelection()
 
       table.insert(self.undoStack, self:createSaveable())
       table.insert(self.humanFoundWords, word)
-      -- updateUI later when score has transitioned
       self:sortWords(self.humanFoundWords)
 
       self:flyAwaySelectedSlots(score, 'human')
@@ -507,31 +531,25 @@ function Grid:testSelection()
 
       -- wait for tile transitions to finish (and tiles be deleted) before updating UI and checking for end of game
       timer.performWithDelay(_G.FLIGHT_TIME, function()
-        self:updateUI(word)
-        if self:countTiles() < 3 then -- will end automatically with 0, 1 or 2 tiles
-          native.showAlert(system.getInfo('appName'),
-          'Game over because there are too few tiles left',
-          {'OK'},
-          function() self:gameOver() end)
-        elseif type(_G.GAME_MODE) == 'number' and #self.humanFoundWords == _G.GAME_MODE then
-          native.showAlert(system.getInfo('appName'),
-          'Game over because you found ' .. tostring(#self.humanFoundWords) .. ' words',
-          {'OK'},
-          function() self:gameOver() end)
-        elseif _G.GAME_MODE == 'ROBOTO' then
-          self.whoseTurnNext = 'robot'
+        -- self:afterMove(word)
+        -- the human had their move, now ...
+        if _G.GAME_MODE == 'ROBOTO' then
           self:robot()
         end
       end)
+
     else  -- word not in dictionary
+
       Util.sound('shake')
       for _,slot in ipairs(self.selectedSlots) do
         slot.tile:shake()
       end
-      self:deselectAllSlots()
-      self:updateUI()
-    end
-  end
+
+      self:updateUI()  -- not really a move, was it?
+
+    end -- isWordInDictionary()
+
+  end -- #self.selectedSlots > 2
 end
 
 function Grid:dropColumn(bottomSlot)
@@ -756,7 +774,7 @@ function Grid:shuffle()
 
   Util.resetDictionaries()
 
-  self:updateUI()
+  self:updateUI()  --- not really a move, was it?
 
 end
 
@@ -890,6 +908,13 @@ function Grid:hint(who)
     timer.cancel(source)
     local timeStop = system.getTimer()
 
+    -- don't allow the (sneaky) human to finish (when they are ahead)
+    -- if _G.GAME_MODE == 'ROBOTO' and who == 'robot' then
+    --   self.humanCanFinish = #self.hintWords == 0
+    -- else
+    --   self.humanCanFinish = true
+    -- end
+
     if #self.hintWords > 0 then
 
       local maxWord, maxScore = _maxWord()
@@ -918,7 +943,7 @@ function Grid:hint(who)
 
       if who == 'robot' then
         self.selectedSlots = table.clone(path)
-        self:_robot(maxWord, maxScore)
+        self:_postRobot(maxWord, maxScore)
       else
         -- local dim = _G.DIMENSIONS
         -- local tax = math.floor(self.humanScore * 0.1)
@@ -933,16 +958,10 @@ function Grid:hint(who)
       end
 
       Util.sound('found')
-      self:updateUI(maxWord)
+      self:afterMove(maxWord)
     else
       Util.sound('failure')
-      self:updateUI()
-    end
-
-    if who == 'robot' then
-      self.whoseTurnNext = 'human'
-      _G.TWITTY_SELECTED_COLOR = _G.TWITTY_COLORS.selected
-      -- trace('selected', unpack(_G.TWITTY_SELECTED_COLOR))
+      self:updateUI()  -- not really a move, was it?
     end
 
   end
@@ -959,12 +978,11 @@ end
 
 function Grid:robot()
 
-  if _G.GAME_MODE ~= 'ROBOTO' then
-    return
-  end
+  assert(_G.GAME_MODE == 'ROBOTO')
 
   _G.TWITTY_SELECTED_COLOR = _G.TWITTY_COLORS.roboto
-  -- trace('roboto', unpack(_G.TWITTY_SELECTED_COLOR))
+
+  if self.humanScore > self.robotScore then self:shuffle() end
 
   self:hint('robot')  -- this ends in it's own time ...
   -- ... so don't put any code here
@@ -991,7 +1009,7 @@ function Grid:flyAwaySelectedSlots(score, who)
 
 end
 
-function Grid:_robot(word, score)
+function Grid:_postRobot(word, score)
 
   -- trace('robot post hint #selected slots', #self.selectedSlots)
 
@@ -1008,6 +1026,8 @@ function Grid:_robot(word, score)
   if #self.letterPool > 0 then
     self:addTiles()
   end
+
+  _G.TWITTY_SELECTED_COLOR = _G.TWITTY_COLORS.selected
 
 end
 

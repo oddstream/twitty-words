@@ -1,6 +1,5 @@
 
 -- RobotEnd.lua
--- https://docs.coronalabs.com/guide/programming/06/index.html
 
 local composer = require('composer')
 local scene = composer.newScene()
@@ -58,9 +57,6 @@ function scene:create(event)
   local sceneGroup = self.view
   -- Code here runs when the scene is first created but has not yet appeared on screen
 
-  -- trace('scene height is', sceneGroup.height)
-  -- sceneGroup.height = display.actualContentHeight * 2
-  -- trace('scene height is', sceneGroup.height)
   Util.setBackground(sceneGroup)
 
   local function _banner(y, s)
@@ -105,9 +101,6 @@ function scene:create(event)
     _createTile(xScore, y, tostring(score * string.len(word)))
   end
 
-    -- create a group for the tappy so it doesn't scroll with the background
-  toolbarGroup = display:newGroup()
-
   local y = dim.halfQ
 
   if event.params.humanScore > event.params.robotScore then
@@ -138,6 +131,9 @@ function scene:create(event)
       y = y + dim.halfQ
     end
   end
+
+    -- create a group for the tappy so it doesn't scroll with the background
+  toolbarGroup = display:newGroup()
 
   local tappy = Tappy.new(toolbarGroup, display.actualContentWidth - dim.halfQ, dim.toolbarY, function()
     Util.sound('ui')
@@ -195,7 +191,7 @@ function scene:key(event)
   local phase = event.phase
   if phase == 'up' then
     if event.keyName == 'back' or event.keyName == 'deleteBack' then
-      composer.hideOverlay()
+      composer.gotoScene('Twitty', {effect='slideLeft'})
       return true -- override the key
     end
   end

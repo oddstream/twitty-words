@@ -1,7 +1,6 @@
 -- Wordbar.lua
 
 local Tile = require 'Tile'
-local Util = require 'Util'
 
 local Wordbar = {}
 Wordbar.__index = Wordbar
