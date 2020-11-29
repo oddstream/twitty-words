@@ -80,4 +80,18 @@ function Toolbar:enable(tappy, enabled)
   end
 end
 
+function Toolbar:suspendTouch()
+  self.shuffle:removeTouchListener()
+  self.hint:removeTouchListener()
+  self.undo:removeTouchListener()
+  self.result:removeTouchListener()
+end
+
+function Toolbar:resumeTouch()
+  self.shuffle:addTouchListener()
+  self.hint:addTouchListener()
+  self.undo:addTouchListener()
+  self.result:addTouchListener()
+end
+
 return Toolbar

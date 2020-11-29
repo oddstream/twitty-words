@@ -59,6 +59,21 @@ function scene:create(event)
 
   Util.setBackground(sceneGroup)
 
+  local function _titleRow(y, s)
+    local titleGroup = display.newGroup()
+    -- the first tile is dim.quarterQ over to the right
+    titleGroup.x = display.contentCenterX - (string.len(s) * dim.quarterQ) - dim.quarterQ
+    titleGroup.y = y
+    sceneGroup:insert(titleGroup)
+
+    local x = dim.halfQ
+    for i=1, string.len(s) do
+      local tileGroup = Tile.createGraphics(titleGroup, x, 0, string.sub(s, i, i))
+      tileGroup:scale(0.5, 0.5)
+      x = x + dim.halfQ
+    end
+  end
+
   local function _banner(y, s)
     local txt = display.newText({
       parent = sceneGroup,
@@ -104,12 +119,18 @@ function scene:create(event)
   local y = dim.halfQ
 
   if event.params.humanScore > event.params.robotScore then
-    _banner(y, string.format('YOU WON %d : %d', event.params.humanScore, event.params.robotScore))
+    _titleRow(y, 'YOU WON')
+    Util.sound('complete')
   elseif event.params.humanScore < event.params.robotScore then
-    _banner(y, string.format('YOU LOST %d : %d', event.params.humanScore, event.params.robotScore))
+    _titleRow(y, 'YOU LOST')
+    Util.sound('failure')
   else
-    _banner(y, 'GAME TIED')
+    _titleRow(y, 'GAME TIED')
   end
+
+  y = y + dim.Q
+
+  _banner(y, string.format('%d : %d', event.params.humanScore, event.params.robotScore))
 
   y = y + dim.Q
 

@@ -20,7 +20,7 @@ function Tappy.new(group, x, y, cmd, label, description)
 
   -- removed the tap listener below; creates false hit when coming back from FoundWords
   -- o.grp:addEventListener('tap', o)
-  o.grp:addEventListener('touch', o)
+  o:addTouchListener()
 
   return o
 end
@@ -132,6 +132,14 @@ function Tappy:undepress()
     textDesc.x = 0
     textDesc.y = self.descriptionNormalY
   end
+end
+
+function Tappy:addTouchListener()
+  self.grp:addEventListener('touch', self)
+end
+
+function Tappy:removeTouchListener()
+  self.grp:removeEventListener('touch', self)
 end
 
 -- function Tappy:tap(event)

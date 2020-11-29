@@ -99,7 +99,7 @@ function Grid:timer(event)
 
   if self.secondsLeft == 0 then
     self:pauseCountdown() -- stop multiple calls here
-    Util.showAlert('GAME OVER', 'You ran out of time',
+    Util.showAlert('GAME OVER', 'Time\'s up!',
     {'OK'},
     function() self:gameOver() end)
   end
@@ -124,7 +124,7 @@ function Grid:cancelCountdown()
     trace('cancel countdownTimer')
     timer.cancel(self.countdownTimer)
   -- the following produced runtime error, not sure why
-  self.countdownTimer = nil
+    self.countdownTimer = nil
   end
 end
 
@@ -311,11 +311,13 @@ function Grid:sortWords(foundWords)
   table.sort(foundWords, wordScoreComp)
 end
 
+--[[
 function Grid:iterator(fn)
   for _,s in ipairs(self.slots) do
     fn(s)
   end
 end
+]]
 
 function Grid:findSlot(x,y)
   for _,s in ipairs(self.slots) do
@@ -619,7 +621,7 @@ end
 
 function Grid:slideColumn(col, dir)
   -- trace('slide column', col, dir)
-  assert(dir=='e' or dir=='w')
+  -- assert(dir=='e' or dir=='w')
   local src = self:findSlot(col, 1)
   while src do
     if src.tile then
