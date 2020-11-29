@@ -240,23 +240,24 @@ end
 --   return json.decode( json.encode( t ) )
 -- end
 
-function Util.showAlert(parent, message, buttonLabels, listener)
+function Util.showAlert(title, message, buttonLabels, listener)
 
   local dim = _G.DIMENSIONS
 
   buttonLabels = buttonLabels or {'OK'}
 
   local grp = display.newGroup()
-  parent:insert(grp)
+  _G.TWITTY_GROUPS.grid:insert(grp)
   grp.x, grp.y = display.contentCenterX, display.contentCenterY
 
   -- rip from function Tile.createGraphics()
 
   local radius = dim.Q / 15
   local width = display.contentWidth * 0.666
-  local height = width / 1.61803398875 / 2
-  local messageFontSize = 32
-  local buttonFontSize = 56
+  local height = width / 2 --1.61803398875
+  local titleFontSize = dim.tileFontSize * 0.5
+  local messageFontSize = dim.tileFontSize * 0.3
+  local buttonFontSize = dim.tileFontSize * 0.5
   local buttonWidth = buttonFontSize * 3
 
   -- grp[1]
@@ -268,7 +269,11 @@ function Util.showAlert(parent, message, buttonLabels, listener)
   rectBack:setFillColor(unpack(_G.TWITTY_COLORS.selected))
 
   -- grp[3]
-  local textMessage = display.newText(grp, message, 0, -height/4, _G.ROBOTO_MEDIUM, messageFontSize)
+  local textTitle = display.newText(grp, title, 0, -(height/2) + titleFontSize, _G.ACME, titleFontSize)
+  textTitle:setFillColor(0,0,0)
+
+  -- grp[4]
+  local textMessage = display.newText(grp, message, 0, 0, _G.ROBOTO_MEDIUM, messageFontSize)
   textMessage:setFillColor(0,0,0)
 
   local buttonGroup = display.newGroup()
@@ -287,6 +292,7 @@ function Util.showAlert(parent, message, buttonLabels, listener)
       x = x,
       y = height/2 - (buttonFontSize/2),
       onRelease = function()
+        _G.grid:enableTouch()
         -- display.getCurrentStage():setFocus(nil)
         if listener then
           if type(listener) == 'function' then listener({action='clicked', index=i})
@@ -310,6 +316,7 @@ function Util.showAlert(parent, message, buttonLabels, listener)
 
   -- https://docs.coronalabs.com/api/type/EventDispatcher/dispatchEvent.html
 
+  _G.grid:disableTouch()
   -- display.getCurrentStage():setFocus(grp)
 
   return grp

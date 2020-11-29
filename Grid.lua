@@ -99,8 +99,7 @@ function Grid:timer(event)
 
   if self.secondsLeft == 0 then
     self:pauseCountdown() -- stop multiple calls here
-    Util.showAlert(_G.TWITTY_GROUPS.grid,
-    'Game over because you ran out of time',
+    Util.showAlert('GAME OVER', 'You ran out of time',
     {'OK'},
     function() self:gameOver() end)
   end
@@ -210,33 +209,32 @@ end
 
 function Grid:afterMove(word)
 
+  -- trace(self:countTiles(), 'tiles left')
+
   if not word then self:deselectAllSlots() end
 
   self:updateUI(word)
 
   if self:countTiles() < 3 then -- will end automatically with 0, 1 or 2 tiles
 
-    Util.showAlert(_G.TWITTY_GROUPS.grid,
-      'Game over because there are too few tiles left',
+    Util.showAlert('GAME OVER', 'Too few tiles left',
       {'OK'},
       function() self:gameOver() end)
 
   elseif type(_G.GAME_MODE) == 'number' and #self.humanFoundWords == _G.GAME_MODE then
 
-    Util.showAlert(_G.TWITTY_GROUPS.grid,
-      'Game over because you found ' .. tostring(#self.humanFoundWords) .. ' words',
+    Util.showAlert('GAME OVER', 'You found ' .. tostring(#self.humanFoundWords) .. ' words',
       {'OK'},
       function() self:gameOver() end)
 
   elseif _G.GAME_MODE == 'ROBOTO' then
 
-    if #self.letterPool == 0 then
-      self:fillLetterPool()
-    end
+    -- if #self.letterPool == 0 then
+    --   self:fillLetterPool()
+    -- end
 
-    if self.humanScore > 100 or self.robotScore > 100 then
-      Util.showAlert(_G.TWITTY_GROUPS.grid,
-        'Game over because points target reached',
+    if self.humanScore >= 420 or self.robotScore >= 420 then
+      Util.showAlert('GAME OVER', 'Score target reached',
         {'OK'},
         function() self:gameOver() end)
     end
@@ -531,10 +529,11 @@ function Grid:testSelection()
 
       -- wait for tile transitions to finish (and tiles be deleted) before updating UI and checking for end of game
       timer.performWithDelay(_G.FLIGHT_TIME, function()
-        -- self:afterMove(word)
         -- the human had their move, now ...
         if _G.GAME_MODE == 'ROBOTO' then
           self:robot()
+        else
+          self:afterMove(word)
         end
       end)
 
@@ -958,7 +957,11 @@ function Grid:hint(who)
       end
 
       Util.sound('found')
-      self:afterMove(maxWord)
+      if who == 'robot' then
+        self:afterMove(maxWord)
+      else
+        self:updateUI(maxWord)
+      end
     else
       Util.sound('failure')
       self:updateUI()  -- not really a move, was it?
@@ -1035,6 +1038,22 @@ function Grid:showFoundWords()
   Util.sound('ui')
   self:pauseCountdown()
   composer.showOverlay('FoundWords', {effect='slideRight'})
+end
+
+function Grid:disableTouch()
+  for _,slot in ipairs(self.slots) do
+    if slot.tile then
+      slot.tile:removeTouchListener()
+    end
+  end
+end
+
+function Grid:enableTouch()
+  for _,slot in ipairs(self.slots) do
+    if slot.tile then
+      slot.tile:addTouchListener()
+    end
+  end
 end
 
 return Grid

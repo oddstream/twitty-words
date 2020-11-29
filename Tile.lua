@@ -21,8 +21,12 @@ function Tile.new(slot, letter)
   return o
 end
 
-function Tile:addEventListener()
+function Tile:addTouchListener()
   self.grp:addEventListener('touch', self)
+end
+
+function Tile:removeTouchListener()
+  self.grp:removeEventListener('touch', self)
 end
 
 function Tile.createGraphics(parent, x, y, letter)
