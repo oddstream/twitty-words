@@ -292,7 +292,7 @@ function Util.showAlert(title, message, buttonLabels, listener)
       x = x,
       y = height/2 - (buttonFontSize/2),
       onRelease = function()
-        _G.grid:enableTouch()
+        _G.grid:resumeTouch()
         _G.toolbar:resumeTouch()
         -- display.getCurrentStage():setFocus(nil)
         if listener then
@@ -317,7 +317,7 @@ function Util.showAlert(title, message, buttonLabels, listener)
 
   -- https://docs.coronalabs.com/api/type/EventDispatcher/dispatchEvent.html
 
-  _G.grid:disableTouch()
+  _G.grid:suspendTouch()
   _G.toolbar:suspendTouch()
   -- display.getCurrentStage():setFocus(grp)
 

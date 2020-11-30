@@ -118,19 +118,19 @@ function scene:create(event)
 
   local y = dim.halfQ
 
+  _banner(y, string.format('%d : %d', event.params.humanScore, event.params.robotScore))
+
+  y = y + dim.Q
+
   if event.params.humanScore > event.params.robotScore then
-    _titleRow(y, 'YOU WON')
+    _titleRow(y, 'HUMAN WINS')
     Util.sound('complete')
   elseif event.params.humanScore < event.params.robotScore then
-    _titleRow(y, 'YOU LOST')
+    _titleRow(y, 'ROBOTO WINS')
     Util.sound('failure')
   else
     _titleRow(y, 'GAME TIED')
   end
-
-  y = y + dim.Q
-
-  _banner(y, string.format('%d : %d', event.params.humanScore, event.params.robotScore))
 
   y = y + dim.Q
 

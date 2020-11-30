@@ -68,6 +68,7 @@ local function loadScores()
       'WAVEFRONT',
       'MAGAZINES',
       'VAGABONDS',
+      'ROADHOUSES',
     }
 
     scoresTable = {}

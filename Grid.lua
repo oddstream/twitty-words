@@ -262,7 +262,7 @@ function Grid:updateUI(word)
     _G.statusbar:setCenter(string.format('SCORE %d', self.humanScore))  -- or '%+d'
   end
 
-  if _G.GAME_MODE == 'CASUAL' then
+  if _G.GAME_MODE == 'CASUAL' or _G.GAME_MODE == 'ROBOTO' then
     --string.len(_G.SCRABBLE_LETTERS) == 100, so ...
     _G.statusbar:setRight(string.format('%u%%', _countFoundLetters()))
   elseif type(_G.GAME_MODE) == 'number' then
@@ -1042,7 +1042,7 @@ function Grid:showFoundWords()
   composer.showOverlay('FoundWords', {effect='slideRight'})
 end
 
-function Grid:disableTouch()
+function Grid:suspendTouch()
   for _,slot in ipairs(self.slots) do
     if slot.tile then
       slot.tile:removeTouchListener()
@@ -1050,7 +1050,7 @@ function Grid:disableTouch()
   end
 end
 
-function Grid:enableTouch()
+function Grid:resumeTouch()
   for _,slot in ipairs(self.slots) do
     if slot.tile then
       slot.tile:addTouchListener()
