@@ -28,8 +28,12 @@ function Statusbar.new()
     y = dim.statusbarY,
     onRelease = function()
       Util.sound('ui')
-      _G.grid:cancelGame()
-      composer.gotoScene('ModeMenu')
+      Util.showAlert('Are you sure', 'Abandon this game and return to menu?', {'Yes','No'}, function(event)
+        if event.index == 1 then
+          _G.grid:cancelGame()
+          composer.gotoScene('ModeMenu')
+        end
+      end)
     end,
     label = '☰',
     labelColor = { default=_G.TWITTY_COLORS.uiforeground, over=_G.TWITTY_COLORS.uicontrol },

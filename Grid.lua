@@ -194,6 +194,8 @@ function Grid:newGame()
 
   Util.resetDictionaries()
 
+  _G.toolbar:enable('shuffle', true)
+
   -- update ui
   Util.sound('found') -- make a happy sound
   self:updateUI()
@@ -523,7 +525,8 @@ function Grid:testSelection()
       table.insert(self.humanFoundWords, word)
       self:sortWords(self.humanFoundWords)
 
-      self:flyAwaySelectedSlots(score, 'human')
+      self:flyAwaySelectedSlots(score)
+      self.humanScore = self.humanScore + score
 
       self:dropColumns()
       self:compactColumns()
@@ -531,15 +534,17 @@ function Grid:testSelection()
         self:addTiles()
       end
 
-      -- wait for tile transitions to finish (and tiles be deleted) before updating UI and checking for end of game
-      timer.performWithDelay(2000, function()
-        -- the human had their move, now ...
-        if _G.GAME_MODE == 'ROBOTO' then
+      -- the human had their move, now ...
+      if _G.GAME_MODE == 'ROBOTO' then
+        self:updateUI(word)
+        timer.performWithDelay(2000, function()
           self:robot()
-        else
-          self:afterMove(word)
-        end
-      end)
+        end)
+      else
+        self:afterMove(word)  -- update UI and check end of game
+      end
+
+      _G.toolbar:enable('shuffle', true)
 
     else  -- word not in dictionary
 
@@ -782,6 +787,8 @@ function Grid:shuffle()
 
   self:updateUI()  --- not really a move, was it?
 
+  _G.toolbar:enable('shuffle', false)
+
 end
 
 function Grid:addTiles()
@@ -947,9 +954,14 @@ function Grid:hint(who)
       --   b:fadeOut()
       -- end
 
+      Util.sound('found')
+
+      self.selectedSlots = table.clone(path)
+
       if who == 'robot' then
-        self.selectedSlots = table.clone(path)
         self:_postRobot(maxWord, maxScore)
+        -- the game can end after robot's move (no human's move)
+        self:afterMove(maxWord) -- update UI and check for end of game
       else
         -- local dim = _G.DIMENSIONS
         -- local tax = math.floor(self.humanScore * 0.1)
@@ -961,15 +973,10 @@ function Grid:hint(who)
         if system.getInfo('environment') ~= 'simulator' then
           self.hints = self.hints - 1
         end
-      end
-
-      Util.sound('found')
-      if who == 'robot' then
-        self:afterMove(maxWord)
-      else
         self:updateUI(maxWord)
       end
-    else
+
+    else  -- no hint words found
       Util.sound('failure')
       self:updateUI()  -- not really a move, was it?
     end
@@ -992,13 +999,11 @@ function Grid:robot()
 
   _G.TWITTY_SELECTED_COLOR = _G.TWITTY_COLORS.roboto
 
-  if self.humanScore > self.robotScore then self:shuffle() end
-
   self:hint('robot')  -- this ends in it's own time ...
   -- ... so don't put any code here
 end
 
-function Grid:flyAwaySelectedSlots(score, who)
+function Grid:flyAwaySelectedSlots(score)
 
   local n = 1
   for _,slot in ipairs(self.selectedSlots) do
@@ -1012,7 +1017,6 @@ function Grid:flyAwaySelectedSlots(score, who)
     local src = self.selectedSlots[#self.selectedSlots]
     local b = Bubble.new(src.center.x, src.center.y, string.format('%+d', score))
     b:flyTo(dim.statusbarX, dim.statusbarY)
-    if who == 'robot' then self.robotScore = self.robotScore + score else self.humanScore = self.humanScore + score end
   end
 
   self.selectedSlots = {}
@@ -1026,7 +1030,8 @@ function Grid:_postRobot(word, score)
   -- don't create an undoable save point here
   -- table.insert(self.undoStack, self:createSaveable())
 
-  self:flyAwaySelectedSlots(score, 'robot')
+  self:flyAwaySelectedSlots(score)
+  self.robotScore = self.robotScore + score
 
   table.insert(self.robotFoundWords, word)
   self:sortWords(self.robotFoundWords)

@@ -3,8 +3,7 @@
 
 local composer = require('composer')
 local scene = composer.newScene()
-
--- local widget = require('widget')
+local json = require 'json'
 
 local Tappy = require 'Tappy'
 local Tile = require 'Tile'
@@ -14,6 +13,42 @@ local Util = require 'Util'
 -- Code outside of the scene event functions below will only be executed ONCE unless
 -- the scene is removed entirely (not recycled) via 'composer.removeScene()'
 -- -----------------------------------------------------------------------------------
+
+local filePath = system.pathForFile('RobotStats.json', system.DocumentsDirectory)
+
+local function loadStats()
+  local stats
+  local file, msg = io.open(filePath, 'r')
+  if file then
+    local contents = file:read('*a')
+    io.close(file)
+    trace('robot stats loaded from', filePath)
+    stats = json.decode(contents)
+  else
+    trace('cannot open', filePath, msg)
+  end
+  return stats or {
+    gamesWon = 0,
+    gamesLost = 0,
+    bestScore = 0,
+    worstScore = 9999,
+    currStreak = 0,
+    bestStreak = 0,
+    worstStreak = 0,
+  }
+end
+
+local function saveStats(stats)
+  local file, msg = io.open(filePath, 'w')
+  if file then
+    file:write(json.encode(stats, {indent=true}))
+    trace('robot stats written to', filePath)
+    io.close(file)
+  else
+    trace('cannot open', filePath, msg)
+  end
+end
+
 
 local toolbarGroup
 
@@ -88,44 +123,86 @@ function scene:create(event)
     txt:setFillColor(0,0,0)
   end
 
-  local function _createTile(x, y, txt)
+  local function _text(y, s)
+    local txt = display.newText({
+      parent = sceneGroup,
+      text = s,
+      x = display.contentCenterX,
+      y = y,
+      font = _G.ACME,
+      fontSize = dim.Q / 4,
+      align = 'center',
+    })
+    -- txt.anchorX = 0
+    txt:setFillColor(0,0,0)
+  end
+
+  local function _createTile(x, y, txt, color)
     local grp = Tile.createGraphics(sceneGroup, x, y, txt)
     grp:scale(0.5, 0.5)
+    grp[2]:setFillColor(unpack(color))
     return grp
   end
 
-  local function _displayRow(y, i, word)
+  local function _displayRow(y, word, color)
     local score = 0
-    local xNumber = dim.firstTileX + dim.halfQ
+
     local xScore = dim.firstTileX + dim.halfQ
     local xLetter = dim.firstTileX + (dim.halfQ * 3)
-
-    if type(_G.GAME_MODE) == 'number' then
-      _createTile(xNumber, y, tostring(i))
-      xScore = xScore + dim.halfQ * 2
-      xLetter = xLetter + dim.halfQ * 2
-    end
 
     for j=1, string.len(word) do
       local letter = string.sub(word, j, j)
       score = score + _G.SCRABBLE_SCORES[letter]
-      _createTile(xLetter, y, letter)
+      _createTile(xLetter, y, letter, color)
       xLetter = xLetter + dim.halfQ
     end
 
-    _createTile(xScore, y, tostring(score * string.len(word)))
+    _createTile(xScore, y, tostring(score * string.len(word)), color)
   end
+
+  local stats = loadStats()
 
   local y = dim.halfQ
 
   if event.params.humanScore > event.params.robotScore then
-    _titleRow(y, 'YOU WIN')
+    _titleRow(y, 'YOU WON')
     Util.sound('complete')
+
+    stats.gamesWon = stats.gamesWon + 1
+
+    if stats.currStreak < 0 then
+      stats.currStreak = 1
+    else
+      stats.currStreak = stats.currStreak + 1
+    end
+    if stats.currStreak > stats.bestStreak then
+      stats.bestStreak = stats.currStreak
+    end
+
   elseif event.params.humanScore < event.params.robotScore then
-    _titleRow(y, 'ROBOTO WINS')
+    _titleRow(y, 'YOU LOSE')
     Util.sound('failure')
+
+    stats.gamesLost = stats.gamesLost + 1
+
+    if stats.currStreak > 0 then
+      stats.currStreak = -1
+    else
+      stats.currStreak = stats.currStreak - 1
+    end
+    if stats.currStreak < stats.worstStreak then
+      stats.worstStreak = stats.currStreak
+    end
+
   else
     _titleRow(y, 'GAME TIED')
+  end
+
+  if event.params.humanScore > stats.bestScore then
+    stats.bestScore = event.params.humanScore
+  end
+  if event.params.humanScore < stats.worstScore then
+    stats.worstScore = event.params.humanScore
   end
 
   -- y = y + dim.halfQ
@@ -134,12 +211,33 @@ function scene:create(event)
 
   y = y + dim.Q
 
+  _text(y, string.format('Games won: %u', stats.gamesWon))
+  y = y + dim.quarterQ
+  _text(y, string.format('Games lost: %u', stats.gamesLost))
+  y = y + dim.halfQ
+
+  _text(y, string.format('Best score: %u', stats.bestScore))
+  y = y + dim.quarterQ
+  _text(y, string.format('Worst score: %u', stats.worstScore))
+  y = y + dim.halfQ
+
+  _text(y, string.format('Current streak: %d', stats.currStreak))
+  y = y + dim.quarterQ
+  _text(y, string.format('Best streak: %d', stats.bestStreak))
+  y = y + dim.quarterQ
+  _text(y, string.format('Worst streak: %d', stats.worstStreak))
+  y = y + dim.quarterQ
+
+  saveStats(stats)
+
+  y = y + dim.halfQ
+
   _banner(y, 'WORDS YOU FOUND')
 
   y = y + dim.halfQ
 
-  for i,word in ipairs(event.params.humanFoundWords) do
-    _displayRow(y, i, word)
+  for _,word in ipairs(event.params.humanFoundWords) do
+    _displayRow(y, word, _G.TWITTY_COLORS.selected)
     y = y + dim.halfQ
   end
 
@@ -147,8 +245,8 @@ function scene:create(event)
 
   _banner(y, 'WORDS ROBOTO FOUND')
   y = y + dim.halfQ
-  for i,word in ipairs(event.params.robotFoundWords) do
-    _displayRow(y, i, word)
+  for _,word in ipairs(event.params.robotFoundWords) do
+    _displayRow(y, word, _G.TWITTY_COLORS.roboto)
     y = y + dim.halfQ
   end
 

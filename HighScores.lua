@@ -47,7 +47,6 @@ local function loadScores()
       'MALARKEY',
       'ZOOMING',
       'ZOOMORPHISM',
-      'SOUTHERN',
       'NETWORKERS',
       'DAUGHTERS',
       'CONTAINERS',
@@ -70,6 +69,9 @@ local function loadScores()
       'VAGABONDS',
       'ROADHOUSES',
       'SOCIALIZE',
+      'MAGAZINES',
+      'QUARTERED',
+      'SLEUTHING',
     }
 
     scoresTable = {}
