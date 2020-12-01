@@ -3,6 +3,8 @@
 local composer = require('composer')
 local scene = composer.newScene()
 
+local Util = require 'Util'
+
 local tim = nil
 local logo = nil
 local destination = nil
@@ -120,7 +122,7 @@ function scene:show(event)
   if phase == 'will' then
     -- Code here runs when the scene is still off screen (but is about to come on screen)
 
-    -- Util.setBackground(sceneGroup)
+    Util.setBackground(sceneGroup)
 
     logo = display.newImage(sceneGroup, 'assets/splashlogo.png', system.ResourceDirectory, display.contentCenterX, display.contentCenterY)
     -- png is 420x420 pixels
@@ -129,14 +131,17 @@ function scene:show(event)
     logo:scale(scale,scale)
     assert(logo:addEventListener('tap', gotoDestination))
 
-    loadDictionaries()
+    -- https://docs.coronalabs.com/guide/graphics/3D.html
+    transition.to( logo.path, { time=1000, --[[x1=80, y1=-80,]] x4=-420/2, y4=420/2 } )
+    transition.fadeOut(logo, {time=1000})
+    transition.scaleTo(logo, {time=1000, xScale=0.1, yScale=0.1})
 
-    -- transition.fadeOut(logo, {time=1000})
+    loadDictionaries()
 
   elseif phase == 'did' then
     destination = event.params.scene
     -- Code here runs when the scene is entirely on screen
-    tim = timer.performWithDelay(500, gotoDestination, 1)
+    tim = timer.performWithDelay(1000, gotoDestination, 1)
   end
 end
 

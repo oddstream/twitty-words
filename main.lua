@@ -113,8 +113,6 @@ _G.SCRABBLE_SCORES = {
   Z = 10,
 }
 
-_G.FLIGHT_TIME = 2000
-
 _G.TOUTES_DIRECTIONS = {'n','ne','e','se','s','sw','w','nw'}
 
 local function RGB2DEC(r,g,b)

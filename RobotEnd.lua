@@ -81,7 +81,7 @@ function scene:create(event)
       x = display.contentCenterX,
       y = y,
       font = _G.ACME,
-      fontSize = dim.halfQ,
+      fontSize = dim.Q / 3,
       align = 'center',
     })
     -- txt.anchorX = 0
@@ -118,12 +118,8 @@ function scene:create(event)
 
   local y = dim.halfQ
 
-  _banner(y, string.format('%d : %d', event.params.humanScore, event.params.robotScore))
-
-  y = y + dim.Q
-
   if event.params.humanScore > event.params.robotScore then
-    _titleRow(y, 'HUMAN WINS')
+    _titleRow(y, 'YOU WIN')
     Util.sound('complete')
   elseif event.params.humanScore < event.params.robotScore then
     _titleRow(y, 'ROBOTO WINS')
@@ -132,25 +128,28 @@ function scene:create(event)
     _titleRow(y, 'GAME TIED')
   end
 
+  -- y = y + dim.halfQ
+
+  -- _banner(y, string.format('%d : %d', event.params.humanScore, event.params.robotScore))
+
   y = y + dim.Q
 
   _banner(y, 'WORDS YOU FOUND')
 
-  y = y + dim.Q
+  y = y + dim.halfQ
 
   for i,word in ipairs(event.params.humanFoundWords) do
     _displayRow(y, i, word)
     y = y + dim.halfQ
   end
 
-  if _G.GAME_MODE == 'ROBOTO' then
-    y = y + dim.Q
-    _banner(y, 'WORDS ROBOTO FOUND')
-    y = y + dim.Q
-    for i,word in ipairs(event.params.robotFoundWords) do
-      _displayRow(y, i, word)
-      y = y + dim.halfQ
-    end
+  y = y + dim.halfQ
+
+  _banner(y, 'WORDS ROBOTO FOUND')
+  y = y + dim.halfQ
+  for i,word in ipairs(event.params.robotFoundWords) do
+    _displayRow(y, i, word)
+    y = y + dim.halfQ
   end
 
     -- create a group for the tappy so it doesn't scroll with the background

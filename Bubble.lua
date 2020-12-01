@@ -35,11 +35,11 @@ function Bubble.new(x, y, label)
 end
 
 function Bubble:fadeOut()
-  transition.scaleTo(self.grp, {xScale=0.1, yScale=0.1, time=_G.FLIGHT_TIME / 2, transition=easing.inQuart, onComplete=function() self.grp:removeSelf() end})
+  transition.scaleTo(self.grp, {xScale=0.1, yScale=0.1, time=1000, transition=easing.inQuart, onComplete=function() self.grp:removeSelf() end})
 end
 
 function Bubble:flyTo(x, y)
-  transition.moveTo(self.grp, {x=x, y=y, time=_G.FLIGHT_TIME * 2, transition=easing.outQuart, onComplete=function() self.grp:removeSelf() end})
+  transition.moveTo(self.grp, {x=x, y=y, time=4000, transition=easing.outQuart, onComplete=function() self.grp:removeSelf() end})
 end
 
 return Bubble

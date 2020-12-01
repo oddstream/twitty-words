@@ -144,9 +144,9 @@ function Grid:gameOver()
   self:deleteTiles()
 
   if _G.GAME_MODE == 'ROBOTO' then
-    composer.gotoScene('RobotEnd', { params={humanScore=self.humanScore, humanFoundWords=self.humanFoundWords, robotScore=self.robotScore, robotFoundWords=self.robotFoundWords} })
+    composer.gotoScene('RobotEnd', { effect='slideRight', params={humanScore=self.humanScore, humanFoundWords=self.humanFoundWords, robotScore=self.robotScore, robotFoundWords=self.robotFoundWords} })
   else
-    composer.gotoScene('HighScores', { params={score=self.humanScore - deductions, words=self.humanFoundWords} })
+    composer.gotoScene('HighScores', { effect='slideRight', params={score=self.humanScore - deductions, words=self.humanFoundWords} })
   end
 
 end
@@ -262,11 +262,13 @@ function Grid:updateUI(word)
     _G.statusbar:setCenter(string.format('SCORE %d', self.humanScore))  -- or '%+d'
   end
 
-  if _G.GAME_MODE == 'CASUAL' or _G.GAME_MODE == 'ROBOTO' then
+  if _G.GAME_MODE == 'CASUAL' then
     --string.len(_G.SCRABBLE_LETTERS) == 100, so ...
     _G.statusbar:setRight(string.format('%u%%', _countFoundLetters()))
   elseif type(_G.GAME_MODE) == 'number' then
     _G.statusbar:setRight(string.format('%u of %u', #self.humanFoundWords, _G.GAME_MODE))
+    -- time remaining is set directly from Grid:timer()
+    -- nothing is currently set in ROBOTO mode
   end
 
   _G.wordbar:setCenter(word)
@@ -530,7 +532,7 @@ function Grid:testSelection()
       end
 
       -- wait for tile transitions to finish (and tiles be deleted) before updating UI and checking for end of game
-      timer.performWithDelay(_G.FLIGHT_TIME, function()
+      timer.performWithDelay(2000, function()
         -- the human had their move, now ...
         if _G.GAME_MODE == 'ROBOTO' then
           self:robot()
@@ -588,12 +590,12 @@ function Grid:dropColumn(bottomSlot)
     dst.tile = tile
     tile.slot = dst
 
-    -- dst.tile.grp.y = dst.center.y
-    transition.moveTo(tile.grp, {
-      y = dst.center.y,
-      time = _G.FLIGHT_TIME,
-      transition = easing.outQuart,
-    })
+    -- transition.moveTo(tile.grp, {
+    --   y = dst.center.y,
+    --   time = _G.FLIGHT_TIME,
+    --   transition = easing.outQuart,
+    -- })
+    tile:settle()
 
     dst = dst.n
   end
@@ -628,15 +630,16 @@ function Grid:slideColumn(col, dir)
       local dst = src[dir]
       assert(not dst.tile)
 
-      transition.moveTo(src.tile.grp, {
-        x = dst.center.x,
-        time = _G.FLIGHT_TIME,
-        transition = easing.outQuart,
-      })
-      -- src.tile.grp.x = dst.center.x
+      -- transition.moveTo(src.tile.grp, {
+      --   x = dst.center.x,
+      --   time = _G.FLIGHT_TIME,
+      --   transition = easing.outQuart,
+      -- })
 
       dst.tile = src.tile
       dst.tile.slot = dst
+
+      dst.tile:settle()
 
       src.tile = nil
     end
@@ -688,11 +691,12 @@ function Grid:compactColumns()
     slot.center.x = (slot.x * dim.Q) - dim.Q + dim.halfQ  -- copied from Slot.new()
     slot.center.x = slot.center.x + newMargin
     if slot.tile then
-      transition.moveTo(slot.tile.grp, {
-        x = slot.center.x,
-        time = _G.FLIGHT_TIME,
-        transition = easing.outQuart,
-      })
+      -- transition.moveTo(slot.tile.grp, {
+      --   x = slot.center.x,
+      --   time = _G.FLIGHT_TIME,
+      --   transition = easing.outQuart,
+      -- })
+      slot.tile:settle()
     end
   end
 end
@@ -733,12 +737,13 @@ function Grid:shuffle2(tiles)
       if tile then
         dst.tile = tile
         tile.slot = dst
-        transition.moveTo(tile.grp, {
-          x = dst.center.x,
-          y = dst.center.y,
-          time = _G.FLIGHT_TIME,
-          transition = easing.outQuart,
-        })
+        dst.tile:settle()
+        -- transition.moveTo(tile.grp, {
+        --   x = dst.center.x,
+        --   y = dst.center.y,
+        --   time = _G.FLIGHT_TIME,
+        --   transition = easing.outQuart,
+        -- })
       else
         dst.tile = nil
       end

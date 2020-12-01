@@ -197,7 +197,7 @@ function Tile:settle()
   transition.moveTo(self.grp, {
     x = self.slot.center.x,
     y = self.slot.center.y,
-    time = _G.FLIGHT_TIME / 2,
+    time = 1000,
     transition = easing.outQuad,
   })
 end
@@ -211,7 +211,7 @@ function Tile:flyAway(n, wordLength)
     -- x = (dim.halfQ + (dim.Q * (n-1))) + ((display.actualContentWidth / 2) - ((dim.Q * wordLength) / 2)),
     x = dim.quarterQ + (dim.halfQ * (n-1)) + ((display.actualContentWidth / 2) - ((dim.halfQ * wordLength) / 2)),
     y = dim.wordbarY,
-    time = _G.FLIGHT_TIME,
+    time = 2000,
     transition = easing.outQuad,
   })
   -- transition.fadeOut(self.grp, {
@@ -222,7 +222,7 @@ function Tile:flyAway(n, wordLength)
   transition.scaleTo(self.grp, {
     xScale = 0.5,
     yScale = 0.5,
-    time = _G.FLIGHT_TIME,
+    time = 2000,
     transition = easing.linear,
     onComplete = function() self:delete() end,
   })

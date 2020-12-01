@@ -69,6 +69,7 @@ local function loadScores()
       'MAGAZINES',
       'VAGABONDS',
       'ROADHOUSES',
+      'SOCIALIZE',
     }
 
     scoresTable = {}

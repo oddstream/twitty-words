@@ -24,6 +24,10 @@ A. Because (a) the tiles were randomly shuffled to start with, and (b) everytime
 
 A. Why have any hints at all?
 
+## Q. How are the word scores calculated?
+
+A.
+
 ## Q. Hints and tips
 
 A. Make long words, because the score is calculated to be (the sum of all the letter values in the word) x (the length of the word).
