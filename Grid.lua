@@ -144,9 +144,9 @@ function Grid:gameOver()
   self:deleteTiles()
 
   if _G.GAME_MODE == 'ROBOTO' then
-    composer.gotoScene('RobotEnd', { effect='slideRight', params={humanScore=self.humanScore, humanFoundWords=self.humanFoundWords, robotScore=self.robotScore, robotFoundWords=self.robotFoundWords} })
+    composer.gotoScene('RobotEnd', { effect='slideLeft', params={humanScore=self.humanScore, humanFoundWords=self.humanFoundWords, robotScore=self.robotScore, robotFoundWords=self.robotFoundWords} })
   else
-    composer.gotoScene('HighScores', { effect='slideRight', params={score=self.humanScore - deductions, words=self.humanFoundWords} })
+    composer.gotoScene('HighScores', { effect='slideLeft', params={score=self.humanScore - deductions, words=self.humanFoundWords} })
   end
 
 end
@@ -271,6 +271,10 @@ function Grid:updateUI(word)
     _G.statusbar:setRight(string.format('%u of %u', #self.humanFoundWords, _G.GAME_MODE))
     -- time remaining is set directly from Grid:timer()
     -- nothing is currently set in ROBOTO mode
+  end
+
+  if word == nil and #self.selectedSlots > 0 then
+    word, _ = self:getSelectedWord()
   end
 
   _G.wordbar:setCenter(word)
@@ -1049,7 +1053,7 @@ end
 function Grid:showFoundWords()
   Util.sound('ui')
   self:pauseCountdown()
-  composer.showOverlay('FoundWords', {effect='slideRight'})
+  composer.showOverlay('FoundWords', {effect='fromLeft'})
 end
 
 function Grid:suspendTouch()

@@ -31,7 +31,7 @@ function Statusbar.new()
       Util.showAlert('Are you sure', 'Abandon this game and return to menu?', {'Yes','No'}, function(event)
         if event.index == 1 then
           _G.grid:cancelGame()
-          composer.gotoScene('ModeMenu')
+          composer.gotoScene('ModeMenu', {effect='slideRight'})
         end
       end)
     end,

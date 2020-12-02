@@ -254,7 +254,7 @@ function scene:show(event)
     toolbarGroup = display:newGroup()
     local tappy = Tappy.new(toolbarGroup, display.actualContentWidth - dim.halfQ, dim.toolbarY, function()
       Util.sound('ui')
-      composer.gotoScene('Twitty', {effect='slideLeft'})
+      composer.gotoScene('Twitty', {effect='slideRight'})
     end, 'Ne', 'NEW') -- '★'
 
   end
@@ -295,7 +295,7 @@ function scene:key(event)
   if phase == 'up' then
     if event.keyName == 'back' or event.keyName == 'deleteBack' then
       Util.sound('ui')
-      composer.gotoScene('Twitty', {effect='slideLeft'})
+      composer.gotoScene('Twitty', {effect='slideRight'})
       return true -- override the key
     end
   end
