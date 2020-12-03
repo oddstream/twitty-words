@@ -5,6 +5,8 @@ local composer = require('composer')
 local scene = composer.newScene()
 local json = require 'json'
 
+local const = require 'constants'
+
 local Tappy = require 'Tappy'
 local Tile = require 'Tile'
 local Util = require 'Util'
@@ -115,7 +117,7 @@ function scene:create(event)
       text = s,
       x = display.contentCenterX,
       y = y,
-      font = _G.ACME,
+      font = const.FONTS.ACME,
       fontSize = dim.Q / 3,
       align = 'center',
     })
@@ -129,7 +131,7 @@ function scene:create(event)
       text = s,
       x = display.contentCenterX,
       y = y,
-      font = _G.ACME,
+      font = const.FONTS.ACME,
       fontSize = dim.Q / 4,
       align = 'center',
     })
@@ -152,7 +154,7 @@ function scene:create(event)
 
     for j=1, string.len(word) do
       local letter = string.sub(word, j, j)
-      score = score + _G.SCRABBLE_SCORES[letter]
+      score = score + const.SCRABBLE_SCORES[letter]
       _createTile(xLetter, y, letter, color)
       xLetter = xLetter + dim.halfQ
     end
@@ -237,7 +239,7 @@ function scene:create(event)
   y = y + dim.halfQ
 
   for _,word in ipairs(event.params.humanFoundWords) do
-    _displayRow(y, word, _G.TWITTY_COLORS.selected)
+    _displayRow(y, word, const.COLORS.selected)
     y = y + dim.halfQ
   end
 
@@ -246,7 +248,7 @@ function scene:create(event)
   _banner(y, 'WORDS ROBOTO FOUND')
   y = y + dim.halfQ
   for _,word in ipairs(event.params.robotFoundWords) do
-    _displayRow(y, word, _G.TWITTY_COLORS.roboto)
+    _displayRow(y, word, const.COLORS.roboto)
     y = y + dim.halfQ
   end
 

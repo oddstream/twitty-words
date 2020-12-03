@@ -7,6 +7,8 @@ local scene = composer.newScene()
 
 -- local widget = require('widget')
 
+local const = require 'constants'
+
 local Tappy = require 'Tappy'
 local Tile = require 'Tile'
 local Util = require 'Util'
@@ -69,7 +71,7 @@ function scene:create(event)
       text = s,
       x = display.contentCenterX,
       y = y,
-      font = _G.ACME,
+      font = const.FONTS.ACME,
       fontSize = dim.halfQ,
       align = 'center',
     })
@@ -97,7 +99,7 @@ function scene:create(event)
 
     for j=1, string.len(word) do
       local letter = string.sub(word, j, j)
-      score = score + _G.SCRABBLE_SCORES[letter]
+      score = score + const.SCRABBLE_SCORES[letter]
       _createTile(xLetter, y, letter)
       xLetter = xLetter + dim.halfQ
     end
@@ -109,10 +111,10 @@ function scene:create(event)
   -- the background needs to be tall enough to display #_G.grid.words
   -- local backHeight = (#_G.grid.words * dim.halfQ) + display.actualContentHeight
   -- local rectBackground = display.newRect(sceneGroup, display.actualContentWidth / 2, display.actualContentHeight / 2, display.actualContentWidth, backHeight)
-  -- rectBackground:setFillColor(unpack(_G.TWITTY_COLORS.baize))
+  -- rectBackground:setFillColor(unpack(const.COLORS.baize))
 --[[
   local rect = display.newRect(sceneGroup, dim.toolbarX, dim.toolbarY, dim.toolbarWidth, dim.toolbarHeight)
-  rect:setFillColor(unpack(_G.TWITTY_COLORS.uibackground))
+  rect:setFillColor(unpack(const.COLORS.uibackground))
 ]]
 
 --[[
@@ -125,9 +127,9 @@ function scene:create(event)
       _G.grid:resumeCountdown()
     end,
     label = '< BACK',
-    labelColor = { default=_G.TWITTY_COLORS.uiforeground, over=_G.TWITTY_COLORS.uicontrol },
+    labelColor = { default=const.COLORS.uiforeground, over=const.COLORS.uicontrol },
     labelAlign = 'left',
-    font = _G.ACME,
+    font = const.FONTS.ACME,
     fontSize = dim.toolbarHeight / 2,
     textOnly = true,
   })

@@ -1,5 +1,7 @@
 -- Tappy.lua
 
+local const = require 'constants'
+
 local Tile = require 'Tile'
 
 local Tappy = {}
@@ -16,7 +18,7 @@ function Tappy.new(group, x, y, cmd, label, description)
   o.label = label
 
   o.grp = o:_createGraphics(o.group, x, y, o.label, o.description)
-  o.grp[2]:setFillColor(unpack(_G.TWITTY_COLORS.tappy))
+  o.grp[2]:setFillColor(unpack(const.COLORS.tappy))
 
   -- removed the tap listener below; creates false hit when coming back from FoundWords
   -- o.grp:addEventListener('tap', o)
@@ -42,10 +44,10 @@ function Tappy:_createGraphics(parent, x, y, label, description)
       text = description,
       x = 0,
       y = self.descriptionNormalY,
-      font = _G.ACME,
+      font = const.FONTS.ACME,
       fontSize = dim.halfQ / 3,
     })
-    txt:setFillColor(unpack(_G.TWITTY_COLORS.black))
+    txt:setFillColor(unpack(const.COLORS.black))
   else
     self.letterNormalY = 0
     self.letterDepressedY = dim.offset3D
@@ -79,7 +81,7 @@ function Tappy:enable(enabled)
   self.disabled = not enabled
 
   if self.grp and self.grp[3] then
-    local color = enabled and _G.TWITTY_COLORS.black or _G.TWITTY_COLORS.gray
+    local color = enabled and const.COLORS.black or const.COLORS.gray
     self.grp[3]:setFillColor(unpack(color))
     if self.description then
       self.grp[4]:setFillColor(unpack(color))

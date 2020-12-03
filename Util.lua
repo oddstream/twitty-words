@@ -2,6 +2,8 @@
 
 local widget = require 'widget'
 
+local const = require 'constants'
+
 local Util = {}
 Util.__index = Util
 
@@ -40,14 +42,14 @@ end
 
 function Util.setBackground(group)
 
-  display.setDefault('background', unpack(_G.TWITTY_COLORS.baize))
+  display.setDefault('background', unpack(const.COLORS.baize))
   -- tried a bitmap (wood effect) background
   -- it didn't scale well
   -- couldn't get textureWrapX/Y to work
 
   -- make background wide/high enough that scrolling it doesn't show edges
   local bg = display.newRect(group, display.contentCenterX, display.contentCenterY, display.contentWidth * 3, display.contentHeight * 3)
-  bg:setFillColor(unpack(_G.TWITTY_COLORS.baize))
+  bg:setFillColor(unpack(const.COLORS.baize))
   bg.alpha = 0.95
 
 end
@@ -262,18 +264,18 @@ function Util.showAlert(title, message, buttonLabels, listener)
 
   -- grp[1]
   local rectShadow = display.newRoundedRect(grp, dim.offset3D, dim.offset3D, width, height, radius)
-  rectShadow:setFillColor(unpack(_G.TWITTY_COLORS.shadow))
+  rectShadow:setFillColor(unpack(const.COLORS.shadow))
 
   -- grp[2]
   local rectBack = display.newRoundedRect(grp, 0, 0, width, height, radius)
-  rectBack:setFillColor(unpack(_G.TWITTY_COLORS.selected))
+  rectBack:setFillColor(unpack(const.COLORS.selected))
 
   -- grp[3]
-  local textTitle = display.newText(grp, title, 0, -(height/2) + titleFontSize, _G.ACME, titleFontSize)
+  local textTitle = display.newText(grp, title, 0, -(height/2) + titleFontSize, const.FONTS.ACME, titleFontSize)
   textTitle:setFillColor(0,0,0)
 
   -- grp[4]
-  local textMessage = display.newText(grp, message, 0, 0, _G.ROBOTO_MEDIUM, messageFontSize)
+  local textMessage = display.newText(grp, message, 0, 0, const.FONTS.ROBOTO_MEDIUM, messageFontSize)
   textMessage:setFillColor(0,0,0)
 
   local buttonGroup = display.newGroup()
@@ -303,9 +305,9 @@ function Util.showAlert(title, message, buttonLabels, listener)
         grp:removeSelf()
       end,
       label = buttonLabel,
-      labelColor = { default=_G.TWITTY_COLORS.black, over=_G.TWITTY_COLORS.shadow },
+      labelColor = { default=const.COLORS.black, over=const.COLORS.shadow },
       labelAlign = 'center',
-      font = _G.ACME,
+      font = const.FONTS.ACME,
       fontSize = buttonFontSize,
       textOnly = true,
     })

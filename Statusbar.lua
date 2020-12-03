@@ -3,6 +3,8 @@
 local composer = require 'composer'
 local widget = require 'widget'
 
+local const = require 'constants'
+
 local Util = require 'Util'
 
 local Statusbar = {}
@@ -18,10 +20,10 @@ function Statusbar.new()
   local halfFontSize = fontSize / 2
 
   o.rect = display.newRect(_G.TWITTY_GROUPS.ui, dim.statusbarX, dim.statusbarY, dim.statusbarWidth, dim.statusbarHeight)
-  o.rect:setFillColor(unpack(_G.TWITTY_COLORS.uibackground))
+  o.rect:setFillColor(unpack(const.COLORS.uibackground))
 
-  -- o.left = display.newText(_G.TWITTY_GROUPS.ui, '🦝', halfFontSize, dim.statusbarY, _G.ACME, fontSize)
-  -- o.left:setFillColor(unpack(_G.TWITTY_COLORS.uiforeground))
+  -- o.left = display.newText(_G.TWITTY_GROUPS.ui, '🦝', halfFontSize, dim.statusbarY, const.FONTS.ACME, fontSize)
+  -- o.left:setFillColor(unpack(const.COLORS.uiforeground))
   -- o.left.anchorX = 0
   o.left = widget.newButton({
     x = halfFontSize,
@@ -36,9 +38,9 @@ function Statusbar.new()
       end)
     end,
     label = '☰',
-    labelColor = { default=_G.TWITTY_COLORS.uiforeground, over=_G.TWITTY_COLORS.uicontrol },
+    labelColor = { default=const.COLORS.uiforeground, over=const.COLORS.uicontrol },
     labelAlign = 'left',
-    font = _G.ACME,
+    font = const.FONTS.ACME,
     fontSize = fontSize,
     textOnly = true,
   })
@@ -46,13 +48,13 @@ function Statusbar.new()
   _G.TWITTY_GROUPS.ui:insert(o.left)
 
   -- could maybe make this a button, tap shows FoundWords scene
-  -- _G.ROBOTO_BOLD didn't display raccoon glyph on phone
-  o.center = display.newText(_G.TWITTY_GROUPS.ui, '🦝', dim.statusbarX, dim.statusbarY, _G.ACME, fontSize)
-  o.center:setFillColor(unpack(_G.TWITTY_COLORS.uiforeground))
+  -- const.FONTS.ROBOTO_BOLD didn't display raccoon glyph on phone
+  o.center = display.newText(_G.TWITTY_GROUPS.ui, '🦝', dim.statusbarX, dim.statusbarY, const.FONTS.ACME, fontSize)
+  o.center:setFillColor(unpack(const.COLORS.uiforeground))
   o.center.anchorX = 0.5
 
-  o.right = display.newText(_G.TWITTY_GROUPS.ui, '🦝', dim.statusbarWidth - halfFontSize, dim.statusbarY, _G.ACME, fontSize)
-  o.right:setFillColor(unpack(_G.TWITTY_COLORS.uiforeground))
+  o.right = display.newText(_G.TWITTY_GROUPS.ui, '🦝', dim.statusbarWidth - halfFontSize, dim.statusbarY, const.FONTS.ACME, fontSize)
+  o.right:setFillColor(unpack(const.COLORS.uiforeground))
   o.right.anchorX = 1
 
   -- o.right = widget.newButton({
@@ -63,9 +65,9 @@ function Statusbar.new()
   --     Public.showLeaderboard()
   --   end,
   --   label = '...',  -- raccoon looks clunky on Chromebook '🦝'
-  --   labelColor = { default=_G.TWITTY_COLORS.uiforeground, over=_G.TWITTY_COLORS.uicontrol },
+  --   labelColor = { default=const.COLORS.uiforeground, over=const.COLORS.uicontrol },
   --   labelAlign = 'right',
-  --   font = _G.ACME,
+  --   font = const.FONTS.ACME,
   --   fontSize = fontSize,
   --   textOnly = true,
   -- })

@@ -1,5 +1,7 @@
 -- Must.lua
 
+local const = require 'constants'
+
 local Statusbar = require 'Statusbar'
 local Wordbar = require 'Wordbar'
 local Toolbar = require 'Toolbar'

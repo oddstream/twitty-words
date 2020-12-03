@@ -1,5 +1,7 @@
 -- Tile.lua
 
+local const = require 'constants'
+
 local Tile = {}
 Tile.__index = Tile
 
@@ -41,7 +43,7 @@ function Tile.createGraphics(parent, x, y, letter)
 
   -- grp[1]
   local rectShadow = display.newRoundedRect(grp, dim.offset3D, dim.offset3D, dim.size3D, dim.size3D, radius)
-  rectShadow:setFillColor(unpack(_G.TWITTY_COLORS.shadow))
+  rectShadow:setFillColor(unpack(const.COLORS.shadow))
 
   -- grp[2]
   local rectBack = display.newRoundedRect(grp, 0, 0, dim.size3D, dim.size3D, radius)
@@ -59,7 +61,7 @@ function Tile.createGraphics(parent, x, y, letter)
 ]]
   -- if alpha == 0, we don't get tap events
   -- set fill color AFTER applying paint
-  rectBack:setFillColor(unpack(_G.TWITTY_COLORS.tile))
+  rectBack:setFillColor(unpack(const.COLORS.tile))
   -- rectBack:setFillColor(math.random(),math.random(),math.random())
 
   -- grp[3]
@@ -70,17 +72,17 @@ function Tile.createGraphics(parent, x, y, letter)
     tileFontSize = tileFontSize * 0.666
   end
   -- tried a highlight on the letter; can't see it against ivory background
-  -- local textHighlight = display.newText(grp, letter, -(dim.Q / 30), -(dim.Q / 30), _G.ACME, tileFontSize)
-  -- textHighlight:setFillColor(unpack(_G.TWITTY_COLORS.white))
+  -- local textHighlight = display.newText(grp, letter, -(dim.Q / 30), -(dim.Q / 30), const.FONTS.ACME, tileFontSize)
+  -- textHighlight:setFillColor(unpack(const.COLORS.white))
 
-  local textLetter = display.newText(grp, letter, 0, 0, _G.ACME, tileFontSize)
-  textLetter:setFillColor(unpack(_G.TWITTY_COLORS.black))
+  local textLetter = display.newText(grp, letter, 0, 0, const.FONTS.ACME, tileFontSize)
+  textLetter:setFillColor(unpack(const.COLORS.black))
 
   -- grp[4]
   -- makes the grid harder to scan
-  -- if string.len(letter) == 1 and _G.SCRABBLE_SCORES[letter] then
-  --   local textScore = display.newText(grp, tostring(_G.SCRABBLE_SCORES[letter]), dim.Q / 3, dim.Q / 3, _G.ACME, tileFontSize / 3)
-  --   textScore:setFillColor(unpack(_G.TWITTY_COLORS.black))
+  -- if string.len(letter) == 1 and const.SCRABBLE_SCORES[letter] then
+  --   local textScore = display.newText(grp, tostring(const.SCRABBLE_SCORES[letter]), dim.Q / 3, dim.Q / 3, const.FONTS.ACME, tileFontSize / 3)
+  --   textScore:setFillColor(unpack(const.COLORS.black))
   -- end
 
   return grp
@@ -165,7 +167,7 @@ end
 
 function Tile:deselect()
   self.selected = false
-  self.grp[2]:setFillColor(unpack(_G.TWITTY_COLORS.tile))
+  self.grp[2]:setFillColor(unpack(const.COLORS.tile))
   self:undepress()
 end
 
@@ -174,7 +176,7 @@ function Tile:mark()
 end
 
 function Tile:unmark()
-  self.grp[2]:setFillColor(unpack(_G.TWITTY_COLORS.tile))
+  self.grp[2]:setFillColor(unpack(const.COLORS.tile))
 end
 
 function Tile:delete()

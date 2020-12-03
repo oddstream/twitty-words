@@ -2,6 +2,8 @@
 
 local composer = require('composer')
 
+local const = require 'constants'
+
 local Bubble = require 'Bubble'
 local Slot = require 'Slot'
 local Util = require 'Util'
@@ -287,8 +289,8 @@ end
 
 function Grid:fillLetterPool()
 
-  for i=1, string.len(_G.SCRABBLE_LETTERS) do
-    local letter = string.sub(_G.SCRABBLE_LETTERS, i, i)
+  for i=1, string.len(const.SCRABBLE_LETTERS) do
+    local letter = string.sub(const.SCRABBLE_LETTERS, i, i)
     table.insert(self.letterPool, letter)
   end
   -- assert(#self.letterPool==100)
@@ -309,7 +311,7 @@ function Grid:sortWords(foundWords)
     local function calcScore(s)
       local score = 0
       for i=1, string.len(s) do
-        score = score + _G.SCRABBLE_SCORES[string.sub(s, i, i)]
+        score = score + const.SCRABBLE_SCORES[string.sub(s, i, i)]
       end
       return score * string.len(s)
     end
@@ -362,7 +364,7 @@ function Grid:calcResidualScore()
   local score = 0
   for _,slot in ipairs(self.slots) do
     if slot.tile then
-      score = score + _G.SCRABBLE_SCORES[slot.tile.letter]
+      score = score + const.SCRABBLE_SCORES[slot.tile.letter]
     end
   end
   return score
@@ -374,7 +376,7 @@ function Grid:getSelectedWord()
   for _,slot in ipairs(self.selectedSlots) do
     local letter = slot.tile.letter
     word = word .. letter
-    score = score + _G.SCRABBLE_SCORES[letter]
+    score = score + const.SCRABBLE_SCORES[letter]
   end
   return word, score * word:len()
 end
@@ -433,7 +435,7 @@ end
 function Grid:selectSlot(slot)
 
   local function _connected(a, b)
-    for _,dir in ipairs(_G.TOUTES_DIRECTIONS) do
+    for _,dir in ipairs(const.TOUTES_DIRECTIONS) do
       if a[dir] == b then
         return true
       end
@@ -505,7 +507,7 @@ function Grid:testSelection()
       t2:settle()
 
       do
-        local score = _G.SCRABBLE_SCORES[t1.letter] + _G.SCRABBLE_SCORES[t2.letter]
+        local score = const.SCRABBLE_SCORES[t1.letter] + const.SCRABBLE_SCORES[t2.letter]
         local b = Bubble.new(s2.center.x, s2.center.y, string.format('-%d', score))
         b:flyTo(dim.statusbarX, dim.statusbarY)
         self.humanScore = self.humanScore - score
@@ -834,7 +836,7 @@ function Grid:DFS(path, word)
 
   local slot = path[#path]
 
-  for _,dir in ipairs(_G.TOUTES_DIRECTIONS) do
+  for _,dir in ipairs(const.TOUTES_DIRECTIONS) do
 
     local slot2 = slot[dir]
     if slot2 and slot2.tile and (not table.contains(path, slot2)) then
@@ -870,7 +872,7 @@ function Grid:hint(who)
   local function _calcScore(s)
     local score = 0
     for i=1, string.len(s) do
-      score = score + _G.SCRABBLE_SCORES[string.sub(s, i, i)]
+      score = score + const.SCRABBLE_SCORES[string.sub(s, i, i)]
     end
     return score * string.len(s)
   end
@@ -1001,7 +1003,7 @@ function Grid:robot()
 
   assert(_G.GAME_MODE == 'ROBOTO')
 
-  _G.TWITTY_SELECTED_COLOR = _G.TWITTY_COLORS.roboto
+  _G.TWITTY_SELECTED_COLOR = const.COLORS.roboto
 
   self:hint('robot')  -- this ends in it's own time ...
   -- ... so don't put any code here
@@ -1046,7 +1048,7 @@ function Grid:_postRobot(word, score)
     self:addTiles()
   end
 
-  _G.TWITTY_SELECTED_COLOR = _G.TWITTY_COLORS.selected
+  _G.TWITTY_SELECTED_COLOR = const.COLORS.selected
 
 end
 

@@ -19,7 +19,10 @@ local function loadDictionaries()
   -- local filePath = system.pathForFile('Collins Scrabble Words (2019).txt', system.ResourceDirectory)
 
   -- https://github.com/dwyl/english-words
-  local filePath = system.pathForFile('words_alpha.txt', system.ResourceDirectory)
+  -- cleaned version (no 1- or 2- letter words) saves no memory (usage is 4628 KBytes)
+  -- but must save some searching time as file size decreases from 4136 to 3773 KBytes
+  -- awk '{if (length($0) > 3) print $0}'' words.alpha.txt > words_alpha_cleaned.txt'
+  local filePath = system.pathForFile('words_alpha_cleaned.txt', system.ResourceDirectory)
   local file, msg = io.open(filePath)
   if not file then
     trace('ERROR: Cannot open', filePath, msg)

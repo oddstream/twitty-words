@@ -8,6 +8,8 @@ local scene = composer.newScene()
 -- local widget = require('widget')
 local json = require('json')
 
+local const = require 'constants'
+
 local Tappy = require 'Tappy'
 local Tile = require 'Tile'
 local Util = require 'Util'
@@ -190,7 +192,7 @@ function scene:show(event)
         text = s,
         x = display.contentCenterX,
         y = y,
-        font = _G.ACME,
+        font = const.FONTS.ACME,
         fontSize = dim.halfQ,
         align = 'center',
       })
@@ -202,7 +204,7 @@ function scene:show(event)
       local grp = Tile.createGraphics(sceneGroup, x, y, txt)
       grp:scale(0.5, 0.5)
       if selected then
-        grp[2]:setFillColor(unpack(_G.TWITTY_COLORS.moccasin))
+        grp[2]:setFillColor(unpack(const.COLORS.selected))
       end
       return grp
     end

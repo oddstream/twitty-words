@@ -35,7 +35,7 @@ function Toolbar.new()
   local dim = _G.DIMENSIONS
 
   -- o.rect = display.newRect(_G.TWITTY_GROUPS.ui, dim.toolbarX, dim.toolbarY, dim.toolbarWidth, dim.toolbarHeight)
-  -- o.rect:setFillColor(unpack(_G.TWITTY_COLORS.uibackground))
+  -- o.rect:setFillColor(unpack(const.COLORS.uibackground))
 
   o.shuffle = Tappy.new(_G.TWITTY_GROUPS.ui, dim.halfQ, dim.toolbarY, function()
     _G.grid:shuffle()

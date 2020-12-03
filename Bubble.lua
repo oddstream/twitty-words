@@ -1,5 +1,7 @@
 -- Bubble.lua
 
+local const = require 'constants'
+
 local Bubble = {}
 Bubble.__index = Bubble
 
@@ -24,7 +26,7 @@ function Bubble.new(x, y, label)
     text = o.label,
     x = 0,
     y = 0,
-    font = _G.ACME,
+    font = const.FONTS.ACME,
     fontSize = dim.quarterQ,
     align = 'center',
   })

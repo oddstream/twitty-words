@@ -4,6 +4,8 @@
 local composer = require('composer')
 local scene = composer.newScene()
 
+local const = require 'constants'
+
 local Tappy = require 'Tappy'
 local Tile = require 'Tile'
 local Util = require 'Util'
@@ -76,28 +78,28 @@ function scene:create(event)
   y = (display.actualContentHeight / 2) - (dim.Q * 2)
   _tappyRow(y, 'CASUAL', 'CASUAL')
   y = y + dim.Q * 0.75
-  local help1 = display.newText(sceneGroup, 'Get your best score in your own time', display.contentCenterX, y, _G.ROBOTO_MEDIUM, dim.tileFontSize / 3)
+  local help1 = display.newText(sceneGroup, 'Get your best score in your own time', display.contentCenterX, y, const.FONTS.ROBOTO_MEDIUM, dim.tileFontSize / 3)
   help1:setFillColor(0,0,0)
 
   y = (display.actualContentHeight / 2)
   _tappyRow(y, 'URGENT', 'URGENT')
   y = y + dim.Q * 0.75
-  local help2 = display.newText(sceneGroup, 'Get your best score in four minutes', display.contentCenterX, y, _G.ROBOTO_MEDIUM, dim.tileFontSize / 3)
+  local help2 = display.newText(sceneGroup, 'Get your best score in four minutes', display.contentCenterX, y, const.FONTS.ROBOTO_MEDIUM, dim.tileFontSize / 3)
   help2:setFillColor(0,0,0)
 
   y = (display.actualContentHeight / 2) + (dim.Q * 2)
   _tappyRow(y, 'TWELVE', 12)
   y = y + dim.Q * 0.75
-  local help3 = display.newText(sceneGroup, 'Get your best score with twelve words', display.contentCenterX, y, _G.ROBOTO_MEDIUM, dim.tileFontSize / 3)
+  local help3 = display.newText(sceneGroup, 'Get your best score with twelve words', display.contentCenterX, y, const.FONTS.ROBOTO_MEDIUM, dim.tileFontSize / 3)
   help3:setFillColor(0,0,0)
 
   y = (display.actualContentHeight / 2) + (dim.Q * 4)
   _tappyRow(y, 'ROBOTO', 'ROBOTO')
   y = y + dim.Q * 0.75
-  local help4 = display.newText(sceneGroup, 'Score 420 before the robot can', display.contentCenterX, y, _G.ROBOTO_MEDIUM, dim.tileFontSize / 3)
+  local help4 = display.newText(sceneGroup, 'Score 420 before the robot can', display.contentCenterX, y, const.FONTS.ROBOTO_MEDIUM, dim.tileFontSize / 3)
   help4:setFillColor(0,0,0)
 
-  local ver = display.newText(sceneGroup, system.getInfo('appVersionString'), display.contentCenterX, display.contentHeight - dim.tileFontSize / 3, _G.ROBOTO_MEDIUM, dim.tileFontSize / 3)
+  local ver = display.newText(sceneGroup, system.getInfo('appVersionString'), display.contentCenterX, display.contentHeight - dim.tileFontSize / 3, const.FONTS.ROBOTO_MEDIUM, dim.tileFontSize / 3)
   ver:setFillColor(0,0,0)
 end
 
