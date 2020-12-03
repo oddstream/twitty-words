@@ -29,12 +29,6 @@ function Wordbar:destroy()
 end
 ]]
 
-local function _createTile(group, x, y, txt)
-  local grp = Tile.createGraphics(group, x, y, txt)
-  grp:scale(0.5, 0.5)
-  return grp
-end
-
 function Wordbar:setCenter(s)
   -- self:set('center', s)
 
@@ -58,7 +52,7 @@ function Wordbar:setCenter(s)
   if s then
     local x = dim.halfQ
     for i=1, string.len(s) do
-      local tile = _createTile(self.center, x, dim.wordbarY, string.sub(s, i, i))
+      local tile = Tile.createLittleGraphics(self.center, x, dim.wordbarY, string.sub(s, i, i))
       self.center:insert(tile)
       x = x + dim.halfQ
     end

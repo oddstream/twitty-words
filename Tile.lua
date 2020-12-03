@@ -88,6 +88,15 @@ function Tile.createGraphics(parent, x, y, letter)
   return grp
 end
 
+function Tile.createLittleGraphics(parent, x, y, txt, color)
+  local grp = Tile.createGraphics(parent, x, y, txt)
+  grp:scale(0.5, 0.5)
+  if color then
+    grp[2]:setFillColor(unpack(color))
+  end
+  return grp
+end
+
 function Tile:depress()
   local dim = _G.DIMENSIONS
 

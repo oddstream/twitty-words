@@ -200,20 +200,11 @@ function scene:show(event)
       txt:setFillColor(0,0,0)
     end
 
-    local function _createTile(x, y, txt, selected)
-      local grp = Tile.createGraphics(sceneGroup, x, y, txt)
-      grp:scale(0.5, 0.5)
-      if selected then
-        grp[2]:setFillColor(unpack(const.COLORS.selected))
-      end
-      return grp
-    end
-
-    local function _showScoreAndWord(thisScore, thisWord, yPos, hilite)
-      _createTile(dim.halfQ, yPos, tostring(thisScore), hilite)
+    local function _showScoreAndWord(thisScore, thisWord, yPos, color)
+      Tile.createLittleGraphics(sceneGroup, dim.halfQ, yPos, tostring(thisScore), color)
       local x = dim.firstTileX + (dim.halfQ * 3)
       for j=1, string.len(thisWord) do
-        _createTile(x, yPos, string.sub(thisWord, j, j), hilite)
+        Tile.createLittleGraphics(sceneGroup, x, yPos, string.sub(thisWord, j, j), color)
         x = x + dim.halfQ
       end
     end
@@ -227,7 +218,11 @@ function scene:show(event)
     for i = 1, 20 do
       if scoresTable[i] then
         -- show the highest scoring word, which has been sorted (when inserted) to the front
-        _showScoreAndWord(scoresTable[i].score, scoresTable[i].words[1], y, scoresTable[i].score == score)
+        if scoresTable[i].score == score then
+          _showScoreAndWord(scoresTable[i].score, scoresTable[i].words[1], y, const.COLORS.selected)
+        else
+          _showScoreAndWord(scoresTable[i].score, scoresTable[i].words[1], y, const.COLORS.tile)
+        end
         y = y + dim.halfQ
       end
     end
@@ -237,7 +232,7 @@ function scene:show(event)
       if score < scoresTable[20].score then
         Util.sound('failure')
         y = y + dim.halfQ
-        _showScoreAndWord(score, words[1], y, true)
+        _showScoreAndWord(score, words[1], y, const.COLORS.selected)
       else
         Util.sound('complete')
       end

@@ -37,8 +37,7 @@ function scene:create(event)
 
     local x = dim.halfQ
     for i=1, string.len(s) do
-      local tileGroup = Tile.createGraphics(titleGroup, x, 0, string.sub(s, i, i))
-      tileGroup:scale(0.5, 0.5)
+      Tile.createLittleGraphics(titleGroup, x, 0, string.sub(s, i, i))
       x = x + dim.halfQ
     end
   end

@@ -79,20 +79,14 @@ function scene:create(event)
     txt:setFillColor(0,0,0)
   end
 
-  local function _createTile(x, y, txt)
-    local grp = Tile.createGraphics(sceneGroup, x, y, txt)
-    grp:scale(0.5, 0.5)
-    return grp
-  end
-
-  local function _displayRow(y, i, word)
+  local function _displayRow(y, i, word, color)
     local score = 0
     local xNumber = dim.firstTileX + dim.halfQ
     local xScore = dim.firstTileX + dim.halfQ
     local xLetter = dim.firstTileX + (dim.halfQ * 3)
 
     if type(_G.GAME_MODE) == 'number' then
-      _createTile(xNumber, y, tostring(i))
+      Tile.createLittleGraphics(sceneGroup, xNumber, y, tostring(i), color)
       xScore = xScore + dim.halfQ * 2
       xLetter = xLetter + dim.halfQ * 2
     end
@@ -100,11 +94,11 @@ function scene:create(event)
     for j=1, string.len(word) do
       local letter = string.sub(word, j, j)
       score = score + const.SCRABBLE_SCORES[letter]
-      _createTile(xLetter, y, letter)
+      Tile.createLittleGraphics(sceneGroup, xLetter, y, letter, color)
       xLetter = xLetter + dim.halfQ
     end
 
-    _createTile(xScore, y, tostring(score * string.len(word)))
+    Tile.createLittleGraphics(sceneGroup, xScore, y, tostring(score * string.len(word)), color)
   end
 
   -- don't need this if using a bitmap background
@@ -144,7 +138,7 @@ function scene:create(event)
   y = y + dim.Q
 
   for i,word in ipairs(_G.grid.humanFoundWords) do
-    _displayRow(y, i, word)
+    _displayRow(y, i, word, const.COLORS.selected)
     y = y + dim.halfQ
   end
 
@@ -153,7 +147,7 @@ function scene:create(event)
     _banner(y, 'WORDS ROBOTO FOUND')
     y = y + dim.Q
     for i,word in ipairs(_G.grid.robotFoundWords) do
-      _displayRow(y, i, word)
+      _displayRow(y, i, word, const.COLORS.roboto)
       y = y + dim.halfQ
     end
   end

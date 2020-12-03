@@ -105,8 +105,7 @@ function scene:create(event)
 
     local x = dim.halfQ
     for i=1, string.len(s) do
-      local tileGroup = Tile.createGraphics(titleGroup, x, 0, string.sub(s, i, i))
-      tileGroup:scale(0.5, 0.5)
+      Tile.createLittleGraphics(titleGroup, x, 0, string.sub(s, i, i))
       x = x + dim.halfQ
     end
   end
@@ -139,13 +138,6 @@ function scene:create(event)
     txt:setFillColor(0,0,0)
   end
 
-  local function _createTile(x, y, txt, color)
-    local grp = Tile.createGraphics(sceneGroup, x, y, txt)
-    grp:scale(0.5, 0.5)
-    grp[2]:setFillColor(unpack(color))
-    return grp
-  end
-
   local function _displayRow(y, word, color)
     local score = 0
 
@@ -155,11 +147,11 @@ function scene:create(event)
     for j=1, string.len(word) do
       local letter = string.sub(word, j, j)
       score = score + const.SCRABBLE_SCORES[letter]
-      _createTile(xLetter, y, letter, color)
+      Tile.createLittleGraphics(sceneGroup, xLetter, y, letter, color)
       xLetter = xLetter + dim.halfQ
     end
 
-    _createTile(xScore, y, tostring(score * string.len(word)), color)
+    Tile.createLittleGraphics(sceneGroup, xScore, y, tostring(score * string.len(word)), color)
   end
 
   local stats = loadStats()

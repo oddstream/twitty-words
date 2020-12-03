@@ -83,9 +83,7 @@ end
 
 function Util.sound(name)
   -- build for Win32 to test the sound, because playing sounds in the simulator crashes the sound driver
-  if system.getInfo('environment') == 'simulator' then
-    -- trace('SOUND', name)
-  else
+  if system.getInfo('environment') ~= 'simulator' then
     -- trace('SOUND', name, type(_G.TWITTY_SOUNDS[name]))
     local handle
     if type(_G.TWITTY_SOUNDS[name]) == 'table' then
