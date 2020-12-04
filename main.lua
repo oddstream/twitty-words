@@ -160,7 +160,7 @@ if not string.split then
   end
 end
 
-_G.DIMENSIONS = Dim.new()
+_G.DIMENSIONS = Dim.new(7,7)
 -- grid (of slots) has no graphical elements, and does not change size, so persists across all games
 _G.grid = Grid.new(_G.DIMENSIONS.numX, _G.DIMENSIONS.numY)
 _G.GAME_MODE = 'URGENT'  -- 'CASUAL' | 'URGENT' | 'ROBOTO' | <number>

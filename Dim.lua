@@ -5,15 +5,15 @@ Dim.__index = Dim  -- failed table lookups on the instances should fallback to t
 
 -- "At the beginning of the game, each player draws seven tiles from the bag and places them on their rack"
 
-function Dim.new()
+function Dim.new(width, height)
   local o = {}
   setmetatable(o, Dim)
 
   -- safeAreaInsets reports top=126, left=0, bottom=97, right=0 for iPhone X
   local topInset, leftInset, bottomInset, rightInset = display.getSafeAreaInsets()
 
-  o.numX = 7
-  o.numY = 7
+  o.numX = width
+  o.numY = height
 
   local xQ = math.floor(display.actualContentWidth/o.numX)
   local yQ = math.floor(display.actualContentHeight / (o.numY + 3)) -- add for statusbar, wordbar, toolbar

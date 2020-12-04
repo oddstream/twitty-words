@@ -235,6 +235,24 @@ function Util.resetDictionaries()
   _G.DICT_PREFIX_FALSE = {}
 end
 
+function Util.checkDictionaries()
+  -- check all words in hint dictionary are in main dictionary
+  local filePath = system.pathForFile('1000 words.txt', system.ResourceDirectory)
+  print('checking', filePath)
+  local count = 0
+  local timeStart = system.getTimer()
+  for line in io.lines(filePath) do
+    count = count + 1
+    if not Util.isWordInDictionary(line) then
+      print(string.format('WARNING: \"%s\" not in main dictionary', line))
+    end
+  end
+  local timeStop = system.getTimer()
+
+  print('finished, checking', count, 'words in', math.floor((timeStop - timeStart) / 1000), 'seconds')
+  -- checked 1324 words in 206 seconds (0.155 seconds/word to check main dictionary)
+end
+
 -- don't use this on a table that contains tables
 -- function Util.cloneTable(t)
 --   return json.decode( json.encode( t ) )

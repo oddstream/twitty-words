@@ -45,7 +45,7 @@ local function loadScores()
       'SCRUMPTIOUS',
       'CANOODLE',
       'PETRICHOR',
-      'NIMCOMPOOP',
+      'NINCOMPOOP',
       'MALARKEY',
       'ZOOMING',
       'ZOOMORPHISM',

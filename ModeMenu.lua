@@ -30,26 +30,25 @@ function scene:create(event)
 
   local function _titleRow(y, s)
     local titleGroup = display.newGroup()
-    -- the first tile is dim.quarterQ over to the right
-    titleGroup.x = display.contentCenterX - (string.len(s) * dim.quarterQ) - dim.quarterQ
+    titleGroup.x = display.contentCenterX - (string.len(s) * dim.halfQ)
     titleGroup.y = y
     sceneGroup:insert(titleGroup)
 
     local x = dim.halfQ
     for i=1, string.len(s) do
-      Tile.createLittleGraphics(titleGroup, x, 0, string.sub(s, i, i))
-      x = x + dim.halfQ
+      Tile.createGraphics(titleGroup, x, 0, string.sub(s, i, i))
+      x = x + dim.Q
     end
   end
 
   local function _tappyRow(y, s, mode)
     local tappyGroup = display.newGroup()
-    -- the first tile is dim.halfQ over to the right
-    tappyGroup.x = display.contentCenterX - (string.len(s) * dim.halfQ) - dim.halfQ
+    tappyGroup.x = display.contentCenterX - (string.len(s) * dim.halfQ)
     tappyGroup.y = y
     sceneGroup:insert(tappyGroup)
 
-    local x = dim.Q
+    -- the first tile is dim.halfQ over to the right
+    local x = dim.halfQ
     for i=1, string.len(s) do
       local tappy = Tappy.new(tappyGroup, x, 0, function()
         Util.sound('ui')
@@ -66,11 +65,7 @@ function scene:create(event)
 
   _titleRow(y, 'TWITTY')
 
-  y = y + dim.halfQ
-
-  _titleRow(y, ({'LITTLE', 'LYTTLE'})[math.random(1, 2)])
-
-  y = y + dim.halfQ
+  y = y + dim.Q
 
   _titleRow(y, ({'WORDES', 'SWORDS', 'WOORDS', 'VVORDS'})[math.random(1, 4)])
 
