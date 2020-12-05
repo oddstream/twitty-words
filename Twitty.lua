@@ -1,6 +1,7 @@
 -- Must.lua
 
-local const = require 'constants'
+-- local const = require 'constants'
+local globalData = require 'globalData'
 
 local Statusbar = require 'Statusbar'
 local Wordbar = require 'Wordbar'
@@ -55,19 +56,19 @@ function scene:create(event)
 
   trace('Twitty scene:create')
 
-  _G.TWITTY_GROUPS.grid = self.view -- TODO referenced by Tile
-
   Util.setBackground(self.view)
 
+  globalData.gridGroup = self.view
+
   -- create a separate group for UI objects, so they are always on top of grid
-  _G.TWITTY_GROUPS.ui = display.newGroup()
-  sceneGroup:insert(_G.TWITTY_GROUPS.ui)
+  globalData.uiGroup = display.newGroup()
+  sceneGroup:insert(globalData.uiGroup)
 
-  _G.statusbar = Statusbar.new()
-  _G.statusbar:setLeft('☰ ' .. _G.GAME_MODE)
+  globalData.statusbar = Statusbar.new()
+  globalData.statusbar:setLeft('☰ ' .. globalData.mode)
 
-  _G.wordbar = Wordbar.new()
-  _G.toolbar = Toolbar.new()
+  globalData.wordbar = Wordbar.new()
+  globalData.toolbar = Toolbar.new()
   -- scene remains in memory once created, ie it's only created once when app is run
 end
 
@@ -87,7 +88,7 @@ function scene:show(event)
     --   trace('ERROR: could not addEventListener system in scene:show')
     -- end
 
-    _G.grid:newGame()
+    globalData.grid:newGame()
 
   elseif phase == 'did' then
     -- Code here runs when the scene is entirely on screen
@@ -115,7 +116,7 @@ function scene:hide(event)
     -- end
   elseif phase == 'did' then
     -- Code here runs immediately after the scene goes entirely off screen
-    _G.grid:destroy()
+    globalData.grid:destroy()
     composer.removeScene('Twitty')
   --[[
     if profileThreshold > 0 then
@@ -143,11 +144,11 @@ function scene:key(event)
   if phase == 'up' then
     if event.keyName == 'back' or event.keyName == 'deleteBack' then
       Util.sound('ui')
-      _G.grid:cancelGame()
+      globalData.grid:cancelGame()
       composer.gotoScene('ModeMenu', {effect='slideRight'})
       return true -- override the key
     elseif event.keyName == 'h' then
-      _G.grid:hint()
+      globalData.grid:hint()
     elseif event.keyName == 'g' then
       do
         local before = collectgarbage('count')
@@ -156,9 +157,9 @@ function scene:key(event)
         print('collected', math.floor(before - after), 'KBytes, now using', math.floor(after), 'KBytes')
       end
     elseif event.keyName == 's' then
-      _G.grid:shuffle()
+      globalData.grid:shuffle()
     elseif event.keyName == 'u' then
-      _G.grid:undo()
+      globalData.grid:undo()
     elseif event.keyName == 'd' then
       -- trace('#_G.DICTIONARY_TRUE', #_G.DICTIONARY_TRUE)
       -- trace('#_G.DICTIONARY_FALSE', #_G.DICTIONARY_FALSE)
@@ -169,7 +170,7 @@ function scene:key(event)
       trace('#_G.DICT_PREFIX_TRUE', #_G.DICT_PREFIX_TRUE)
       trace('#_G.DICT_PREFIX_FALSE', #_G.DICT_PREFIX_FALSE)
     elseif event.keyName == 'w' then
-      _G.grid:showFoundWords()
+      globalData.grid:showFoundWords()
     end
   end
 end
@@ -179,9 +180,9 @@ function scene:system(event)
   -- print( "System event name and type: " .. event.name, event.type )
   if event.type == 'applicationExit' then
   elseif event.type == 'applicationSuspend' then
-    _G.grid:pauseCountdown()
+    globalData.grid:pauseCountdown()
   elseif event.type == 'applicationResume' then
-    _G.grid:resumeCountdown()
+    globalData.grid:resumeCountdown()
   end
 end
 ]]

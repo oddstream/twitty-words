@@ -1,5 +1,7 @@
 -- Toolbar.lua
 
+local globalData = require 'globalData'
+
 local Tappy = require 'Tappy'
 local Util = require 'Util'
 
@@ -32,25 +34,25 @@ function Toolbar.new()
   -- assert(self==Toolbar)
   setmetatable(o, Toolbar)
 
-  local dim = _G.DIMENSIONS
+  local dim = globalData.dim
 
-  -- o.rect = display.newRect(_G.TWITTY_GROUPS.ui, dim.toolbarX, dim.toolbarY, dim.toolbarWidth, dim.toolbarHeight)
+  -- o.rect = display.newRect(globalData.uiGroup, dim.toolbarX, dim.toolbarY, dim.toolbarWidth, dim.toolbarHeight)
   -- o.rect:setFillColor(unpack(const.COLORS.uibackground))
 
-  o.shuffle = Tappy.new(_G.TWITTY_GROUPS.ui, dim.halfQ, dim.toolbarY, function()
-    _G.grid:shuffle()
+  o.shuffle = Tappy.new(globalData.uiGroup, dim.halfQ, dim.toolbarY, function()
+    globalData.grid:shuffle()
   end, 'Sh', 'SHUFFLE') -- '🗘' doesn't display on phone, 🔀 doesn't display on Chromebook
 
-  o.hint = Tappy.new(_G.TWITTY_GROUPS.ui, dim.Q + dim.Q, dim.toolbarY, function()
-    _G.grid:hint()
+  o.hint = Tappy.new(globalData.uiGroup, dim.Q + dim.Q, dim.toolbarY, function()
+    globalData.grid:hint()
   end, 'Hi', 'HINT')  -- 💡
 
-  o.undo = Tappy.new(_G.TWITTY_GROUPS.ui, dim.toolbarX, dim.toolbarY, function()
-    _G.grid:undo()
+  o.undo = Tappy.new(globalData.uiGroup, dim.toolbarX, dim.toolbarY, function()
+    globalData.grid:undo()
   end, 'Un', 'UNDO') -- '⎌'
 
   if system.getInfo('environment') == 'simulator' then
-    o.robot = Tappy.new(_G.TWITTY_GROUPS.ui, display.actualContentWidth - dim.Q - dim.Q, dim.toolbarY, function()
+    o.robot = Tappy.new(globalData.uiGroup, display.actualContentWidth - dim.Q - dim.Q, dim.toolbarY, function()
       local al = Util.showAlert('DEBUG', 'Check dictionaries?', {'Yes','No','Maybe'},
         function(event)
           if 1 == event.index then
@@ -60,8 +62,8 @@ function Toolbar.new()
     end, ' 🐛 ', 'DEBUG')
   end
 
-  o.result = Tappy.new(_G.TWITTY_GROUPS.ui, display.actualContentWidth - dim.halfQ, dim.toolbarY, function()
-    _G.grid:showFoundWords()
+  o.result = Tappy.new(globalData.uiGroup, display.actualContentWidth - dim.halfQ, dim.toolbarY, function()
+    globalData.grid:showFoundWords()
   end, 'Wo', 'WORDS')  -- make ' ⚖ ' string longer to trick into scaling down glyph size
 
   return o

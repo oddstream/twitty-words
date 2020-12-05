@@ -1,5 +1,7 @@
 -- Wordbar.lua
 
+local globalData = require 'globalData'
+
 local Tile = require 'Tile'
 
 local Wordbar = {}
@@ -11,11 +13,11 @@ function Wordbar.new()
   -- assert(self==Wordbar)
   setmetatable(o, Wordbar)
 
-  -- o.rect = display.newRect(_G.TWITTY_GROUPS.ui, dim.toolbarX, dim.toolbarY, dim.toolbarWidth, dim.toolbarHeight)
+  -- o.rect = display.newRect(globalData.uiGroup, dim.toolbarX, dim.toolbarY, dim.toolbarWidth, dim.toolbarHeight)
   -- o.rect:setFillColor(unpack(const.COLORS.uibackground))
 
   o.center = display.newGroup()
-  _G.TWITTY_GROUPS.ui:insert(o.center)
+  globalData.uiGroup:insert(o.center)
 
   return o
 end
@@ -32,7 +34,7 @@ end
 function Wordbar:setCenter(s)
   -- self:set('center', s)
 
-  local dim = _G.DIMENSIONS
+  local dim = globalData.dim
 
   if not self.center then -- timed out, object deleted
     return

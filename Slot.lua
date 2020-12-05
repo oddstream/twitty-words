@@ -1,5 +1,7 @@
 -- Slot.lua
 
+local globalData = require 'globalData'
+
 local Tile = require 'Tile'
 
 local Slot = {
@@ -27,7 +29,7 @@ function Slot.new(grid, x, y)
 end
 
 function Slot:position()
-  local dim = _G.DIMENSIONS
+  local dim = globalData.dim
   -- calculate where the screen coords center point will be
   self.center = {x=(self.x * dim.Q) - dim.Q + dim.halfQ, y=(self.y * dim.Q) - dim.Q + dim.halfQ}
   self.center.x = self.center.x + dim.firstTileX
@@ -66,7 +68,7 @@ function Slot:select(x, y)
   if self.tile then
     -- only select this slot if event x/y is within radius of center
     -- otherwise diagonal drags select adjacent tiles
-    if pointInCircle(x, y, self.center.x, self.center.y, _G.DIMENSIONS.Q / 3.33) then
+    if pointInCircle(x, y, self.center.x, self.center.y, globalData.dim.Q / 3.33) then
       self.tile:select()
       self.grid:selectSlot(self)
     -- else

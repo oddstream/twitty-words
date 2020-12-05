@@ -8,6 +8,7 @@ local scene = composer.newScene()
 -- local widget = require('widget')
 
 local const = require 'constants'
+local globalData = require 'globalData'
 
 local Tappy = require 'Tappy'
 local Tile = require 'Tile'
@@ -56,7 +57,7 @@ end
 -- create()
 function scene:create(event)
 
-  local dim = _G.DIMENSIONS
+  local dim = globalData.dim
   local sceneGroup = self.view
   -- Code here runs when the scene is first created but has not yet appeared on screen
 
@@ -85,7 +86,7 @@ function scene:create(event)
     local xScore = dim.firstTileX + dim.halfQ
     local xLetter = dim.firstTileX + (dim.halfQ * 3)
 
-    if type(_G.GAME_MODE) == 'number' then
+    if type(globalData.mode) == 'number' then
       Tile.createLittleGraphics(sceneGroup, xNumber, y, tostring(i), color)
       xScore = xScore + dim.halfQ * 2
       xLetter = xLetter + dim.halfQ * 2
@@ -101,34 +102,9 @@ function scene:create(event)
     Tile.createLittleGraphics(sceneGroup, xScore, y, tostring(score * string.len(word)), color)
   end
 
-  -- don't need this if using a bitmap background
-  -- the background needs to be tall enough to display #_G.grid.words
-  -- local backHeight = (#_G.grid.words * dim.halfQ) + display.actualContentHeight
-  -- local rectBackground = display.newRect(sceneGroup, display.actualContentWidth / 2, display.actualContentHeight / 2, display.actualContentWidth, backHeight)
-  -- rectBackground:setFillColor(unpack(const.COLORS.baize))
 --[[
   local rect = display.newRect(sceneGroup, dim.toolbarX, dim.toolbarY, dim.toolbarWidth, dim.toolbarHeight)
   rect:setFillColor(unpack(const.COLORS.uibackground))
-]]
-
---[[
-  local backButton = widget.newButton({
-    x = dim.firstTileX + dim.halfQ,
-    y = dim.toolbarY,
-    onRelease = function()
-      Util.sound('ui')
-      composer.hideOverlay('slideLeft')
-      _G.grid:resumeCountdown()
-    end,
-    label = '< BACK',
-    labelColor = { default=const.COLORS.uiforeground, over=const.COLORS.uicontrol },
-    labelAlign = 'left',
-    font = const.FONTS.ACME,
-    fontSize = dim.toolbarHeight / 2,
-    textOnly = true,
-  })
-  backButton.anchorX = 0
-  sceneGroup:insert(backButton)
 ]]
 
   local y = dim.halfQ
@@ -137,16 +113,16 @@ function scene:create(event)
 
   y = y + dim.Q
 
-  for i,word in ipairs(_G.grid.humanFoundWords) do
+  for i,word in ipairs(globalData.grid.humanFoundWords) do
     _displayRow(y, i, word, const.COLORS.selected)
     y = y + dim.halfQ
   end
 
-  if _G.GAME_MODE == 'ROBOTO' then
+  if globalData.mode == 'ROBOTO' then
     y = y + dim.Q
     _banner(y, 'WORDS ROBOTO FOUND')
     y = y + dim.Q
-    for i,word in ipairs(_G.grid.robotFoundWords) do
+    for i,word in ipairs(globalData.grid.robotFoundWords) do
       _displayRow(y, i, word, const.COLORS.roboto)
       y = y + dim.halfQ
     end
@@ -158,15 +134,15 @@ function scene:create(event)
   local tappyBack = Tappy.new(toolbarGroup, dim.halfQ, dim.toolbarY, function()
     Util.sound('ui')
     composer.hideOverlay('slideLeft')
-    _G.grid:resumeCountdown()
+    globalData.grid:resumeCountdown()
     end, '<', 'BACK') -- '←'
 
   local tappyFinish = Tappy.new(toolbarGroup, display.actualContentWidth - dim.halfQ, dim.toolbarY, function()
     Util.sound('ui')
     composer.hideOverlay('slideLeft')
-    _G.grid:gameOver()
+    globalData.grid:gameOver()
     end, 'Fin', 'FINISH') -- '⯈' didn't appear on the phone, ' ⚖ '
-  -- tappyFinish:enable(_G.grid.humanCanFinish)
+  -- tappyFinish:enable(globalData.grid.humanCanFinish)
 
 end
 

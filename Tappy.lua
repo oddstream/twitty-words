@@ -1,6 +1,7 @@
 -- Tappy.lua
 
 local const = require 'constants'
+local globalData = require 'globalData'
 
 local Tile = require 'Tile'
 
@@ -28,7 +29,7 @@ function Tappy.new(group, x, y, cmd, label, description)
 end
 
 function Tappy:_createGraphics(parent, x, y, label, description)
-  local dim = _G.DIMENSIONS
+  local dim = globalData.dim
   local grp = Tile.createGraphics(parent, x, y, label)
 
 
@@ -57,7 +58,7 @@ function Tappy:_createGraphics(parent, x, y, label, description)
 end
 
 function Tappy:setLabel(label)
-  local dim = _G.DIMENSIONS
+  local dim = globalData.dim
 
   if self.grp and self.grp[3] and self.grp[3].text then  -- timer may have elapsed
     local item = self.grp[3]
@@ -92,7 +93,7 @@ end
 
 function Tappy:depress()
   -- this is the same as Tile:depress, with description
-  local dim = _G.DIMENSIONS
+  local dim = globalData.dim
 
   local rectShadow = self.grp[1]
   rectShadow.x = 0
@@ -115,7 +116,7 @@ end
 
 function Tappy:undepress()
   -- this is the same as Tile:undepress, with description
-  local dim = _G.DIMENSIONS
+  local dim = globalData.dim
 
   local rectShadow = self.grp[1]
   rectShadow.x = dim.offset3D

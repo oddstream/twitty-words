@@ -1,6 +1,7 @@
 -- Tile.lua
 
 local const = require 'constants'
+local globalData = require 'globalData'
 
 local Tile = {}
 Tile.__index = Tile
@@ -14,7 +15,7 @@ function Tile.new(slot, letter)
 
   o.letter = letter
 
-  o.grp = o.createGraphics(_G.TWITTY_GROUPS.grid, slot.center.x, slot.center.y, o.letter)
+  o.grp = o.createGraphics(globalData.gridGroup, slot.center.x, slot.center.y, o.letter)
 
   -- don't add event listers here, as tiles are also used for displaying found words and high scores
 
@@ -32,7 +33,7 @@ function Tile:removeTouchListener()
 end
 
 function Tile.createGraphics(parent, x, y, letter)
-  local dim = _G.DIMENSIONS
+  local dim = globalData.dim
 
   local grp = display.newGroup()
   grp.x = x
@@ -98,7 +99,7 @@ function Tile.createLittleGraphics(parent, x, y, txt, color)
 end
 
 function Tile:depress()
-  local dim = _G.DIMENSIONS
+  local dim = globalData.dim
 
   local rectShadow = self.grp[1]
   rectShadow.x = 0
@@ -112,7 +113,7 @@ function Tile:depress()
 end
 
 function Tile:undepress()
-  local dim = _G.DIMENSIONS
+  local dim = globalData.dim
 
   local rectShadow = self.grp[1]
   rectShadow.x = dim.offset3D
@@ -168,9 +169,16 @@ function Tile:touch(event)
   return true
 end
 
-function Tile:select()
+function Tile:select(who)
+  who = who or 'HUMAN'
+  if who == 'HUMAN' then
+    self.grp[2]:setFillColor(unpack(const.COLORS.selected))
+  elseif who == 'ROBOTO' then
+    self.grp[2]:setFillColor(unpack(const.COLORS.roboto))
+  else
+    self.grp[2]:setFillColor(unpack(const.COLORS.white))
+  end
   self.selected = true
-  self.grp[2]:setFillColor(unpack(_G.TWITTY_SELECTED_COLOR))
   self:depress()
 end
 
@@ -178,14 +186,6 @@ function Tile:deselect()
   self.selected = false
   self.grp[2]:setFillColor(unpack(const.COLORS.tile))
   self:undepress()
-end
-
-function Tile:mark()
-  self.grp[2]:setFillColor(unpack(_G.TWITTY_SELECTED_COLOR))
-end
-
-function Tile:unmark()
-  self.grp[2]:setFillColor(unpack(const.COLORS.tile))
 end
 
 function Tile:delete()
@@ -214,7 +214,7 @@ function Tile:settle()
 end
 
 function Tile:flyAway(n, wordLength)
-  local dim = _G.DIMENSIONS
+  local dim = globalData.dim
 
   self.grp:toFront()
 

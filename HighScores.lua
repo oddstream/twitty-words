@@ -9,6 +9,7 @@ local scene = composer.newScene()
 local json = require('json')
 
 local const = require 'constants'
+local globalData = require 'globalData'
 
 local Tappy = require 'Tappy'
 local Tile = require 'Tile'
@@ -16,7 +17,7 @@ local Util = require 'Util'
 
 local toolbarGroup
 
-local filePath = system.pathForFile(_G.GAME_MODE .. '_scores.json', system.DocumentsDirectory)
+local filePath = system.pathForFile(globalData.mode .. '_scores.json', system.DocumentsDirectory)
 -- win32 c:\Users\oddst\AppData\Roaming\Wychwood Paddocks\Must\Documents
 -- print(filePath)
 
@@ -153,7 +154,7 @@ end
 function scene:show(event)
   local sceneGroup = self.view
   local phase = event.phase
-  local dim = _G.DIMENSIONS
+  local dim = globalData.dim
 
   trace('HighScores scene:show', phase)
 

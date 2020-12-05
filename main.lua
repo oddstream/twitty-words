@@ -3,7 +3,8 @@
 local pprint = require 'pprint'
 local composer = require 'composer'
 
-local const = require 'constants'
+-- local const = require 'constants'
+local globalData = require 'globalData'
 
 local Dim = require 'Dim'
 local Grid = require 'Grid'
@@ -81,14 +82,7 @@ if nil == _G.BOLDFONT then  const.FONTS.ROBOTO_MEDIUM = native.systemFontBold en
 ]]
 
 -- a global object containing useful precalculated dimensions
-_G.DIMENSIONS = {}
-
-_G.TWITTY_SELECTED_COLOR = const.COLORS.selected
-
-_G.TWITTY_GROUPS = {
-  grid = nil,
-  ui = nil,
-}
+globalData.dim = {}
 
 if not _G.table.contains then
   function _G.table.contains(tab, val)
@@ -160,10 +154,10 @@ if not string.split then
   end
 end
 
-_G.DIMENSIONS = Dim.new(7,7)
+globalData.dim = Dim.new(7,7)
 -- grid (of slots) has no graphical elements, and does not change size, so persists across all games
-_G.grid = Grid.new(_G.DIMENSIONS.numX, _G.DIMENSIONS.numY)
-_G.GAME_MODE = 'URGENT'  -- 'CASUAL' | 'URGENT' | 'ROBOTO' | <number>
+globalData.grid = Grid.new(globalData.dim.numX, globalData.dim.numY)
+globalData.mode = 'URGENT'  -- 'CASUAL' | 'URGENT' | 'ROBOTO' | <number>
 
 -- for k,v in pairs( _G ) do
 --   print( k , v )

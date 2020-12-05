@@ -152,4 +152,26 @@ C.SOUNDS = {
   },
 }
 
-return C
+C.VARIANT = {
+  CASUAL = {
+  },
+  URGENT = {
+    width = 7,
+    height = 7,
+    timer = 60 * 4,
+  },
+  TWELVE = {
+    words = 12,
+  },
+  ROBOTO = {
+  },
+  PACKED = {
+    width = 10,
+    height = 10,
+  },
+}
+
+return setmetatable({}, {
+  __index = C,
+  __newindex = function() error("attempted to modify read only constants table") end,
+  __metatable = false })

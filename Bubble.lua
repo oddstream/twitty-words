@@ -1,13 +1,14 @@
 -- Bubble.lua
 
 local const = require 'constants'
+local globalData = require 'globalData'
 
 local Bubble = {}
 Bubble.__index = Bubble
 
 function Bubble.new(x, y, label)
 
-  local dim = _G.DIMENSIONS
+  local dim = globalData.dim
 
   local o = {}
   setmetatable(o, Bubble)
@@ -15,22 +16,29 @@ function Bubble.new(x, y, label)
   o.label = label
 
   o.grp = display.newGroup()
-  _G.TWITTY_GROUPS.grid:insert(o.grp)
+  globalData.gridGroup:insert(o.grp)
   o.grp.x, o.grp.y = x, y
 
   o.circle = display.newCircle(o.grp, 0, 0,dim.quarterQ)
-  o.circle:setFillColor(unpack(_G.TWITTY_SELECTED_COLOR))
+  o.circle:setFillColor(unpack(const.COLORS.tile))
 
-  o.label = display.newText({
+  local fontSize
+  if string.len(o.label) > 3 then -- eg '+100'
+    fontSize = dim.Q / 5
+  else
+    fontSize = dim.Q / 4
+  end
+
+  o.text = display.newText({
     parent = o.grp,
     text = o.label,
     x = 0,
     y = 0,
     font = const.FONTS.ACME,
-    fontSize = dim.quarterQ,
+    fontSize = fontSize,
     align = 'center',
   })
-  o.label:setFillColor(0,0,0)
+  o.text:setFillColor(0,0,0)
 
   return o
 

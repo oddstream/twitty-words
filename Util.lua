@@ -3,6 +3,7 @@
 local widget = require 'widget'
 
 local const = require 'constants'
+local globalData = require 'globalData'
 
 local Util = {}
 Util.__index = Util
@@ -63,7 +64,7 @@ function Util.randomDirections()
   local x = (display.actualContentWidth / 2) + (display.actualContentWidth) * math.sin(radians)
   local y = (display.actualContentHeight / 2) + (display.actualContentHeight) * math.cos(radians)
 
-  local Q = _G.DIMENSIONS.Q
+  local Q = globalData.dim.Q
 
   local xMax = display.actualContentWidth + Q
   local xMin = -xMax
@@ -84,12 +85,12 @@ end
 function Util.sound(name)
   -- build for Win32 to test the sound, because playing sounds in the simulator crashes the sound driver
   if system.getInfo('environment') ~= 'simulator' then
-    -- trace('SOUND', name, type(_G.TWITTY_SOUNDS[name]))
+    -- trace('SOUND', name, type(const.SOUNDS[name]))
     local handle
-    if type(_G.TWITTY_SOUNDS[name]) == 'table' then
-      handle = _G.TWITTY_SOUNDS[name][math.random(1, #_G.TWITTY_SOUNDS[name])]
-    elseif type(_G.TWITTY_SOUNDS[name]) == 'userdata' then
-      handle = _G.TWITTY_SOUNDS[name]
+    if type(const.SOUNDS[name]) == 'table' then
+      handle = const.SOUNDS[name][math.random(1, #const.SOUNDS[name])]
+    elseif type(const.SOUNDS[name]) == 'userdata' then
+      handle = const.SOUNDS[name]
     end
     if handle then
       audio.play(handle)
@@ -100,20 +101,20 @@ end
 function Util.isWordInDictionary(word)
   -- no point using a cache if only used to check words user has selected
 --[[
-  if table.contains(_G.DICTIONARY_TRUE, word) then return true end
-  if table.contains(_G.DICTIONARY_FALSE, word) then return false end
+  if table.contains(globalData.DICTIONARY_TRUE, word) then return true end
+  if table.contains(globalData.DICTIONARY_FALSE, word) then return false end
 ]]
   local word2 = string.gsub(word, ' ', '%%u')
-  local first,last = string.find(_G.DICTIONARY, '[^%u]' .. word2 .. '[^%u]')
+  local first,last = string.find(globalData.DICTIONARY, '[^%u]' .. word2 .. '[^%u]')
   -- if first then
-  --   trace('found', string.sub(_G.DICTIONARY, first+1, last-1))
+  --   trace('found', string.sub(globalData.DICTIONARY, first+1, last-1))
   -- end
 --[[
   if first then
-    table.insert(_G.DICTIONARY_TRUE, word)
+    table.insert(globalData.DICTIONARY_TRUE, word)
     -- trace(word, '> FOUND CACHE')
   else
-    table.insert(_G.DICTIONARY_FALSE, word)
+    table.insert(globalData.DICTIONARY_FALSE, word)
     -- trace(word, '> NOT FOUND CACHE')
   end
 ]]
@@ -123,33 +124,35 @@ end
 
 function Util.isWordInDict(word)
 
-  if table.contains(_G.DICT_TRUE, word) then return true end
-  -- if _G.DICT_TRUE[word] then return true end
+  if table.contains(globalData.DICT_TRUE, word) then return true end
+  -- if globalData.DICT_TRUE[word] then return true end
 
-  if table.contains(_G.DICT_FALSE, word) then return false end
-  -- if _G.DICT_FALSE[word] then return false end
+  -- if table.contains(globalData.ROBOTODICTIONARY, word) then return true end
+
+  if table.contains(globalData.DICT_FALSE, word) then return false end
+  -- if globalData.DICT_FALSE[word] then return false end
 
   local word2 = string.gsub(word, ' ', '%%u')
 
   local first, last
   local initialLetter = string.sub(word,1,1)
   if initialLetter == ' ' then
-    first,last = string.find(_G.DICT, '[^%u]' .. word2 .. '[^%u]')
+    first,last = string.find(globalData.DICT, '[^%u]' .. word2 .. '[^%u]')
   else
-    assert(_G.DICTIDX[initialLetter], '<' .. initialLetter .. '>')
-    first,last = string.find(_G.DICTIDX[initialLetter], '[^%u]' .. word2 .. '[^%u]')
+    assert(globalData.DICTIDX[initialLetter], '<' .. initialLetter .. '>')
+    first,last = string.find(globalData.DICTIDX[initialLetter], '[^%u]' .. word2 .. '[^%u]')
   end
 
   -- if first then
-  --   trace('found', string.sub(_G.DICT, first+1, last-1))
+  --   trace('found', string.sub(globalData.DICT, first+1, last-1))
   -- end
   if first then
-    table.insert(_G.DICT_TRUE, word)
-    -- _G.DICT_TRUE[word] = true
+    table.insert(globalData.DICT_TRUE, word)
+    -- globalData.DICT_TRUE[word] = true
     -- trace(word, '> FOUND IN CACHE')
   else
-    -- _G.DICT_FALSE[word] = true
-    table.insert(_G.DICT_FALSE, word)
+    -- globalData.DICT_FALSE[word] = true
+    table.insert(globalData.DICT_FALSE, word)
     -- trace(word, '> NOT FOUND IN CACHE')
   end
 
@@ -161,21 +164,21 @@ end
 --[[
 function Util.isWordPrefixInDictionary(word)
 
-  -- if table.contains(_G.DICTIONARY_TRUE, word) then return true end
-  -- if table.contains(_G.DICTIONARY_PREFIX_TRUE, word) then return true end
-  -- if table.contains(_G.DICTIONARY_PREFIX_FALSE, word) then return false end
+  -- if table.contains(globalDaglobalData.DICTIONARY_TRUE, word) then return true end
+  -- if table.contains(globalDaglobalData.DICTIONARY_PREFIX_TRUE, word) then return true end
+  -- if table.contains(globalDaglobalData.DICTIONARY_PREFIX_FALSE, word) then return false end
 
   local word2 = string.gsub(word, ' ', '%%u')
-  local first,last = string.find(_G.DICTIONARY, '[^%u]' .. word2)
+  local first,last = string.find(globalDaglobalData.DICTIONARY, '[^%u]' .. word2)
   -- if first then
-  --   trace('found', string.sub(_G.DICT, first+1, last-1))
+  --   trace('found', string.sub(globalDaglobalData.DICT, first+1, last-1))
   -- end
 
   if first then
-    table.insert(_G.DICTIONARY_PREFIX_TRUE, word)
+    table.insert(globalDaglobalData.DICTIONARY_PREFIX_TRUE, word)
     -- trace(word, '> FOUND IN PREFIX DICTIONARY')
   else
-    table.insert(_G.DICTIONARY_PREFIX_FALSE, word)
+    table.insert(globalDaglobalData.DICTIONARY_PREFIX_FALSE, word)
     -- trace(word, '> NOT FOUND IN PREFIX DICTIONARY')
   end
 
@@ -192,35 +195,37 @@ end
 
 function Util.isWordPrefixInDict(word)
 
-  if table.contains(_G.DICT_TRUE, word) then return true end
-  -- if _G.DICT_TRUE[word] then return true end
+  if table.contains(globalData.DICT_TRUE, word) then return true end
+  -- if globalData.DICT_TRUE[word] then return true end
 
-  if table.contains(_G.DICT_PREFIX_TRUE, word) then return true end
-  -- if _G.DICT_PREFIX_TRUE[word] then return true end
+  -- if table.contains(globalData.ROBOTODICTIONARY, word) then return true end
 
-  if table.contains(_G.DICT_PREFIX_FALSE, word) then return false end
-  -- if _G.DICT_PREFIX_FALSE[word] then return false end
+  if table.contains(globalData.DICT_PREFIX_TRUE, word) then return true end
+  -- if globalData.DICT_PREFIX_TRUE[word] then return true end
+
+  if table.contains(globalData.DICT_PREFIX_FALSE, word) then return false end
+  -- if globalData.DICT_PREFIX_FALSE[word] then return false end
 
   local initialLetter = string.sub(word,1,1)
   local word2 = string.gsub(word, ' ', '%%u')
   local first,last
   if initialLetter == ' ' then
-    first, last = string.find(_G.DICT, '[^%u]' .. word2)
+    first, last = string.find(globalData.DICT, '[^%u]' .. word2)
   else
-    first, last = string.find(_G.DICTIDX[initialLetter], '[^%u]' .. word2)
+    first, last = string.find(globalData.DICTIDX[initialLetter], '[^%u]' .. word2)
   end
 
   -- if first then
-  --   trace('found', string.sub(_G.DICT, first+1, last-1))
+  --   trace('found', string.sub(globalData.DICT, first+1, last-1))
   -- end
 
   if first then
-    table.insert(_G.DICT_PREFIX_TRUE, word)
-    -- _G.DICT_PREFIX_TRUE[word] = true
+    table.insert(globalData.DICT_PREFIX_TRUE, word)
+    -- globalData.DICT_PREFIX_TRUE[word] = true
     -- trace(word, '> FOUND IN PREFIX CACHE')
   else
-    table.insert(_G.DICT_PREFIX_FALSE, word)
-    -- _G.DICT_PREFIX_FALSE[word] = true
+    table.insert(globalData.DICT_PREFIX_FALSE, word)
+    -- globalData.DICT_PREFIX_FALSE[word] = true
     -- trace(word, '> NOT FOUND IN PREFIX CACHE')
   end
 
@@ -229,10 +234,10 @@ function Util.isWordPrefixInDict(word)
 end
 
 function Util.resetDictionaries()
-  _G.DICT_TRUE = {}
-  _G.DICT_FALSE = {}
-  _G.DICT_PREFIX_TRUE = {}
-  _G.DICT_PREFIX_FALSE = {}
+  globalData.DICT_TRUE = {}
+  globalData.DICT_FALSE = {}
+  globalData.DICT_PREFIX_TRUE = {}
+  globalData.DICT_PREFIX_FALSE = {}
 end
 
 function Util.checkDictionaries()
@@ -260,12 +265,12 @@ end
 
 function Util.showAlert(title, message, buttonLabels, listener)
 
-  local dim = _G.DIMENSIONS
+  local dim = globalData.dim
 
   buttonLabels = buttonLabels or {'OK'}
 
   local grp = display.newGroup()
-  _G.TWITTY_GROUPS.grid:insert(grp)
+  globalData.gridGroup:insert(grp)
   grp.x, grp.y = display.contentCenterX, display.contentCenterY
 
   -- rip from function Tile.createGraphics()
@@ -310,8 +315,8 @@ function Util.showAlert(title, message, buttonLabels, listener)
       x = x,
       y = height/2 - (buttonFontSize/2),
       onRelease = function()
-        _G.grid:resumeTouch()
-        _G.toolbar:resumeTouch()
+        globalData.grid:resumeTouch()
+        globalData.toolbar:resumeTouch()
         -- display.getCurrentStage():setFocus(nil)
         if listener then
           if type(listener) == 'function' then listener({action='clicked', index=i})
@@ -335,8 +340,8 @@ function Util.showAlert(title, message, buttonLabels, listener)
 
   -- https://docs.coronalabs.com/api/type/EventDispatcher/dispatchEvent.html
 
-  _G.grid:suspendTouch()
-  _G.toolbar:suspendTouch()
+  globalData.grid:suspendTouch()
+  globalData.toolbar:suspendTouch()
   -- display.getCurrentStage():setFocus(grp)
 
   return grp

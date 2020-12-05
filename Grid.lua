@@ -3,6 +3,7 @@
 local composer = require('composer')
 
 local const = require 'constants'
+local globalData = require 'globalData'
 
 local Bubble = require 'Bubble'
 local Slot = require 'Slot'
@@ -95,7 +96,7 @@ function Grid:timer(event)
     end
   end
 
-  _G.statusbar:setRight(string.format('%u:%02u',
+  globalData.statusbar:setRight(string.format('%u:%02u',
     math.floor(self.secondsLeft / 60),
     math.floor(self.secondsLeft % 60)))
 
@@ -139,13 +140,13 @@ function Grid:gameOver()
   self:cancelCountdown()
 
   local deductions = 0
-  if type(_G.GAME_MODE) ~= 'number' then
+  if type(globalData.mode) ~= 'number' then
     deductions = self:calcResidualScore()
   end
 
   self:deleteTiles()
 
-  if _G.GAME_MODE == 'ROBOTO' then
+  if globalData.mode == 'ROBOTO' then
     composer.gotoScene('RobotEnd', { effect='slideLeft', params={humanScore=self.humanScore, humanFoundWords=self.humanFoundWords, robotScore=self.robotScore, robotFoundWords=self.robotFoundWords} })
   else
     composer.gotoScene('HighScores', { effect='slideLeft', params={score=self.humanScore - deductions, words=self.humanFoundWords} })
@@ -185,7 +186,7 @@ function Grid:newGame()
     self.countdownTimer = nil
   end
 
-  if _G.GAME_MODE == 'URGENT' then
+  if globalData.mode == 'URGENT' then
     self.secondsLeft = 60 * 4
   else
     self.secondsLeft = 0
@@ -196,7 +197,7 @@ function Grid:newGame()
 
   Util.resetDictionaries()
 
-  _G.toolbar:enable('shuffle', true)
+  globalData.toolbar:enable('shuffle', true)
 
   -- update ui
   Util.sound('found') -- make a happy sound
@@ -225,13 +226,13 @@ function Grid:afterMove(word)
       {'OK'},
       function() self:gameOver() end)
 
-  elseif type(_G.GAME_MODE) == 'number' and #self.humanFoundWords == _G.GAME_MODE then
+  elseif type(globalData.mode) == 'number' and #self.humanFoundWords == globalData.mode then
 
     Util.showAlert('GAME OVER', 'You found ' .. tostring(#self.humanFoundWords) .. ' words',
       {'OK'},
       function() self:gameOver() end)
 
-  elseif _G.GAME_MODE == 'ROBOTO' then
+  elseif globalData.mode == 'ROBOTO' then
 
     -- if #self.letterPool == 0 then
     --   self:fillLetterPool()
@@ -260,17 +261,17 @@ function Grid:updateUI(word)
     return count
   end
 
-  if _G.GAME_MODE == 'ROBOTO' then
-    _G.statusbar:setCenter(string.format('%d : %d', self.humanScore, self.robotScore))  -- or '%+d'
+  if globalData.mode == 'ROBOTO' then
+    globalData.statusbar:setCenter(string.format('%d : %d', self.humanScore, self.robotScore))  -- or '%+d'
   else
-    _G.statusbar:setCenter(string.format('SCORE %d', self.humanScore))  -- or '%+d'
+    globalData.statusbar:setCenter(string.format('SCORE %d', self.humanScore))  -- or '%+d'
   end
 
-  if _G.GAME_MODE == 'CASUAL' then
+  if globalData.mode == 'CASUAL' then
     --string.len(_G.SCRABBLE_LETTERS) == 100, so ...
-    _G.statusbar:setRight(string.format('%u%%', _countFoundLetters()))
-  elseif type(_G.GAME_MODE) == 'number' then
-    _G.statusbar:setRight(string.format('%u of %u', #self.humanFoundWords, _G.GAME_MODE))
+    globalData.statusbar:setRight(string.format('%u%%', _countFoundLetters()))
+  elseif type(globalData.mode) == 'number' then
+    globalData.statusbar:setRight(string.format('%u of %u', #self.humanFoundWords, globalData.mode))
     -- time remaining is set directly from Grid:timer()
     -- nothing is currently set in ROBOTO mode
   end
@@ -279,11 +280,11 @@ function Grid:updateUI(word)
     word, _ = self:getSelectedWord()
   end
 
-  _G.wordbar:setCenter(word)
+  globalData.wordbar:setCenter(word)
 
-  _G.toolbar:enable('hint', self.hints > 0)
-  _G.toolbar:enable('undo', #self.undoStack > 0)
-  _G.toolbar:enable('result', #self.humanFoundWords > 0)
+  globalData.toolbar:enable('hint', self.hints > 0)
+  globalData.toolbar:enable('undo', #self.undoStack > 0)
+  globalData.toolbar:enable('result', #self.humanFoundWords > 0)
 
 end
 
@@ -470,7 +471,7 @@ function Grid:selectSlot(slot)
     end
 
     if #self.selectedSlots > 2 then
-      local dim = _G.DIMENSIONS
+      local dim = globalData.dim
       local _, score = self:getSelectedWord()
       local src = self.selectedSlots[#self.selectedSlots]
       local b = Bubble.new(src.center.x, src.center.y - dim.halfQ, string.format('%+d', score))
@@ -484,7 +485,7 @@ end
 
 function Grid:testSelection()
 
-  local dim = _G.DIMENSIONS
+  local dim = globalData.dim
 
   if #self.selectedSlots == 2 then
 
@@ -541,7 +542,7 @@ function Grid:testSelection()
       end
 
       -- the human had their move, now ...
-      if _G.GAME_MODE == 'ROBOTO' then
+      if globalData.mode == 'ROBOTO' then
         self:updateUI(word)
         timer.performWithDelay(2000, function()
           self:robot()
@@ -550,7 +551,7 @@ function Grid:testSelection()
         self:afterMove(word)  -- update UI and check end of game
       end
 
-      _G.toolbar:enable('shuffle', true)
+      globalData.toolbar:enable('shuffle', true)
 
     else  -- word not in dictionary
 
@@ -659,7 +660,7 @@ function Grid:slideColumn(col, dir)
 end
 
 function Grid:compactColumns()
-  local dim = _G.DIMENSIONS
+  local dim = globalData.dim
 
   local function _isColumnEmpty(col)
     local slot = self:findSlot(col, 1)
@@ -793,7 +794,7 @@ function Grid:shuffle()
 
   self:updateUI()  --- not really a move, was it?
 
-  _G.toolbar:enable('shuffle', false)
+  globalData.toolbar:enable('shuffle', false)
 
 end
 
@@ -867,7 +868,7 @@ end
 
 function Grid:hint(who)
 
-  who = who or 'human'
+  who = who or 'HUMAN'
 
   local function _calcScore(s)
     local score = 0
@@ -890,7 +891,7 @@ function Grid:hint(who)
     return maxWord, maxScore
   end
 
-  if who == 'human' and self.hints < 1 then
+  if who == 'HUMAN' and self.hints < 1 then
     -- shouldn't happen because hints tappy will be disabled
     Util.sound('failure')
     return
@@ -903,7 +904,7 @@ function Grid:hint(who)
     for _,slot in ipairs(self.slots) do
       if slot.tile and slot.tile.letter ~= ' ' then
         Util.sound('select')
-        slot.tile:mark()
+        slot.tile:select(who)
 
         coroutine.yield() -- yield to the timer, so UI can update; adds about 1.5 seconds
 
@@ -914,9 +915,9 @@ function Grid:hint(who)
 
         -- showing the word as we go adds 3 seconds
         -- local maxWord, _ = _maxWord()
-        -- _G.wordbar:setCenter(maxWord)
+        -- globalData.wordbar:setCenter(maxWord)
 
-          slot.tile:unmark()
+          slot.tile:deselect()
         end
 
         -- second call to coroutine.yield adds 2-ish seconds
@@ -928,7 +929,7 @@ function Grid:hint(who)
     local timeStop = system.getTimer()
 
     -- don't allow the (sneaky) human to finish (when they are ahead)
-    -- if _G.GAME_MODE == 'ROBOTO' and who == 'robot' then
+    -- if globalData.mode == 'ROBOTO' and who == 'ROBOTO' then
     --   self.humanCanFinish = #self.hintWords == 0
     -- else
     --   self.humanCanFinish = true
@@ -954,7 +955,7 @@ function Grid:hint(who)
       end
 
       -- do
-      --   local dim = _G.DIMENSIONS
+      --   local dim = globalData.dim
       --   local src = path[#path]
       --   local b = Bubble.new(src.center.x, src.center.y - dim.halfQ, string.format('%+d', maxScore))
       --   b:fadeOut()
@@ -964,15 +965,15 @@ function Grid:hint(who)
 
       self.selectedSlots = table.clone(path)
 
-      if who == 'robot' then
+      if who == 'ROBOTO' then
         self:_postRobot(maxWord, maxScore)
         -- the game can end after robot's move (no human's move)
         self:afterMove(maxWord) -- update UI and check for end of game
       else
-        -- local dim = _G.DIMENSIONS
+        -- local dim = globalData.dim
         -- local tax = math.floor(self.humanScore * 0.1)
         -- if tax > 0 then
-        --   local b = Bubble.new(_G.toolbar.hint.grp.x, _G.toolbar.hint.grp.y, string.format('%+d', -tax))
+        --   local b = Bubble.new(globalData.toolbar.hint.grp.x, globalData.toolbar.hint.grp.y, string.format('%+d', -tax))
         --   b:flyTo(dim.statusbarX, dim.statusbarY)
         --   self.humanScore = self.humanScore - tax
         -- end
@@ -1001,11 +1002,9 @@ end
 
 function Grid:robot()
 
-  assert(_G.GAME_MODE == 'ROBOTO')
+  assert(globalData.mode == 'ROBOTO')
 
-  _G.TWITTY_SELECTED_COLOR = const.COLORS.roboto
-
-  self:hint('robot')  -- this ends in it's own time ...
+  self:hint('ROBOTO')  -- this ends in it's own time ...
   -- ... so don't put any code here
 end
 
@@ -1019,7 +1018,7 @@ function Grid:flyAwaySelectedSlots(score)
   end
 
   do
-    local dim = _G.DIMENSIONS
+    local dim = globalData.dim
     local src = self.selectedSlots[#self.selectedSlots]
     local b = Bubble.new(src.center.x, src.center.y, string.format('%+d', score))
     b:flyTo(dim.statusbarX, dim.statusbarY)
@@ -1047,8 +1046,6 @@ function Grid:_postRobot(word, score)
   if #self.letterPool > 0 then
     self:addTiles()
   end
-
-  _G.TWITTY_SELECTED_COLOR = const.COLORS.selected
 
 end
 

@@ -6,6 +6,7 @@ local scene = composer.newScene()
 local json = require 'json'
 
 local const = require 'constants'
+local globalData = require 'globalData'
 
 local Tappy = require 'Tappy'
 local Tile = require 'Tile'
@@ -16,7 +17,7 @@ local Util = require 'Util'
 -- the scene is removed entirely (not recycled) via 'composer.removeScene()'
 -- -----------------------------------------------------------------------------------
 
-local filePath = system.pathForFile('RobotStats.json', system.DocumentsDirectory)
+local filePath = system.pathForFile('ROBOTO_stats.json', system.DocumentsDirectory)
 
 local function loadStats()
   local stats
@@ -90,7 +91,7 @@ end
 -- create()
 function scene:create(event)
 
-  local dim = _G.DIMENSIONS
+  local dim = globalData.dim
   local sceneGroup = self.view
   -- Code here runs when the scene is first created but has not yet appeared on screen
 
@@ -205,21 +206,21 @@ function scene:create(event)
 
   y = y + dim.Q
 
-  _text(y, string.format('Games won: %u', stats.gamesWon))
+  _text(y, string.format('GAMES WON: %u', stats.gamesWon))
   y = y + dim.quarterQ
-  _text(y, string.format('Games lost: %u', stats.gamesLost))
+  _text(y, string.format('GAMES LOST: %u', stats.gamesLost))
   y = y + dim.halfQ
 
-  _text(y, string.format('Best score: %u', stats.bestScore))
+  _text(y, string.format('BEST SCORE: %u', stats.bestScore))
   y = y + dim.quarterQ
-  _text(y, string.format('Worst score: %u', stats.worstScore))
+  _text(y, string.format('WORST SCORE: %u', stats.worstScore))
   y = y + dim.halfQ
 
-  _text(y, string.format('Current streak: %d', stats.currStreak))
+  _text(y, string.format('CURRENT STREAK: %d', stats.currStreak))
   y = y + dim.quarterQ
-  _text(y, string.format('Best streak: %d', stats.bestStreak))
+  _text(y, string.format('BEST STREAK: %d', stats.bestStreak))
   y = y + dim.quarterQ
-  _text(y, string.format('Worst streak: %d', stats.worstStreak))
+  _text(y, string.format('WORST STREAK: %d', stats.worstStreak))
   y = y + dim.quarterQ
 
   saveStats(stats)
@@ -251,9 +252,25 @@ function scene:create(event)
     Util.sound('ui')
     composer.gotoScene('Twitty', {effect='slideRight'})
   end, 'Ne', 'NEW') -- '★'
-
+--[[
+  for _,word in ipairs(event.params.humanFoundWords) do
+    -- TODO would be cleaner to add these to hint dict text file?
+    if not table.contains(_G.ROBOTODICTIONARY, word) and not Util.isWordInDict(word) then
+      table.insert(_G.ROBOTODICTIONARY, word)
+      trace('Adding', word, 'to ROBOTO\'s private dictionary')
+    end
+  end
+  do
+    local file, msg = io.open(system.pathForFile('ROBOTO_dict.json', system.DocumentsDirectory), 'w')
+    if file then
+      file:write(json.encode(_G.ROBOTODICTIONARY))
+      io.close(file)
+    else
+      trace('cannot open ROBOTO_dict.json', msg)
+    end
+  end
+]]
 end
-
 
 -- show()
 function scene:show(event)

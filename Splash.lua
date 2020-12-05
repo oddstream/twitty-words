@@ -1,7 +1,10 @@
 -- Splash.lua
 
+-- local json = require 'json'
 local composer = require('composer')
 local scene = composer.newScene()
+
+local globalData = require 'globalData'
 
 local Util = require 'Util'
 
@@ -28,9 +31,9 @@ local function loadDictionaries()
     trace('ERROR: Cannot open', filePath, msg)
   else
     trace('opened', filePath)
-    _G.DICTIONARY = file:read('*a')
+    globalData.DICTIONARY = file:read('*a')
     io.close(file)
-    trace('dictionary length', string.len(_G.DICTIONARY))
+    trace('dictionary length', string.len(globalData.DICTIONARY))
   end
 
 --[[
@@ -38,7 +41,7 @@ local function loadDictionaries()
 
   for i=1, 26 do
     local letter = A2Z:sub(i,i)
-    local first, last = string.find(_G.DICTIONARY, '\n' .. letter)
+    local first, last = string.find(globalData.DICTIONARY, '\n' .. letter)
     assert(first, letter) -- no words beginning with letter
     index[letter] = first
   end
@@ -47,13 +50,13 @@ local function loadDictionaries()
   --   trace(key, value)
   -- end
 
-  _G.DICTIONARYIDX = {}
+  globalData.DICTIONARYIDX = {}
   for i=1, 25 do
     local letter = A2Z:sub(i,i)
     local nextLetter = A2Z:sub(i+1,i+1)
-    _G.DICTIONARYIDX[letter] = string.sub(_G.DICTIONARY, index[letter], index[nextLetter])
+    globalData.DICTIONARYIDX[letter] = string.sub(globalData.DICTIONARY, index[letter], index[nextLetter])
   end
-  _G.DICTIONARYIDX['Z'] = string.sub(_G.DICTIONARY, index['Z'])
+  globalData.DICTIONARYIDX['Z'] = string.sub(globalData.DICTIONARY, index['Z'])
 ]]
 
   -- https://raw.githubusercontent.com/sapbmw/The-Oxford-3000/master/The_Oxford_3000.txt
@@ -64,9 +67,9 @@ local function loadDictionaries()
     trace('ERROR: Cannot open', filePath, msg)
   else
     trace('opened', filePath)
-    _G.DICT = file:read('*a')
+    globalData.DICT = file:read('*a')
     io.close(file)
-    trace('dict length', string.len(_G.DICT))
+    trace('dict length', string.len(globalData.DICT))
   end
 
   -- double the speed of searching the hint dictionary by slicing it up into 26 sub dictionaries
@@ -74,7 +77,7 @@ local function loadDictionaries()
 
   for i=1, 26 do
     local letter = A2Z:sub(i,i)
-    local first, last = string.find(_G.DICT, '\n' .. letter)
+    local first, last = string.find(globalData.DICT, '\n' .. letter)
     assert(first, letter) -- no words beginning with letter
     index[letter] = first
   end
@@ -83,30 +86,40 @@ local function loadDictionaries()
   --   trace(key, value)
   -- end
 
-  _G.DICTIDX = {}
+  globalData.DICTIDX = {}
   for i=1, 25 do
     local letter = A2Z:sub(i,i)
     local nextLetter = A2Z:sub(i+1,i+1)
-    _G.DICTIDX[letter] = string.sub(_G.DICT, index[letter], index[nextLetter])
+    globalData.DICTIDX[letter] = string.sub(globalData.DICT, index[letter], index[nextLetter])
   end
-  _G.DICTIDX['Z'] = string.sub(_G.DICT, index['Z'])
+  globalData.DICTIDX['Z'] = string.sub(globalData.DICT, index['Z'])
 
   -- trace('------')
-  -- trace(_G.DICTIDX['A'])
+  -- trace(globalData.DICTIDX['A'])
   -- trace('------')
-  -- trace(_G.DICTIDX['Z'])
+  -- trace(globalData.DICTIDX['Z'])
   -- trace('------')
 
 --[[
   -- cannot search a table for a wildcard, so cannot do this
-  _G.HINTWORDSTABLE = {}
+  globalData.HINTWORDSTABLE = {}
   for line in io.lines(filePath) do
     if string.len(line) > 2 then
-      table.insert(_G.HINTWORDSTABLE, line)
+      table.insert(globalData.HINTWORDSTABLE, line)
     end
   end
 ]]
-
+--[[
+  filePath = system.pathForFile('ROBOTO_dict.json', system.DocumentsDirectory)
+  file = io.open(filePath, 'r')
+  if file then
+    local contents = file:read('*a')
+    io.close(file)
+    globalData.ROBOTODICTIONARY = json.decode(contents)
+  else
+    globalData.ROBOTODICTIONARY = {'ANTEATERS','BADGERS','COWS','DORMICE','EARWIGS','FOXES','GERBILS','HAMSTERS'}
+  end
+]]
 end
 
 local function gotoDestination(event)

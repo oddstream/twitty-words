@@ -5,6 +5,7 @@ local composer = require('composer')
 local scene = composer.newScene()
 
 local const = require 'constants'
+local globalData = require 'globalData'
 
 local Tappy = require 'Tappy'
 local Tile = require 'Tile'
@@ -24,7 +25,7 @@ function scene:create(event)
 
   trace('ModeMenu scene:create')
 
-  local dim = _G.DIMENSIONS
+  local dim = globalData.dim
   local sceneGroup = self.view
   -- Code here runs when the scene is first created but has not yet appeared on screen
 
@@ -52,7 +53,7 @@ function scene:create(event)
     for i=1, string.len(s) do
       local tappy = Tappy.new(tappyGroup, x, 0, function()
         Util.sound('ui')
-        _G.GAME_MODE = mode
+        globalData.mode = mode
         composer.gotoScene('Twitty', {effect='slideLeft'})
       end, string.sub(s, i, i)) -- no description
       x = x + dim.Q
