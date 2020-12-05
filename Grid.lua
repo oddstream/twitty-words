@@ -147,6 +147,7 @@ function Grid:gameOver()
   self:deleteTiles()
 
   Util.mergeIntoHintDictionary(self.humanFoundWords)
+  Util.loadHintDictionary()
 
   if globalData.mode == 'ROBOTO' then
     composer.gotoScene('RobotEnd', { effect='slideLeft', params={humanScore=self.humanScore, humanFoundWords=self.humanFoundWords, robotScore=self.robotScore, robotFoundWords=self.robotFoundWords} })

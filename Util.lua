@@ -240,6 +240,76 @@ function Util.resetDictionaries()
   globalData.DICT_PREFIX_FALSE = {}
 end
 
+function Util.loadMainDictionary()
+
+  -- https://boardgames.stackexchange.com/questions/38366/latest-collins-scrabble-words-list-in-text-file
+  -- local filePath = system.pathForFile('Collins Scrabble Words (2019).txt', system.ResourceDirectory)
+
+  -- https://github.com/dwyl/english-words
+  -- cleaned version (no 1- or 2- letter words) saves no memory (usage is 4628 KBytes)
+  -- but must save some searching time as file size decreases from 4136 to 3773 KBytes
+  -- awk '{if (length($0) > 3) print $0}'' words.alpha.txt > words_alpha_cleaned.txt'
+
+  local file, msg = io.open(const.FILES.MAIN_DICTIONARY)
+  if not file then
+    trace('ERROR:', msg)
+  else
+    -- trace('opened', const.FILES.MAINDICTIONARY)
+    globalData.DICTIONARY = file:read('*a')
+    io.close(file)
+    -- trace('main dictionary length', string.len(globalData.DICTIONARY))
+  end
+
+end
+
+function Util.loadHintDictionary()
+
+  local file, msg = io.open(const.FILES.USR_HINT_DICTIONARY)
+  if not file then
+    file, msg = io.open(const.FILES.SYS_HINT_DICTIONARY)
+    if not file then
+      trace('ERROR:', msg)
+    end
+  end
+  if file then
+    globalData.DICT = file:read('*a')
+    io.close(file)
+    -- trace('hint dict length', string.len(globalData.DICT))
+  end
+
+  -- double the speed of searching the hint dictionary by slicing it up into 26 sub dictionaries
+  -- still need original (A-Z) dictionary for words that start with blank tile
+
+  local A2Z = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+  local index = {}
+
+  for i=1, 26 do
+    local letter = A2Z:sub(i,i)
+    local first, last = string.find(globalData.DICT, '\n' .. letter)
+    assert(first, letter) -- no words beginning with letter
+    index[letter] = first
+  end
+
+  -- for key,value in pairs(index) do
+  --   trace(key, value)
+  -- end
+
+  globalData.DICTIDX = {}
+  for i=1, 25 do
+    local letter = A2Z:sub(i,i)
+    local nextLetter = A2Z:sub(i+1,i+1)
+    globalData.DICTIDX[letter] = string.sub(globalData.DICT, index[letter], index[nextLetter])
+  end
+  globalData.DICTIDX['Z'] = string.sub(globalData.DICT, index['Z'])
+
+  -- trace('------')
+  -- trace(globalData.DICTIDX['A'])
+  -- trace('------')
+  -- trace(globalData.DICTIDX['Z'])
+  -- trace('------')
+
+end
+
 function Util.checkDictionaries()
   -- check all words in hint dictionary are in main dictionary
   -- and all words are in alphabetical order
@@ -300,11 +370,11 @@ function Util.mergeIntoHintDictionary(originalFoundWords)
   write found-word[i] until end of table
 
 ]]
-  -- make a local copy, without words containing blanks, and sort it
+  -- make a local copy, without words containing blanks, and words already in hint dict, and sort it
   trace(originalFoundWords)
   local foundWords = {}
   for _,word in ipairs(originalFoundWords) do
-    if not string.find(word, ' ') then
+    if not string.find(word, ' ') and not Util.isWordInDict(word) then
       table.insert(foundWords, word)
     end
   end
