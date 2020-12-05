@@ -4,6 +4,7 @@
 local composer = require('composer')
 local scene = composer.newScene()
 
+local const = require 'constants'
 local globalData = require 'globalData'
 
 local Util = require 'Util'
@@ -25,15 +26,14 @@ local function loadDictionaries()
   -- cleaned version (no 1- or 2- letter words) saves no memory (usage is 4628 KBytes)
   -- but must save some searching time as file size decreases from 4136 to 3773 KBytes
   -- awk '{if (length($0) > 3) print $0}'' words.alpha.txt > words_alpha_cleaned.txt'
-  local filePath = system.pathForFile('words_alpha_cleaned.txt', system.ResourceDirectory)
-  local file, msg = io.open(filePath)
+  local file, msg = io.open(const.FILES.MAIN_DICTIONARY)
   if not file then
-    trace('ERROR: Cannot open', filePath, msg)
+    trace('ERROR:', msg)
   else
-    trace('opened', filePath)
+    -- trace('opened', const.FILES.MAINDICTIONARY)
     globalData.DICTIONARY = file:read('*a')
     io.close(file)
-    trace('dictionary length', string.len(globalData.DICTIONARY))
+    -- trace('main dictionary length', string.len(globalData.DICTIONARY))
   end
 
 --[[
@@ -61,15 +61,17 @@ local function loadDictionaries()
 
   -- https://raw.githubusercontent.com/sapbmw/The-Oxford-3000/master/The_Oxford_3000.txt
   -- filePath = system.pathForFile('assets/junk/Oxford3000.txt', system.ResourceDirectory)
-  filePath = system.pathForFile('1000 words.txt', system.ResourceDirectory)
-  file, msg = io.open(filePath)
+  file, msg = io.open(const.FILES.USR_HINT_DICTIONARY)
   if not file then
-    trace('ERROR: Cannot open', filePath, msg)
-  else
-    trace('opened', filePath)
+    file, msg = io.open(const.FILES.SYS_HINT_DICTIONARY)
+    if not file then
+      trace('ERROR:', msg)
+    end
+  end
+  if file then
     globalData.DICT = file:read('*a')
     io.close(file)
-    trace('dict length', string.len(globalData.DICT))
+    -- trace('hint dict length', string.len(globalData.DICT))
   end
 
   -- double the speed of searching the hint dictionary by slicing it up into 26 sub dictionaries

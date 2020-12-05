@@ -242,20 +242,127 @@ end
 
 function Util.checkDictionaries()
   -- check all words in hint dictionary are in main dictionary
-  local filePath = system.pathForFile('1000 words.txt', system.ResourceDirectory)
+  -- and all words are in alphabetical order
+  local filePath = const.FILES.SYS_HINT_DICTIONARY
   print('checking', filePath)
   local count = 0
+  local prevLine = ''
   local timeStart = system.getTimer()
   for line in io.lines(filePath) do
     count = count + 1
+    if prevLine == line or prevLine > line then
+      print('WARNING: problem at', line)
+    end
     if not Util.isWordInDictionary(line) then
       print(string.format('WARNING: \"%s\" not in main dictionary', line))
     end
+    prevLine = line
   end
   local timeStop = system.getTimer()
 
   print('finished, checking', count, 'words in', math.floor((timeStop - timeStart) / 1000), 'seconds')
   -- checked 1324 words in 206 seconds (0.155 seconds/word to check main dictionary)
+end
+
+function Util.fileExists(filePath)
+  local exists = false
+  local file, errorString = io.open(filePath, 'r')
+  if file then
+    exists = true
+    file:close()
+  end
+  return exists
+end
+
+function Util.mergeIntoHintDictionary(originalFoundWords)
+--[[
+
+  system.ResourceDirectory is readonly
+
+  hints: BAT CAT DOG FOX
+  found: ANT
+  found: EAGLE
+  found: LION
+
+  foundWords is assumed to be sorted
+  hint dict is sorted
+  create system.pathForFile('output.txt', system.DocumentsDirectory) for writing
+
+  try to open updated hint dict in documents folder
+  if not there open original hint dict in resources folder
+
+  read hint dict one word/line at a time
+    if found-word[i] == hint-word
+      do nothing
+    if found-word[i] < hint-word
+      write found-word[i], i++
+    write hint-word to output
+  write found-word[i] until end of table
+
+]]
+  -- make a local copy, without words containing blanks, and sort it
+  trace(originalFoundWords)
+  local foundWords = {}
+  for _,word in ipairs(originalFoundWords) do
+    if not string.find(word, ' ') then
+      table.insert(foundWords, word)
+    end
+  end
+  trace(foundWords)
+  if #foundWords == 0 then
+    return
+  end
+  table.sort(foundWords, function(a,b) return a < b end)
+  trace(foundWords)
+
+  local outputPath = system.pathForFile('output.txt', system.DocumentsDirectory)
+  local outputFile, errorString = io.open(outputPath, "w")
+  if not outputFile then
+    trace('ERROR:', errorString)
+    return
+  end
+
+  local inputPath
+  if Util.fileExists(const.FILES.USR_HINT_DICTIONARY) then
+    inputPath = const.FILES.USR_HINT_DICTIONARY
+  else
+    inputPath = const.FILES.SYS_HINT_DICTIONARY
+  end
+
+  local i = 1
+
+  local timeStart = system.getTimer()
+
+  for line in io.lines(inputPath) do
+    if string.len(line) > 0 and foundWords[i] then
+      if foundWords[i] == line then
+        trace('found', foundWords[i])
+        i = i + 1
+      elseif foundWords[i] < line then
+        trace('writing', foundWords[i])
+        outputFile:write(foundWords[i] .. '\n')
+        i = i + 1
+      end
+    end
+    outputFile:write(line .. '\n')
+  end
+
+  while i <= #foundWords do
+    trace('writing', foundWords[i])
+    outputFile:write(foundWords[i] .. '\n')
+    i = i + 1
+  end
+
+  io.close(outputFile)
+
+  local timeStop = system.getTimer()
+  print('rebuilt', inputPath, 'in', math.floor((timeStop - timeStart) / 1000), 'seconds')
+
+  if Util.fileExists(const.FILES.USR_HINT_DICTIONARY) then
+    os.remove(const.FILES.USR_HINT_DICTIONARY)
+  end
+  os.rename(outputPath, const.FILES.USR_HINT_DICTIONARY) -- oldname, newname
+
 end
 
 -- don't use this on a table that contains tables

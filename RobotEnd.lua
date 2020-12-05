@@ -252,24 +252,7 @@ function scene:create(event)
     Util.sound('ui')
     composer.gotoScene('Twitty', {effect='slideRight'})
   end, 'Ne', 'NEW') -- '★'
---[[
-  for _,word in ipairs(event.params.humanFoundWords) do
-    -- TODO would be cleaner to add these to hint dict text file?
-    if not table.contains(_G.ROBOTODICTIONARY, word) and not Util.isWordInDict(word) then
-      table.insert(_G.ROBOTODICTIONARY, word)
-      trace('Adding', word, 'to ROBOTO\'s private dictionary')
-    end
-  end
-  do
-    local file, msg = io.open(system.pathForFile('ROBOTO_dict.json', system.DocumentsDirectory), 'w')
-    if file then
-      file:write(json.encode(_G.ROBOTODICTIONARY))
-      io.close(file)
-    else
-      trace('cannot open ROBOTO_dict.json', msg)
-    end
-  end
-]]
+
 end
 
 -- show()

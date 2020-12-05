@@ -152,6 +152,12 @@ C.SOUNDS = {
   },
 }
 
+C.FILES = {
+  MAIN_DICTIONARY = system.pathForFile('words_alpha_cleaned.txt', system.ResourceDirectory),
+  SYS_HINT_DICTIONARY = system.pathForFile('hintdict.txt', system.ResourceDirectory),
+  USR_HINT_DICTIONARY = system.pathForFile('hintdict.txt', system.DocumentsDirectory),
+}
+
 C.VARIANT = {
   CASUAL = {
   },

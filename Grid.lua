@@ -146,6 +146,8 @@ function Grid:gameOver()
 
   self:deleteTiles()
 
+  Util.mergeIntoHintDictionary(self.humanFoundWords)
+
   if globalData.mode == 'ROBOTO' then
     composer.gotoScene('RobotEnd', { effect='slideLeft', params={humanScore=self.humanScore, humanFoundWords=self.humanFoundWords, robotScore=self.robotScore, robotFoundWords=self.robotFoundWords} })
   else
@@ -764,7 +766,9 @@ function Grid:shuffle2(tiles)
 
 end
 
-function Grid:shuffle()
+function Grid:shuffle(who)
+
+  who = who or 'human'
 
   local tiles = self:getTiles()
   if #tiles < 3 then
@@ -794,7 +798,9 @@ function Grid:shuffle()
 
   self:updateUI()  --- not really a move, was it?
 
-  globalData.toolbar:enable('shuffle', false)
+  if who == 'human' then
+    globalData.toolbar:enable('shuffle', false)
+  end
 
 end
 
@@ -1003,6 +1009,10 @@ end
 function Grid:robot()
 
   assert(globalData.mode == 'ROBOTO')
+
+  if self:countTiles() < self.width * self.height then
+    self:shuffle('ROBOTO')
+  end
 
   self:hint('ROBOTO')  -- this ends in it's own time ...
   -- ... so don't put any code here

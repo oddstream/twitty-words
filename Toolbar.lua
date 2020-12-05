@@ -59,6 +59,13 @@ function Toolbar.new()
             Util.checkDictionaries()
           end
         end)
+      -- local al = Util.showAlert('DEBUG', 'Merge dictionaries?', {'Yes','No','Maybe'},
+      --   function(event)
+      --     if 1 == event.index then
+      --       Util.mergeIntoHintDictionary({'AAA','BBB','ZOOM','ZZZ'})
+      --     end
+      --   end)
+
     end, ' 🐛 ', 'DEBUG')
   end
 
