@@ -160,16 +160,29 @@ C.FILES = {
 
 C.VARIANT = {
   CASUAL = {
+    width = 7,
+    height = 7,
+    deductions = true,
   },
   URGENT = {
     width = 7,
     height = 7,
     timer = 60 * 4,
+    deductions = true,
   },
   TWELVE = {
+    width = 7,
+    height = 7,
     words = 12,
   },
   ROBOTO = {
+    width = 7,
+    height = 7,
+    robot = true,
+  },
+  FILLUP = {
+    width = 7,
+    height = 7,
   },
   PACKED = {
     width = 10,

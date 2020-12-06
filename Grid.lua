@@ -140,14 +140,13 @@ function Grid:gameOver()
   self:cancelCountdown()
 
   local deductions = 0
-  if type(globalData.mode) ~= 'number' then
+  if globalData.mode == 'CASUAL' or globalData.mode == 'URGENT' then
     deductions = self:calcResidualScore()
   end
 
   self:deleteTiles()
 
   Util.mergeIntoHintDictionary(self.humanFoundWords)
-  Util.loadHintDictionary()
 
   if globalData.mode == 'ROBOTO' then
     composer.gotoScene('RobotEnd', { effect='slideLeft', params={humanScore=self.humanScore, humanFoundWords=self.humanFoundWords, robotScore=self.robotScore, robotFoundWords=self.robotFoundWords} })
@@ -247,6 +246,12 @@ function Grid:afterMove(word)
         function() self:gameOver() end)
     end
 
+  elseif globalData.mode == 'FILLUP' then
+    if self:countTiles() == self.width * self.height then
+      Util.showAlert('GAME OVER', 'The grid is full of tiles',
+        {'OK'},
+        function() self:gameOver() end)
+    end
   end
 
 end
@@ -277,6 +282,8 @@ function Grid:updateUI(word)
     globalData.statusbar:setRight(string.format('%u of %u', #self.humanFoundWords, globalData.mode))
     -- time remaining is set directly from Grid:timer()
     -- nothing is currently set in ROBOTO mode
+  elseif globalData.mode == 'FILLUP' then
+    globalData.statusbar:setRight(string.format('FREE %u', self.width * self.height - self:countTiles()))
   end
 
   if word == nil and #self.selectedSlots > 0 then
@@ -292,6 +299,8 @@ function Grid:updateUI(word)
 end
 
 function Grid:fillLetterPool()
+
+  trace('Filling letter pool')
 
   for i=1, string.len(const.SCRABBLE_LETTERS) do
     local letter = string.sub(const.SCRABBLE_LETTERS, i, i)
@@ -386,8 +395,17 @@ function Grid:getSelectedWord()
 end
 
 function Grid:createTiles()
-  for _,slot in ipairs(self.slots) do
-    slot:createTile()
+  if globalData.mode == 'FILLUP' then
+    for y = self.height-2, self.height do
+      for x = 1, self.width do
+        local slot = self:findSlot(x,y)
+        slot:createTile()
+      end
+    end
+  else
+    for _,slot in ipairs(self.slots) do
+      slot:createTile()
+    end
   end
 end
 
@@ -540,8 +558,17 @@ function Grid:testSelection()
 
       self:dropColumns()
       self:compactColumns()
-      if #self.letterPool > 0 then
-        self:addTiles()
+
+      if globalData.mode == 'FILLUP' then
+        if #self.letterPool == 0 then
+          self:fillLetterPool()
+        end
+        self:shuffle('FILLUP')
+        self:addRowOfTiles()
+      else
+        if #self.letterPool > 0 then
+          self:addTiles()
+        end
       end
 
       -- the human had their move, now ...
@@ -829,6 +856,40 @@ function Grid:addTiles()
           tilesAdded = true
         end
         slot = slot.s
+      end
+    end
+    column = column.e
+  end
+
+  if tilesAdded then
+    self:dropColumns()
+  end
+
+end
+
+function Grid:addRowOfTiles()
+
+  local function _tilesInColumn(slot)
+    local count = 0
+    while slot do
+      if slot.tile then count = count + 1 end
+      slot = slot.s
+    end
+    return count
+  end
+
+  local tilesAdded = false
+  local column = self:findSlot(1,1)
+  while column and #self.letterPool > 0 do
+    local count = _tilesInColumn(column)
+    if count > 0 and count < self.height then
+      local slot = column
+      if slot and slot.tile == nil and #self.letterPool > 0 then
+        if slot:createTile() then
+          slot.tile.grp.y = -(display.contentHeight / 2)  -- fall from a great height, to create slight delay
+          slot.tile:settle()
+          tilesAdded = true
+        end
       end
     end
     column = column.e

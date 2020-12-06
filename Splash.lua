@@ -4,8 +4,8 @@
 local composer = require('composer')
 local scene = composer.newScene()
 
-local const = require 'constants'
-local globalData = require 'globalData'
+-- local const = require 'constants'
+-- local globalData = require 'globalData'
 
 local Util = require 'Util'
 
@@ -39,7 +39,7 @@ function scene:show(event)
     assert(logo:addEventListener('tap', gotoDestination))
 
     -- https://docs.coronalabs.com/guide/graphics/3D.html
-    transition.to( logo.path, { time=1000, --[[x1=80, y1=-80,]] x4=-420/2, y4=420/2 } )
+    transition.to(logo.path, {time=1000, --[[x1=80, y1=-80,]] x4=-420/2, y4=420/2})
     transition.fadeOut(logo, {time=1000})
     transition.scaleTo(logo, {time=1000, xScale=0.1, yScale=0.1})
 

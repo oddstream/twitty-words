@@ -83,11 +83,17 @@ function scene:create(event)
   help2:setFillColor(0,0,0)
 
   y = (display.actualContentHeight / 2) + (dim.Q * 2)
+  _tappyRow(y, 'FILLUP', 'FILLUP')
+  y = y + dim.Q * 0.75
+  local help3 = display.newText(sceneGroup, 'Find words faster than new tiles are added', display.contentCenterX, y, const.FONTS.ROBOTO_MEDIUM, dim.tileFontSize / 3)
+  help3:setFillColor(0,0,0)
+--[[
+  y = (display.actualContentHeight / 2) + (dim.Q * 2)
   _tappyRow(y, 'TWELVE', 12)
   y = y + dim.Q * 0.75
   local help3 = display.newText(sceneGroup, 'Get your best score with twelve words', display.contentCenterX, y, const.FONTS.ROBOTO_MEDIUM, dim.tileFontSize / 3)
   help3:setFillColor(0,0,0)
-
+]]
   y = (display.actualContentHeight / 2) + (dim.Q * 4)
   _tappyRow(y, 'ROBOTO', 'ROBOTO')
   y = y + dim.Q * 0.75
