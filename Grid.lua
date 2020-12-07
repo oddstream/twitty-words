@@ -61,6 +61,7 @@ function Grid:createSaveable()
   -- self.hints is not covered by the unconditional undo guarantee
   o.humanScore = self.humanScore  -- could recalc this
   o.robotScore = self.robotScore  -- could recalc this
+  o.swaps = self.swaps
   return o
 end
 
@@ -74,6 +75,7 @@ function Grid:replaceWithSaved(saved)
   -- self.hints is not covered by the unconditional undo guarantee
   self.humanScore = saved.humanScore  -- could recalc this
   self.robotScore = saved.robotScore  -- could recalc this
+  self.swaps = saved.swaps
 
   self:updateUI()
 end
@@ -177,7 +179,8 @@ function Grid:newGame()
   self.robotScore = 0
   self.humanFoundWords = {}
   self.robotFoundWords = {}
-  self.hints = 1
+  self.swaps = 0  -- number of letter swaps human has made this turn
+  self.hints = 1  -- number of hints human has left to use this game
   self.selectedSlots = {}
   self.undoStack = {}
 
@@ -235,10 +238,6 @@ function Grid:afterMove(word)
       function() self:gameOver() end)
 
   elseif globalData.mode == 'ROBOTO' then
-
-    -- if #self.letterPool == 0 then
-    --   self:fillLetterPool()
-    -- end
 
     if self.humanScore >= 420 or self.robotScore >= 420 then
       Util.showAlert('GAME OVER', 'Score target reached',
@@ -515,8 +514,8 @@ function Grid:testSelection()
     local t1 = s1.tile
     local t2 = s2.tile
 
-    table.insert(self.undoStack, self:createSaveable())
     if t1.letter ~= t2.letter then
+      table.insert(self.undoStack, self:createSaveable())
 
       Util.sound('swap')
 
@@ -528,10 +527,11 @@ function Grid:testSelection()
       t2.slot = s1
       t2:settle()
 
+      self.swaps = self.swaps + 1
+
       do
-        local score = const.SCRABBLE_SCORES[t1.letter] + const.SCRABBLE_SCORES[t2.letter]
-        local b = Bubble.new(s2.center.x, s2.center.y, string.format('-%d', score))
-        b:flyTo(dim.statusbarX, dim.statusbarY)
+        local score = (const.SCRABBLE_SCORES[t1.letter] + const.SCRABBLE_SCORES[t2.letter]) * self.swaps
+        Bubble.new(s2.center.x, s2.center.y, string.format('-%d', score)):flyTo(dim.statusbarX, dim.statusbarY)
         self.humanScore = self.humanScore - score
       end
 
@@ -560,9 +560,6 @@ function Grid:testSelection()
       self:compactColumns()
 
       if globalData.mode == 'FILLUP' then
-        if #self.letterPool == 0 then
-          self:fillLetterPool()
-        end
         self:shuffle('FILLUP')
         self:addRowOfTiles()
       else
@@ -581,6 +578,7 @@ function Grid:testSelection()
         self:afterMove(word)  -- update UI and check end of game
       end
 
+      self.swaps = 0  -- number of letter swaps human has made this turn
       globalData.toolbar:enable('shuffle', true)
 
     else  -- word not in dictionary
@@ -878,13 +876,16 @@ function Grid:addRowOfTiles()
     return count
   end
 
+  if #self.letterPool < self.width then
+    self:fillLetterPool()
+  end
+
   local tilesAdded = false
   local column = self:findSlot(1,1)
-  while column and #self.letterPool > 0 do
-    local count = _tilesInColumn(column)
-    if count > 0 and count < self.height then
+  while column do
+    if _tilesInColumn(column) < self.height then
       local slot = column
-      if slot and slot.tile == nil and #self.letterPool > 0 then
+      if slot and slot.tile == nil then
         if slot:createTile() then
           slot.tile.grp.y = -(display.contentHeight / 2)  -- fall from a great height, to create slight delay
           slot.tile:settle()

@@ -410,16 +410,16 @@ function Util.mergeIntoHintDictionary(originalFoundWords)
         i = i + 1
       elseif foundWords[i] < line then
         trace('writing', foundWords[i])
-        outputFile:write(foundWords[i] .. '\n')
+        outputFile:write(foundWords[i], '\n')
         i = i + 1
       end
     end
-    outputFile:write(line .. '\n')
+    outputFile:write(line, '\n')
   end
 
   while i <= #foundWords do
     trace('writing', foundWords[i])
-    outputFile:write(foundWords[i] .. '\n')
+    outputFile:write(foundWords[i], '\n')
     i = i + 1
   end
 

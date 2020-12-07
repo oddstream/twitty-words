@@ -124,7 +124,7 @@ function scene:create(event)
     -- txt.anchorX = 0
     txt:setFillColor(0,0,0)
   end
-
+--[[
   local function _text(y, s)
     local txt = display.newText({
       parent = sceneGroup,
@@ -138,30 +138,19 @@ function scene:create(event)
     -- txt.anchorX = 0
     txt:setFillColor(0,0,0)
   end
-
-  local function _doubletext(y, s1, s2)
-    local txt1 = display.newText({
+]]
+  local function _doubletext(y, s, n)
+    local txt = display.newText({
       parent = sceneGroup,
-      text = s1,
+      text = s .. tostring(n),
       x = display.contentCenterX,
       y = y,
       font = const.FONTS.ACME,
-      fontSize = dim.Q / 4,
-      align = 'right',
+      fontSize = dim.Q / 3,
+      align = 'center',
     })
-    txt1.anchorX = 1
-    txt1:setFillColor(0,0,0)
-
-    local txt2 = display.newText({
-      parent = sceneGroup,
-      text = s2,
-      x = display.contentCenterX,
-      y = y,
-      font = const.FONTS.ACME,
-      fontSize = dim.Q / 4,
-      align = 'right',
-    })
-    txt2.anchorX = 0
+    -- txt.anchorX = 1
+    txt:setFillColor(0,0,0)
   end
 
   local function _displayRow(y, word, color)
@@ -232,28 +221,28 @@ function scene:create(event)
   y = y + dim.Q
 
   -- _text(y, string.format('GAMES WON: %u', stats.gamesWon))
-  _doubletext(y, 'GAMES WON : ', tostring(stats.gamesWon))
-  y = y + dim.quarterQ
-  -- _text(y, string.format('GAMES LOST: %u', stats.gamesLost))
-  _doubletext(y, 'GAMES LOST : ', tostring(stats.gamesLost))
+  _doubletext(y, 'GAMES WON : ', stats.gamesWon)
   y = y + dim.halfQ
+  -- _text(y, string.format('GAMES LOST: %u', stats.gamesLost))
+  _doubletext(y, 'GAMES LOST : ', stats.gamesLost)
+  y = y + dim.Q
 
   -- _text(y, string.format('BEST SCORE: %u', stats.bestScore))
-  _doubletext(y, 'BEST SCORE : ', tostring(stats.bestScore))
-  y = y + dim.quarterQ
-  -- _text(y, string.format('WORST SCORE: %u', stats.worstScore))
-  _doubletext(y, 'WORST SCORE : ', tostring(stats.worstScore))
+  _doubletext(y, 'BEST SCORE : ', stats.bestScore)
   y = y + dim.halfQ
+  -- _text(y, string.format('WORST SCORE: %u', stats.worstScore))
+  _doubletext(y, 'WORST SCORE : ', stats.worstScore)
+  y = y + dim.Q
 
   -- _text(y, string.format('CURRENT STREAK: %d', stats.currStreak))
-  _doubletext(y, 'CURRENT STREAK : ', tostring(stats.currStreak))
-  y = y + dim.quarterQ
+  _doubletext(y, 'CURRENT STREAK : ', stats.currStreak)
+  y = y + dim.halfQ
   -- _text(y, string.format('BEST STREAK: %d', stats.bestStreak))
-  _doubletext(y, 'BEST STREAK : ', tostring(stats.bestStreak))
-  y = y + dim.quarterQ
+  _doubletext(y, 'BEST STREAK : ', stats.bestStreak)
+  y = y + dim.halfQ
   -- _text(y, string.format('WORST STREAK: %d', stats.worstStreak))
-  _doubletext(y, 'WORST STREAK : ', tostring(stats.worstStreak))
-  y = y + dim.quarterQ
+  _doubletext(y, 'WORST STREAK : ', stats.worstStreak)
+  y = y + dim.halfQ
 
   saveStats(stats)
 
