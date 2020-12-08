@@ -142,7 +142,7 @@ function Grid:gameOver()
   self:cancelCountdown()
 
   local deductions = 0
-  if globalData.mode == 'CASUAL' or globalData.mode == 'URGENT' then
+  if const.VARIANT[globalData.mode].deductions then
     deductions = self:calcResidualScore()
   end
 
@@ -150,7 +150,7 @@ function Grid:gameOver()
 
   Util.mergeIntoHintDictionary(self.humanFoundWords)
 
-  if globalData.mode == 'ROBOTO' then
+  if const.VARIANT[globalData.mode].robot then
     composer.gotoScene('RobotEnd', { effect='slideLeft', params={humanScore=self.humanScore, humanFoundWords=self.humanFoundWords, robotScore=self.robotScore, robotFoundWords=self.robotFoundWords} })
   else
     composer.gotoScene('HighScores', { effect='slideLeft', params={score=self.humanScore - deductions, words=self.humanFoundWords} })
@@ -191,7 +191,7 @@ function Grid:newGame()
     self.countdownTimer = nil
   end
 
-  if globalData.mode == 'URGENT' then
+  if const.VARIANT[globalData.mode].timer then
     self.secondsLeft = 60 * 4
   else
     self.secondsLeft = 0
@@ -230,13 +230,13 @@ function Grid:afterMove(word)
     Util.showAlert('GAME OVER', 'Too few tiles left',
       {'OK'},
       function() self:gameOver() end)
-
+--[[
   elseif type(globalData.mode) == 'number' and #self.humanFoundWords == globalData.mode then
 
     Util.showAlert('GAME OVER', 'You found ' .. tostring(#self.humanFoundWords) .. ' words',
       {'OK'},
       function() self:gameOver() end)
-
+]]
   elseif globalData.mode == 'ROBOTO' then
 
     if self.humanScore >= 420 or self.robotScore >= 420 then
@@ -268,7 +268,7 @@ function Grid:updateUI(word)
     return count
   end
 
-  if globalData.mode == 'ROBOTO' then
+  if const.VARIANT[globalData.mode].robot then
     globalData.statusbar:setCenter(string.format('%d : %d', self.humanScore, self.robotScore))  -- or '%+d'
   else
     globalData.statusbar:setCenter(string.format('SCORE %d', self.humanScore))  -- or '%+d'
@@ -277,10 +277,12 @@ function Grid:updateUI(word)
   if globalData.mode == 'CASUAL' then
     --string.len(_G.SCRABBLE_LETTERS) == 100, so ...
     globalData.statusbar:setRight(string.format('%u%%', _countFoundLetters()))
+--[[
   elseif type(globalData.mode) == 'number' then
     globalData.statusbar:setRight(string.format('%u of %u', #self.humanFoundWords, globalData.mode))
     -- time remaining is set directly from Grid:timer()
     -- nothing is currently set in ROBOTO mode
+]]
   elseif globalData.mode == 'FILLUP' then
     globalData.statusbar:setRight(string.format('FREE %u', self.width * self.height - self:countTiles()))
   end
@@ -569,7 +571,7 @@ function Grid:testSelection()
       end
 
       -- the human had their move, now ...
-      if globalData.mode == 'ROBOTO' then
+      if const.VARIANT[globalData.mode].robot then
         self:updateUI(word)
         timer.performWithDelay(2000, function()
           self:robot()

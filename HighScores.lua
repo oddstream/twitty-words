@@ -210,7 +210,7 @@ function scene:show(event)
       end
     end
 
-    local y = dim.halfQ
+    local y = dim.topInset + dim.halfQ
 
     _banner(y, 'HIGH SCORES')
 
@@ -250,10 +250,10 @@ function scene:show(event)
 
     -- create a group for the tappy so it doesn't scroll with the background
     toolbarGroup = display:newGroup()
-    local tappy = Tappy.new(toolbarGroup, display.actualContentWidth - dim.halfQ, dim.toolbarY, function()
+    local tappy = Tappy.new(toolbarGroup, dim.halfQ, dim.topInset + dim.halfQ, function()
       Util.sound('ui')
-      composer.gotoScene('Twitty', {effect='slideRight'})
-    end, 'Ne', 'NEW') -- '★'
+      composer.gotoScene('ModeMenu', {effect='slideRight'})
+    end, '☰', 'MENU') -- '★'
 
   end
 end
@@ -276,7 +276,7 @@ function scene:hide(event)
   elseif phase == 'did' then
     -- Code here runs immediately after the scene goes entirely off screen
     toolbarGroup:removeSelf()
-    --- delete the scene so it gets built next time it's shown
+    -- delete the scene so it gets built next time it's shown
     composer.removeScene('HighScores')
   end
 end
@@ -293,7 +293,7 @@ function scene:key(event)
   if phase == 'up' then
     if event.keyName == 'back' or event.keyName == 'deleteBack' then
       Util.sound('ui')
-      composer.gotoScene('Twitty', {effect='slideRight'})
+      composer.gotoScene('ModeMenu', {effect='slideRight'})
       return true -- override the key
     end
   end

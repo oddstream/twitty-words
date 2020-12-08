@@ -1,7 +1,11 @@
 -- Must.lua
 
 -- local const = require 'constants'
+local const = require 'constants'
 local globalData = require 'globalData'
+
+local Dim = require 'Dim'
+local Grid = require 'Grid'
 
 local Statusbar = require 'Statusbar'
 local Wordbar = require 'Wordbar'
@@ -57,6 +61,12 @@ function scene:create(event)
   trace('Twitty scene:create')
 
   Util.setBackground(self.view)
+
+  globalData.mode = event.params.mode
+
+  globalData.dim = Dim.new(const.VARIANT[globalData.mode].width, const.VARIANT[globalData.mode].height)
+  -- grid (of slots) has no graphical elements, and does not change size, so persists across all games
+  globalData.grid = Grid.new(globalData.dim.numX, globalData.dim.numY)
 
   globalData.gridGroup = self.view
 

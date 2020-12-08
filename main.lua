@@ -3,12 +3,6 @@
 local pprint = require 'pprint'
 local composer = require 'composer'
 
--- local const = require 'constants'
-local globalData = require 'globalData'
-
-local Dim = require 'Dim'
-local Grid = require 'Grid'
-
 function _G.trace(...)
   if system.getInfo('environment') == 'simulator' then
     local lst = {...}
@@ -81,9 +75,6 @@ if nil == const.FONTS.ROBOTO_MEDIUM then  const.FONTS.ROBOTO_MEDIUM = native.sys
 if nil == _G.BOLDFONT then  const.FONTS.ROBOTO_MEDIUM = native.systemFontBold end
 ]]
 
--- a global object containing useful precalculated dimensions
-globalData.dim = {}
-
 if not _G.table.contains then
   function _G.table.contains(tab, val)
     for index, value in ipairs(tab) do
@@ -153,11 +144,6 @@ if not string.split then
     return outResults
   end
 end
-
-globalData.dim = Dim.new(7,7)
--- grid (of slots) has no graphical elements, and does not change size, so persists across all games
-globalData.grid = Grid.new(globalData.dim.numX, globalData.dim.numY)
-globalData.mode = 'URGENT'  -- 'CASUAL' | 'URGENT' | 'ROBOTO' | <number>
 
 -- for k,v in pairs( _G ) do
 --   print( k , v )

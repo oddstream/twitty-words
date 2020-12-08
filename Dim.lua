@@ -9,11 +9,13 @@ function Dim.new(width, height)
   local o = {}
   setmetatable(o, Dim)
 
+  o.numX = width
+  o.numY = height
+
   -- safeAreaInsets reports top=126, left=0, bottom=97, right=0 for iPhone X
   local topInset, leftInset, bottomInset, rightInset = display.getSafeAreaInsets()
 
-  o.numX = width
-  o.numY = height
+  o.topInset = topInset
 
   local xQ = math.floor(display.actualContentWidth/o.numX)
   local yQ = math.floor(display.actualContentHeight / (o.numY + 3)) -- add for statusbar, wordbar, toolbar
@@ -44,7 +46,7 @@ function Dim.new(width, height)
 
   o.toolbarHeight = o.Q
   o.toolbarX = display.contentCenterX
-  o.toolbarY = display.actualContentHeight - (o.toolbarHeight / 2)
+  o.toolbarY = display.actualContentHeight - (o.toolbarHeight / 2) - bottomInset
   o.toolbarWidth = display.actualContentWidth
 
   o.baizeHeight = display.actualContentHeight - o.statusbarHeight - o.toolbarHeight - o.wordbarHeight

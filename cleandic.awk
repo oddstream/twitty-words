@@ -6,7 +6,7 @@
 BEGIN {
 }
 {
-	if (length($0) > 2) print $0
+  if (length($0) > 2) print $0
 }
 END {
 }

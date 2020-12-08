@@ -107,7 +107,7 @@ function scene:create(event)
   rect:setFillColor(unpack(const.COLORS.uibackground))
 ]]
 
-  local y = dim.halfQ
+  local y = dim.topInset + dim.halfQ
 
   _banner(y, 'WORDS YOU FOUND')
 
@@ -133,13 +133,13 @@ function scene:create(event)
 
   local tappyBack = Tappy.new(toolbarGroup, dim.halfQ, dim.toolbarY, function()
     Util.sound('ui')
-    composer.hideOverlay('slideLeft')
+    composer.hideOverlay('slideLeft') -- default is recycleOnly=false, so overlay scene will be completely removed, including its scene object
     globalData.grid:resumeCountdown()
     end, '<', 'BACK') -- '←'
 
   local tappyFinish = Tappy.new(toolbarGroup, display.actualContentWidth - dim.halfQ, dim.toolbarY, function()
     Util.sound('ui')
-    composer.hideOverlay('slideLeft')
+    composer.hideOverlay('slideLeft') -- default is recycleOnly=false, so overlay scene will be completely removed, including its scene object
     globalData.grid:gameOver()
     end, 'Fin', 'FINISH') -- '⯈' didn't appear on the phone, ' ⚖ '
   -- tappyFinish:enable(globalData.grid.humanCanFinish)
@@ -181,7 +181,8 @@ function scene:hide(event)
     -- Code here runs immediately after the scene goes entirely off screen
     toolbarGroup:removeSelf()
     -- delete the scene so it gets built next time it's shown
-    composer.removeScene('FoundWords')
+    -- composer.removeScene('FoundWords')
+    -- "FoundWords's was not removed because it does not exist. Use composer.loadScene() or composer.gotoScene()"
   end
 end
 

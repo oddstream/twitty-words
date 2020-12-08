@@ -163,31 +163,46 @@ C.VARIANT = {
     width = 7,
     height = 7,
     deductions = true,
+    description = 'Get your best score in your own time',
   },
   URGENT = {
     width = 7,
     height = 7,
     timer = 60 * 4,
     deductions = true,
-  },
-  TWELVE = {
-    width = 7,
-    height = 7,
-    words = 12,
+    description = 'Get your best score in four minutes',
   },
   ROBOTO = {
     width = 7,
     height = 7,
     robot = true,
+    description = 'Score 420 before the robot can',
   },
   FILLUP = {
     width = 7,
     height = 7,
+    description = 'Find words faster than new tiles are added',
   },
+  --[[
   PACKED = {
     width = 10,
     height = 10,
+    deductions = true,
+    description = 'One hundred tiles',
   },
+  SPARSE = {
+    width = 5,
+    height = 5,
+    deductions = true,
+    description = 'For the hard of sight',
+  },
+  TWELVE = {
+    width = 7,
+    height = 7,
+    words = 12,
+    description = 'Get your best score with twelve words'
+  },
+  ]]
 }
 
 return setmetatable({}, {

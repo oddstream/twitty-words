@@ -5,7 +5,9 @@ local composer = require('composer')
 local scene = composer.newScene()
 
 local const = require 'constants'
+
 local globalData = require 'globalData'
+local Dim = require 'Dim'
 
 local Tappy = require 'Tappy'
 local Tile = require 'Tile'
@@ -25,9 +27,12 @@ function scene:create(event)
 
   trace('ModeMenu scene:create')
 
-  local dim = globalData.dim
   local sceneGroup = self.view
   -- Code here runs when the scene is first created but has not yet appeared on screen
+
+  Util.setBackground(sceneGroup)
+  local dim = Dim.new(7, 7)  -- pretend we are on a 7x7 grid
+  globalData.dim = dim  -- used by Tile
 
   local function _titleRow(y, s)
     local titleGroup = display.newGroup()
@@ -53,16 +58,13 @@ function scene:create(event)
     for i=1, string.len(s) do
       local tappy = Tappy.new(tappyGroup, x, 0, function()
         Util.sound('ui')
-        globalData.mode = mode
-        composer.gotoScene('Twitty', {effect='slideLeft'})
+        composer.gotoScene('Twitty', {effect='slideLeft', params={mode=mode}})
       end, string.sub(s, i, i)) -- no description
       x = x + dim.Q
     end
   end
 
-  Util.setBackground(sceneGroup)
-
-  local y = dim.Q
+  local y = dim.topInset + dim.Q
 
   _titleRow(y, 'TWITTY')
 
@@ -71,6 +73,16 @@ function scene:create(event)
   _titleRow(y, ({'WORDES', 'SWORDS', 'WOORDS', 'VVORDS'})[math.random(1, 4)])
 
   y = (display.actualContentHeight / 2) - (dim.Q * 2)
+
+  for k,v in pairs(const.VARIANT) do
+    trace('VARIANT', k, v)
+    _tappyRow(y, k, k)
+    y = y + dim.Q * 0.75
+    local help1 = display.newText(sceneGroup, v.description, display.contentCenterX, y, const.FONTS.ROBOTO_MEDIUM, dim.tileFontSize / 3)
+    help1:setFillColor(0,0,0)
+    y = y + dim.Q
+  end
+--[[
   _tappyRow(y, 'CASUAL', 'CASUAL')
   y = y + dim.Q * 0.75
   local help1 = display.newText(sceneGroup, 'Get your best score in your own time', display.contentCenterX, y, const.FONTS.ROBOTO_MEDIUM, dim.tileFontSize / 3)
@@ -87,19 +99,19 @@ function scene:create(event)
   y = y + dim.Q * 0.75
   local help3 = display.newText(sceneGroup, 'Find words faster than new tiles are added', display.contentCenterX, y, const.FONTS.ROBOTO_MEDIUM, dim.tileFontSize / 3)
   help3:setFillColor(0,0,0)
---[[
-  y = (display.actualContentHeight / 2) + (dim.Q * 2)
-  _tappyRow(y, 'TWELVE', 12)
-  y = y + dim.Q * 0.75
-  local help3 = display.newText(sceneGroup, 'Get your best score with twelve words', display.contentCenterX, y, const.FONTS.ROBOTO_MEDIUM, dim.tileFontSize / 3)
-  help3:setFillColor(0,0,0)
-]]
+
+  -- y = (display.actualContentHeight / 2) + (dim.Q * 2)
+  -- _tappyRow(y, 'TWELVE', 12)
+  -- y = y + dim.Q * 0.75
+  -- local help3 = display.newText(sceneGroup, 'Get your best score with twelve words', display.contentCenterX, y, const.FONTS.ROBOTO_MEDIUM, dim.tileFontSize / 3)
+  -- help3:setFillColor(0,0,0)
+
   y = (display.actualContentHeight / 2) + (dim.Q * 4)
   _tappyRow(y, 'ROBOTO', 'ROBOTO')
   y = y + dim.Q * 0.75
   local help4 = display.newText(sceneGroup, 'Score 420 before the robot can', display.contentCenterX, y, const.FONTS.ROBOTO_MEDIUM, dim.tileFontSize / 3)
   help4:setFillColor(0,0,0)
-
+]]
   local ver = display.newText(sceneGroup, system.getInfo('appVersionString'), display.contentCenterX, display.contentHeight - dim.tileFontSize / 3, const.FONTS.ROBOTO_MEDIUM, dim.tileFontSize / 3)
   ver:setFillColor(0,0,0)
 end
