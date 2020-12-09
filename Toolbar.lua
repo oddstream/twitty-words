@@ -25,6 +25,13 @@ end
 
 ]]
 
+local Tappies = {
+  {element='shuffle', label='Sh', subtitle='SHUFFLE', cmd=function() globalData.grid:shuffle() end},
+  {element='hint', label='Hi', subtitle='HINT', cmd=function() globalData.grid:hint() end},
+  {element='undo', label='Un', subtitle='UNDO', cmd=function() globalData.grid:undo() end},
+  {element='result', label='Wo', subtitle='WORDS', cmd=function() globalData.grid:showFoundWords() end},
+}
+
 local Toolbar = {}
 Toolbar.__index = Toolbar
 
@@ -39,39 +46,17 @@ function Toolbar.new()
   -- o.rect = display.newRect(globalData.uiGroup, dim.toolbarX, dim.toolbarY, dim.toolbarWidth, dim.toolbarHeight)
   -- o.rect:setFillColor(unpack(const.COLORS.uibackground))
 
-  o.shuffle = Tappy.new(globalData.uiGroup, dim.halfQ, dim.toolbarY, function()
-    globalData.grid:shuffle()
-  end, 'Sh', 'SHUFFLE') -- '🗘' doesn't display on phone, 🔀 doesn't display on Chromebook
-
-  o.hint = Tappy.new(globalData.uiGroup, dim.Q + dim.Q, dim.toolbarY, function()
-    globalData.grid:hint()
-  end, 'Hi', 'HINT')  -- 💡
-
-  o.undo = Tappy.new(globalData.uiGroup, dim.toolbarX, dim.toolbarY, function()
-    globalData.grid:undo()
-  end, 'Un', 'UNDO') -- '⎌'
-
-  if system.getInfo('environment') == 'simulator' then
-    o.robot = Tappy.new(globalData.uiGroup, display.actualContentWidth - dim.Q - dim.Q, dim.toolbarY, function()
-      local al = Util.showAlert('DEBUG', 'Check dictionaries?', {'Yes','No','Maybe'},
-        function(event)
-          if 1 == event.index then
-            Util.checkDictionaries()
-          end
-        end)
-      -- local al = Util.showAlert('DEBUG', 'Merge dictionaries?', {'Yes','No','Maybe'},
-      --   function(event)
-      --     if 1 == event.index then
-      --       Util.mergeIntoHintDictionary({'AAA','BBB','ZOOM','ZZZ'})
-      --     end
-      --   end)
-
-    end, ' 🐛 ', 'DEBUG')
+  for i=1,#Tappies do
+    local tp = Tappies[i]
+    o[tp.element] = Tappy.new(
+      globalData.uiGroup,
+      Util.mapValue(i, 1, #Tappies, dim.halfQ, display.actualContentWidth - dim.halfQ),
+      dim.toolbarY,
+      tp.cmd,
+      tp.label,
+      tp.subtitle
+    )
   end
-
-  o.result = Tappy.new(globalData.uiGroup, display.actualContentWidth - dim.halfQ, dim.toolbarY, function()
-    globalData.grid:showFoundWords()
-  end, 'Wo', 'WORDS')  -- make ' ⚖ ' string longer to trick into scaling down glyph size
 
   return o
 end
@@ -95,17 +80,17 @@ function Toolbar:enable(tappy, enabled)
 end
 
 function Toolbar:suspendTouch()
-  self.shuffle:removeTouchListener()
-  self.hint:removeTouchListener()
-  self.undo:removeTouchListener()
-  self.result:removeTouchListener()
+  for i=1,#Tappies do
+    local tp = Tappies[i]
+    self[tp.element]:removeTouchListener()
+  end
 end
 
 function Toolbar:resumeTouch()
-  self.shuffle:addTouchListener()
-  self.hint:addTouchListener()
-  self.undo:addTouchListener()
-  self.result:addTouchListener()
+  for i=1,#Tappies do
+    local tp = Tappies[i]
+    self[tp.element]:addTouchListener()
+  end
 end
 
 return Toolbar

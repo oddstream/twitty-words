@@ -442,8 +442,6 @@ end
 
 function Util.showAlert(title, message, buttonLabels, listener)
 
-  local dim = globalData.dim
-
   buttonLabels = buttonLabels or {'OK'}
 
   local grp = display.newGroup()
@@ -452,16 +450,19 @@ function Util.showAlert(title, message, buttonLabels, listener)
 
   -- rip from function Tile.createGraphics()
 
-  local radius = dim.Q / 15
   local width = display.contentWidth * 0.666
   local height = width / 2 --1.61803398875
-  local titleFontSize = dim.tileFontSize * 0.5
-  local messageFontSize = dim.tileFontSize * 0.3
-  local buttonFontSize = dim.tileFontSize * 0.5
+  local radius = height / 15
+
+  local titleFontSize = height / 5
+  local messageFontSize = height / 7
+  local buttonFontSize = titleFontSize
   local buttonWidth = buttonFontSize * 3
+  local offset3D = height / 50
+  local vertOffset = height / 1.9
 
   -- grp[1]
-  local rectShadow = display.newRoundedRect(grp, dim.offset3D, dim.offset3D, width, height, radius)
+  local rectShadow = display.newRoundedRect(grp, offset3D, offset3D, width, height, radius)
   rectShadow:setFillColor(unpack(const.COLORS.shadow))
 
   -- grp[2]
@@ -469,11 +470,11 @@ function Util.showAlert(title, message, buttonLabels, listener)
   rectBack:setFillColor(unpack(const.COLORS.selected))
 
   -- grp[3]
-  local textTitle = display.newText(grp, title, 0, -(height/2) + titleFontSize, const.FONTS.ACME, titleFontSize)
+  local textTitle = display.newText(grp, title, 0, -vertOffset + titleFontSize, const.FONTS.ACME, titleFontSize)
   textTitle:setFillColor(0,0,0)
 
   -- grp[4]
-  local textMessage = display.newText(grp, message, 0, 0, const.FONTS.ROBOTO_MEDIUM, messageFontSize)
+  local textMessage = display.newText(grp, message, 0, 0, const.FONTS.ROBOTO_BOLD, messageFontSize)
   textMessage:setFillColor(0,0,0)
 
   local buttonGroup = display.newGroup()
@@ -490,7 +491,7 @@ function Util.showAlert(title, message, buttonLabels, listener)
 
     local button = widget.newButton({
       x = x,
-      y = height/2 - (buttonFontSize/2),
+      y = vertOffset - (buttonFontSize/2),
       onRelease = function()
         globalData.grid:resumeTouch()
         globalData.toolbar:resumeTouch()

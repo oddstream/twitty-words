@@ -8,6 +8,8 @@ local json = require 'json'
 local const = require 'constants'
 local globalData = require 'globalData'
 
+local Dim = require 'Dim'
+
 local Tappy = require 'Tappy'
 local Tile = require 'Tile'
 local Util = require 'Util'
@@ -91,11 +93,12 @@ end
 -- create()
 function scene:create(event)
 
-  local dim = globalData.dim
   local sceneGroup = self.view
   -- Code here runs when the scene is first created but has not yet appeared on screen
 
   Util.setBackground(sceneGroup)
+  globalData.dim = Dim.new(7,7)
+  local dim = globalData.dim
 
   local function _titleRow(y, s)
     local titleGroup = display.newGroup()
@@ -269,7 +272,7 @@ function scene:create(event)
     -- create a group for the tappy so it doesn't scroll with the background
   toolbarGroup = display:newGroup()
 
-  local tappy = Tappy.new(toolbarGroup, dim.halfQ, dim.topInset + dim.halfQ, dim.toolbarY, function()
+  local tappy = Tappy.new(toolbarGroup, dim.halfQ, dim.topInset + dim.halfQ, function()
     Util.sound('ui')
     composer.gotoScene('ModeMenu', {effect='slideRight'})
   end, '☰', 'MENU') -- '★'

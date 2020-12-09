@@ -31,7 +31,7 @@ function Statusbar.new()
     y = dim.statusbarY,
     onRelease = function()
       Util.sound('ui')
-      Util.showAlert('Are you sure', 'Abandon this game and return to menu?', {'Yes','No'}, function(event)
+      Util.showAlert('Are you sure', 'Abandon this game?', {'Yes','No'}, function(event)
         if event.index == 1 then
           globalData.grid:cancelGame()
           composer.gotoScene('ModeMenu', {effect='slideRight'})

@@ -492,12 +492,24 @@ function Grid:selectSlot(slot)
       end
     end
 
-    if #self.selectedSlots > 2 then
+
+    if #self.selectedSlots == 1 then
+      local dim = globalData.dim
+      local src = self.selectedSlots[1]
+      local score = const.SCRABBLE_SCORES[src.tile.letter]
+      Bubble.new(src.center.x, src.center.y - dim.halfQ, string.format('%u', score)):fadeOut()
+    elseif #self.selectedSlots == 2 then
+      local dim = globalData.dim
+      local t1 = self.selectedSlots[1].tile
+      local t2 = self.selectedSlots[2].tile
+      local score = (const.SCRABBLE_SCORES[t1.letter] + const.SCRABBLE_SCORES[t2.letter]) * (self.swaps + 1)
+      local src = self.selectedSlots[#self.selectedSlots]
+      Bubble.new(src.center.x, src.center.y - dim.halfQ, string.format('-%d', score)):fadeOut()
+    else -- >2 slots selected
       local dim = globalData.dim
       local _, score = self:getSelectedWord()
       local src = self.selectedSlots[#self.selectedSlots]
-      local b = Bubble.new(src.center.x, src.center.y - dim.halfQ, string.format('%+d', score))
-      b:fadeOut()
+      Bubble.new(src.center.x, src.center.y - dim.halfQ, string.format('%+d', score)):fadeOut()
     end
 
   end

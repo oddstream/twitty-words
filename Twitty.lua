@@ -157,6 +157,8 @@ function scene:key(event)
       globalData.grid:cancelGame()
       composer.gotoScene('ModeMenu', {effect='slideRight'})
       return true -- override the key
+    elseif event.keyName == 'a' then
+      Util.showAlert('GAME OVER', 'Do you want an alert?', {'Yes','No','Maybe'})
     elseif event.keyName == 'h' then
       globalData.grid:hint()
     elseif event.keyName == 'g' then
@@ -166,10 +168,6 @@ function scene:key(event)
         local after = collectgarbage('count')
         print('collected', math.floor(before - after), 'KBytes, now using', math.floor(after), 'KBytes')
       end
-    elseif event.keyName == 's' then
-      globalData.grid:shuffle()
-    elseif event.keyName == 'u' then
-      globalData.grid:undo()
     elseif event.keyName == 'd' then
       -- trace('#_G.DICTIONARY_TRUE', #_G.DICTIONARY_TRUE)
       -- trace('#_G.DICTIONARY_FALSE', #_G.DICTIONARY_FALSE)
@@ -179,8 +177,19 @@ function scene:key(event)
       trace('#_G.DICT_FALSE', #_G.DICT_FALSE)
       trace('#_G.DICT_PREFIX_TRUE', #_G.DICT_PREFIX_TRUE)
       trace('#_G.DICT_PREFIX_FALSE', #_G.DICT_PREFIX_FALSE)
-    elseif event.keyName == 'w' then
-      globalData.grid:showFoundWords()
+    elseif event.keyName == 'x' then
+      local al = Util.showAlert('DEBUG', 'Check dictionaries?', {'Yes','No','Maybe'},
+        function(event)
+          if 1 == event.index then
+            Util.checkDictionaries()
+          end
+        end)
+        -- local al = Util.showAlert('DEBUG', 'Merge dictionaries?', {'Yes','No','Maybe'},
+        --   function(event)
+        --     if 1 == event.index then
+        --       Util.mergeIntoHintDictionary({'AAA','BBB','ZOOM','ZZZ'})
+        --     end
+        --   end)
     end
   end
 end

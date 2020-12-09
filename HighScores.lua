@@ -11,6 +11,8 @@ local json = require('json')
 local const = require 'constants'
 local globalData = require 'globalData'
 
+local Dim = require 'Dim'
+
 local Tappy = require 'Tappy'
 local Tile = require 'Tile'
 local Util = require 'Util'
@@ -146,6 +148,7 @@ function scene:create(event)
 
   trace('HighScores scene:create')
   Util.setBackground(sceneGroup)
+  globalData.dim = Dim.new(7,7)
 
 end
 
