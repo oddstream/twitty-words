@@ -159,11 +159,11 @@ C.FILES = {
 }
 
 C.VARIANT = {
-  CASUAL = {
-    width = 7,
-    height = 7,
+  SPARSE = {
+    width = 5,
+    height = 5,
     deductions = true,
-    description = 'Get your best score in your own time',
+    description = 'Small game on a small grid - a good place to start',
   },
   URGENT = {
     width = 7,
@@ -183,26 +183,24 @@ C.VARIANT = {
     height = 7,
     description = 'Find words faster than new tiles are added',
   },
-  --[[
   PACKED = {
     width = 10,
     height = 10,
     deductions = true,
-    description = 'One hundred tiles',
+    description = 'A casual game but with all one hundred tiles',
   },
-  SPARSE = {
-    width = 5,
-    height = 5,
-    deductions = true,
-    description = 'For the hard of sight',
-  },
-  TWELVE = {
+  CASUAL = {
     width = 7,
     height = 7,
-    words = 12,
-    description = 'Get your best score with twelve words'
+    deductions = true,
+    description = 'Get your best score in your own time',
   },
-  ]]
+  -- TWELVE = {
+  --   width = 7,
+  --   height = 7,
+  --   words = 12,
+  --   description = 'Get your best score with twelve words'
+  -- },
 }
 
 return setmetatable({}, {
