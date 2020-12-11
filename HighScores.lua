@@ -190,20 +190,6 @@ function scene:show(event)
       end
     end
 
-    local function _banner(y, s)
-      local txt = display.newText({
-        parent = sceneGroup,
-        text = s,
-        x = display.contentCenterX,
-        y = y,
-        font = const.FONTS.ACME,
-        fontSize = dim.halfQ,
-        align = 'center',
-      })
-      -- txt.anchorX = 0
-      txt:setFillColor(0,0,0)
-    end
-
     local function _showScoreAndWord(thisScore, thisWord, yPos, color)
       Tile.createLittleGraphics(sceneGroup, dim.halfQ, yPos, tostring(thisScore), color)
       local x = dim.firstTileX + (dim.halfQ * 3)
@@ -215,7 +201,7 @@ function scene:show(event)
 
     local y = dim.topInset + dim.halfQ
 
-    _banner(y, 'HIGH SCORES')
+    Util.banner(sceneGroup, y, globalData.mode .. ' HIGH SCORES')
 
     y = y + dim.Q
 
@@ -241,6 +227,8 @@ function scene:show(event)
         Util.sound('complete')
       end
     end
+
+    if y > display.contentHeight then Util.genericMore(sceneGroup) end
 
     sceneGroup:addEventListener('touch', backTouch)
 

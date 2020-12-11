@@ -13,8 +13,12 @@ function Wordbar.new()
   -- assert(self==Wordbar)
   setmetatable(o, Wordbar)
 
-  -- o.rect = display.newRect(globalData.uiGroup, dim.toolbarX, dim.toolbarY, dim.toolbarWidth, dim.toolbarHeight)
-  -- o.rect:setFillColor(unpack(const.COLORS.uibackground))
+  do
+    local dim = globalData.dim
+    o.rect = display.newRect(globalData.uiGroup, dim.wordbarX, dim.wordbarY, dim.wordbarWidth, dim.wordbarHeight)
+    o.rect:setFillColor(0.1,0.1,0.1)
+    o.rect.alpha = 0.1
+  end
 
   o.center = display.newGroup()
   globalData.uiGroup:insert(o.center)

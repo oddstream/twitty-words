@@ -114,34 +114,6 @@ function scene:create(event)
     end
   end
 
-  local function _banner(y, s)
-    local txt = display.newText({
-      parent = sceneGroup,
-      text = s,
-      x = display.contentCenterX,
-      y = y,
-      font = const.FONTS.ACME,
-      fontSize = dim.Q / 3,
-      align = 'center',
-    })
-    -- txt.anchorX = 0
-    txt:setFillColor(0,0,0)
-  end
---[[
-  local function _text(y, s)
-    local txt = display.newText({
-      parent = sceneGroup,
-      text = s,
-      x = display.contentCenterX,
-      y = y,
-      font = const.FONTS.ACME,
-      fontSize = dim.Q / 4,
-      align = 'center',
-    })
-    -- txt.anchorX = 0
-    txt:setFillColor(0,0,0)
-  end
-]]
   local function _doubletext(y, s, n)
     local txt = display.newText({
       parent = sceneGroup,
@@ -217,10 +189,6 @@ function scene:create(event)
     stats.worstScore = event.params.humanScore
   end
 
-  -- y = y + dim.halfQ
-
-  -- _banner(y, string.format('%d : %d', event.params.humanScore, event.params.robotScore))
-
   y = y + dim.Q
 
   -- _text(y, string.format('GAMES WON: %u', stats.gamesWon))
@@ -251,9 +219,9 @@ function scene:create(event)
 
   y = y + dim.halfQ
 
-  _banner(y, 'WORDS YOU FOUND')
+  Util.banner(sceneGroup, y, 'WORDS YOU FOUND')
 
-  y = y + dim.halfQ
+  y = y + dim.Q
 
   for _,word in ipairs(event.params.humanFoundWords) do
     _displayRow(y, word, const.COLORS.selected)
@@ -262,12 +230,16 @@ function scene:create(event)
 
   y = y + dim.halfQ
 
-  _banner(y, 'WORDS ROBOTO FOUND')
-  y = y + dim.halfQ
+  Util.banner(sceneGroup, y, 'WORDS ROBOTO FOUND')
+
+  y = y + dim.Q
+
   for _,word in ipairs(event.params.robotFoundWords) do
     _displayRow(y, word, const.COLORS.roboto)
     y = y + dim.halfQ
   end
+
+  if y > display.contentHeight then Util.genericMore(sceneGroup) end
 
     -- create a group for the tappy so it doesn't scroll with the background
   toolbarGroup = display:newGroup()

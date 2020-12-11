@@ -53,7 +53,7 @@ C.COLORS = {
   uiforeground = {1,1,1},
   uibackground = {0.1,0.1,0.1},
   uicontrol = RGB2DEC(255, 228, 181),  -- moccasin
-  shadow = {0.1,0.1,0.1},
+  shadow = {0.3,0.3,0.3},
   -- uicontrol = {51*4/1020,181*4/1020,229*4/1020}, -- color from widget_theme_android_holo_dark@4x.png
 
   -- baize = {240*4/1020, 1, 240*4/1020},  -- Honeydew
@@ -163,6 +163,7 @@ C.VARIANT = {
     width = 5,
     height = 5,
     deductions = true,
+    showPercent = true,
     description = 'Small game on a small grid - a good place to start',
   },
   URGENT = {
@@ -176,23 +177,27 @@ C.VARIANT = {
     width = 7,
     height = 7,
     robot = true,
+    scoreTarget = 420,
     description = 'Score 420 before the robot can',
   },
   FILLUP = {
     width = 7,
     height = 7,
+    showFree = true,
     description = 'Find words faster than new tiles are added',
   },
   PACKED = {
     width = 10,
     height = 10,
     deductions = true,
+    showPercent = true,
     description = 'A casual game but with all one hundred tiles',
   },
   CASUAL = {
     width = 7,
     height = 7,
     deductions = true,
+    showPercent = true,
     description = 'Get your best score in your own time',
   },
   -- TWELVE = {

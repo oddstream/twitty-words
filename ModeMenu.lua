@@ -112,8 +112,11 @@ function scene:create(event)
     y = y + dim.Q
   end
 
-  local ver = display.newText(sceneGroup, system.getInfo('appVersionString'), display.contentCenterX, display.contentHeight - dim.tileFontSize / 3, const.FONTS.ROBOTO_MEDIUM, dim.tileFontSize / 3)
+  local ver = display.newText(sceneGroup, system.getInfo('appVersionString'), display.contentCenterX, y, const.FONTS.ROBOTO_MEDIUM, dim.tileFontSize / 3)
   ver:setFillColor(0,0,0)
+
+  if y > display.contentHeight then Util.genericMore(sceneGroup) end
+
 end
 
 -- show()

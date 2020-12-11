@@ -19,7 +19,7 @@ local Util = require 'Util'
 -- the scene is removed entirely (not recycled) via 'composer.removeScene()'
 -- -----------------------------------------------------------------------------------
 
-local toolbarGroup
+local tappiesGroup
 
 -- -----------------------------------------------------------------------------------
 -- Scene event functions
@@ -66,31 +66,17 @@ function scene:create(event)
   -- trace('scene height is', sceneGroup.height)
   Util.setBackground(sceneGroup)
 
-  local function _banner(y, s)
-    local txt = display.newText({
-      parent = sceneGroup,
-      text = s,
-      x = display.contentCenterX,
-      y = y,
-      font = const.FONTS.ACME,
-      fontSize = dim.halfQ,
-      align = 'center',
-    })
-    -- txt.anchorX = 0
-    txt:setFillColor(0,0,0)
-  end
-
   local function _displayRow(y, i, word, color)
     local score = 0
-    local xNumber = dim.firstTileX + dim.halfQ
+    -- local xNumber = dim.firstTileX + dim.halfQ
     local xScore = dim.firstTileX + dim.halfQ
     local xLetter = dim.firstTileX + (dim.halfQ * 3)
 
-    if type(globalData.mode) == 'number' then
-      Tile.createLittleGraphics(sceneGroup, xNumber, y, tostring(i), color)
-      xScore = xScore + dim.halfQ * 2
-      xLetter = xLetter + dim.halfQ * 2
-    end
+    -- if type(globalData.mode) == 'number' then
+    --   Tile.createLittleGraphics(sceneGroup, xNumber, y, tostring(i), color)
+    --   xScore = xScore + dim.halfQ * 2
+    --   xLetter = xLetter + dim.halfQ * 2
+    -- end
 
     for j=1, string.len(word) do
       local letter = string.sub(word, j, j)
@@ -109,7 +95,7 @@ function scene:create(event)
 
   local y = dim.topInset + dim.halfQ
 
-  _banner(y, 'WORDS YOU FOUND')
+  Util.banner(sceneGroup, y, 'WORDS YOU FOUND')
 
   y = y + dim.Q
 
@@ -118,9 +104,9 @@ function scene:create(event)
     y = y + dim.halfQ
   end
 
-  if globalData.mode == 'ROBOTO' then
+  if #globalData.grid.robotFoundWords > 0 then
     y = y + dim.Q
-    _banner(y, 'WORDS ROBOTO FOUND')
+    Util.banner(sceneGroup, y, 'WORDS ROBOTO FOUND')
     y = y + dim.Q
     for i,word in ipairs(globalData.grid.robotFoundWords) do
       _displayRow(y, i, word, const.COLORS.roboto)
@@ -128,21 +114,40 @@ function scene:create(event)
     end
   end
 
-    -- create a group for the tappy so it doesn't scroll with the background
-  toolbarGroup = display:newGroup()
+  if y > display.contentHeight then Util.genericMore(sceneGroup) end
 
-  local tappyBack = Tappy.new(toolbarGroup, dim.halfQ, dim.toolbarY, function()
-    Util.sound('ui')
-    composer.hideOverlay('slideLeft') -- default is recycleOnly=false, so overlay scene will be completely removed, including its scene object
-    globalData.grid:resumeCountdown()
-    end, '<', 'BACK') -- '←'
+  local Tappies = {
+    {element='back', label='<', subtitle='BACK', cmd=function()
+      Util.sound('ui')
+      composer.hideOverlay('slideLeft') -- default is recycleOnly=false, so overlay scene will be completely removed, including its scene object
+      globalData.grid:resumeCountdown()
+    end},
+    {element='finish', label='Fin', subtitle='FINISH', cmd=function()
+      Util.sound('ui')
+      composer.hideOverlay('slideLeft') -- default is recycleOnly=false, so overlay scene will be completely removed, including its scene object
+      globalData.grid:gameOver()
+    end},
+  }
 
-  local tappyFinish = Tappy.new(toolbarGroup, display.actualContentWidth - dim.halfQ, dim.toolbarY, function()
-    Util.sound('ui')
-    composer.hideOverlay('slideLeft') -- default is recycleOnly=false, so overlay scene will be completely removed, including its scene object
-    globalData.grid:gameOver()
-    end, 'Fin', 'FINISH') -- '⯈' didn't appear on the phone, ' ⚖ '
-  -- tappyFinish:enable(globalData.grid.humanCanFinish)
+  -- create a group for the tappies so they doesn't scroll with the background
+  tappiesGroup = display:newGroup()
+  -- sceneGroup:insert(tappiesGroup)
+  local tappies = {}
+  for i=1,#Tappies do
+    local tp = Tappies[i]
+    tappies[tp.element] = Tappy.new(
+      tappiesGroup,
+      Util.mapValue(i, 1, #Tappies, dim.halfQ, display.actualContentWidth - dim.halfQ),
+      dim.toolbarY,
+      tp.cmd,
+      tp.label,
+      tp.subtitle
+    )
+  end
+
+  if const.VARIANT[globalData.mode].robot then  -- TODO this is ugly and smelly
+    tappies.finish:enable(false)
+  end
 
 end
 
@@ -179,7 +184,7 @@ function scene:hide(event)
 
   elseif phase == 'did' then
     -- Code here runs immediately after the scene goes entirely off screen
-    toolbarGroup:removeSelf()
+    tappiesGroup:removeSelf()
     -- delete the scene so it gets built next time it's shown
     -- composer.removeScene('FoundWords')
     -- "FoundWords's was not removed because it does not exist. Use composer.loadScene() or composer.gotoScene()"

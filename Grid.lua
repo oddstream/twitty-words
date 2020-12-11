@@ -191,8 +191,8 @@ function Grid:newGame()
     self.countdownTimer = nil
   end
 
-  if const.VARIANT[globalData.mode].timer then
-    self.secondsLeft = 60 * 4
+  if const.VARIANT[globalData.mode].timer ~= nil then
+    self.secondsLeft = const.VARIANT[globalData.mode].timer
   else
     self.secondsLeft = 0
   end
@@ -237,9 +237,10 @@ function Grid:afterMove(word)
       {'OK'},
       function() self:gameOver() end)
 ]]
-  elseif globalData.mode == 'ROBOTO' then
+  elseif const.VARIANT[globalData.mode].scoreTarget ~= nil then
 
-    if self.humanScore >= 420 or self.robotScore >= 420 then
+    local scoreTarget = const.VARIANT[globalData.mode].scoreTarget
+    if self.humanScore >= scoreTarget or self.robotScore >= scoreTarget then
       Util.showAlert('GAME OVER', 'Score target reached',
         {'OK'},
         function() self:gameOver() end)
@@ -274,7 +275,7 @@ function Grid:updateUI(word)
     globalData.statusbar:setCenter(string.format('SCORE %d', self.humanScore))  -- or '%+d'
   end
 
-  if globalData.mode == 'CASUAL' then
+  if const.VARIANT[globalData.mode].showPercent then
     --string.len(_G.SCRABBLE_LETTERS) == 100, so ...
     globalData.statusbar:setRight(string.format('%u%%', _countFoundLetters()))
 --[[
@@ -283,7 +284,7 @@ function Grid:updateUI(word)
     -- time remaining is set directly from Grid:timer()
     -- nothing is currently set in ROBOTO mode
 ]]
-  elseif globalData.mode == 'FILLUP' then
+  elseif const.VARIANT[globalData.mode].showFree then
     globalData.statusbar:setRight(string.format('FREE %u', self.width * self.height - self:countTiles()))
   end
 
@@ -1084,8 +1085,6 @@ function Grid:hint(who)
 end
 
 function Grid:robot()
-
-  assert(globalData.mode == 'ROBOTO')
 
   if self:countTiles() < self.width * self.height then
     self:shuffle('ROBOTO')

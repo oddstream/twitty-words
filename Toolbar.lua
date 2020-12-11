@@ -5,26 +5,6 @@ local globalData = require 'globalData'
 local Tappy = require 'Tappy'
 local Util = require 'Util'
 
---[[
-  varargs
-  args count = 0
-    use ''
-  args count = 1
-    string | number
-  args count > 1 and type arg1 == string
-    string.format(arg1, ...)
-    remove first element from argv
-    string.format(pattern, unpack(rest of args))
-
-function f1(...)
-  -- do not use `arg` name for this variable
-  local argv, argc = {...}, select('#', ...)
-  for i = 1, argc do
-    -- handle argv[i]
-end
-
-]]
-
 local Tappies = {
   {element='shuffle', label='Sh', subtitle='SHUFFLE', cmd=function() globalData.grid:shuffle() end},
   {element='hint', label='Hi', subtitle='HINT', cmd=function() globalData.grid:hint() end},
@@ -43,8 +23,9 @@ function Toolbar.new()
 
   local dim = globalData.dim
 
-  -- o.rect = display.newRect(globalData.uiGroup, dim.toolbarX, dim.toolbarY, dim.toolbarWidth, dim.toolbarHeight)
-  -- o.rect:setFillColor(unpack(const.COLORS.uibackground))
+  o.rect = display.newRect(globalData.uiGroup, dim.toolbarX, dim.toolbarY, dim.toolbarWidth, dim.toolbarHeight)
+  o.rect:setFillColor(0.1,0.1,0.1)
+  o.rect.alpha = 0.1
 
   for i=1,#Tappies do
     local tp = Tappies[i]

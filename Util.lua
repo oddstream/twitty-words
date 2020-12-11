@@ -55,6 +55,42 @@ function Util.setBackground(group)
 
 end
 
+function Util.banner(grp, y, text)
+  local dim = globalData.dim
+
+  local bg = display.newRect(grp, display.contentCenterX, y, display.contentWidth * 3, dim.Q)
+  bg:setFillColor(0.1,0.1,0.1)
+  bg.alpha = 0.1
+
+  local txt = display.newText({
+    parent = grp,
+    text = text,
+    x = display.contentCenterX,
+    y = y,
+    font = const.FONTS.ACME,
+    fontSize = dim.halfQ,
+    align = 'center',
+  })
+  -- txt.anchorX = 0
+  txt:setFillColor(0,0,0)
+end
+
+function Util.genericMore(grp)
+  local dim = globalData.dim
+
+  local txt = display.newText({
+    parent = grp,
+    text = '...',
+    x = display.contentWidth - dim.quarterQ,
+    y = display.contentHeight - dim.quarterQ,
+    font = const.FONTS.ACME,
+    fontSize = dim.halfQ,
+    align = 'center',
+  })
+  -- txt.anchorX = 0
+  txt:setFillColor(0,0,0)
+end
+
 --[[
 function Util.randomDirections()
 
