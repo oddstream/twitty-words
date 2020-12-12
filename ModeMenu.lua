@@ -3,6 +3,7 @@
 
 local composer = require('composer')
 local scene = composer.newScene()
+local utf8 = require 'plugin.utf8'  -- https://docs.coronalabs.com/plugin/utf8/index.html
 
 local const = require 'constants'
 
@@ -79,13 +80,21 @@ function scene:show(event)
 
     local function _titleRow(y, s)
       local titleGroup = display.newGroup()
-      titleGroup.x = display.contentCenterX - (string.len(s) * dim.halfQ)
+      titleGroup.x = display.contentCenterX - (utf8.len(s) * dim.halfQ)
       titleGroup.y = y
       sceneGroup:insert(titleGroup)
 
       local x = dim.halfQ
-      for i=1, string.len(s) do
-        Tile.createGraphics(titleGroup, x, 0, string.sub(s, i, i))
+      for i=1, utf8.len(s) do
+        local ch = utf8.sub(s, i, i)
+        if ch == '⚙' then
+          Tappy.new(titleGroup, x, 0, function()
+            Util.sound('ui')
+            composer.gotoScene('ColorMenu', {effect='slideLeft'})
+          end, ch, 'SETTINGS')
+        else
+          Tile.createGraphics(titleGroup, x, 0, utf8.sub(s, i, i))
+        end
         x = x + dim.Q
       end
     end
@@ -113,7 +122,8 @@ function scene:show(event)
 
     y = y + dim.Q
 
-    _titleRow(y, ({'WORDES', 'SWORDS', 'WOORDS', 'VVORDS'})[math.random(1, 4)])
+    -- _titleRow(y, ({'WORDES', 'SWORDS', 'WOORDS', 'VVORDS'})[math.random(1, 4)])
+    _titleRow(y, 'WORDS⚙')
 
     y = y + dim.Q + dim.halfQ
 

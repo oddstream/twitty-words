@@ -41,6 +41,11 @@ function Util.clamp(value, min, max)
   return math.min(math.max(value, min), max)
 end
 
+function Util.pointInCircle(x, y, cx, cy, radius)
+  local distanceSquared = (x - cx) * (x - cx) + (y - cy) * (y - cy)
+  return distanceSquared <= radius * radius
+end
+
 function Util.setBackground(group)
 
   display.setDefault('background', unpack(globalData.colorBaize))
@@ -540,7 +545,7 @@ function Util.showAlert(title, message, buttonLabels, listener)
         grp:removeSelf()
       end,
       label = buttonLabel,
-      labelColor = { default=const.COLORS.black, over=const.COLORS.shadow },
+      labelColor = { default=const.COLORS.Black, over=const.COLORS.shadow },
       labelAlign = 'center',
       font = const.FONTS.ACME,
       fontSize = buttonFontSize,

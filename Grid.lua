@@ -1031,7 +1031,7 @@ function Grid:hint(who)
       for _,slot in ipairs(self.slots) do
         if table.contains(path, slot) then
           if slot.tile then -- may have timed out and been deleted
-            slot.tile:select()
+            slot.tile:select(who)
           else
             break
           end

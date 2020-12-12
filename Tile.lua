@@ -77,13 +77,13 @@ function Tile.createGraphics(parent, x, y, letter)
   -- textHighlight:setFillColor(unpack(const.COLORS.white))
 
   local textLetter = display.newText(grp, letter, 0, 0, const.FONTS.ACME, tileFontSize)
-  textLetter:setFillColor(unpack(const.COLORS.black))
+  textLetter:setFillColor(unpack(const.COLORS.Black))
 
   -- grp[4]
   -- makes the grid harder to scan
   -- if string.len(letter) == 1 and const.SCRABBLE_SCORES[letter] then
   --   local textScore = display.newText(grp, tostring(const.SCRABBLE_SCORES[letter]), dim.Q / 3, dim.Q / 3, const.FONTS.ACME, tileFontSize / 3)
-  --   textScore:setFillColor(unpack(const.COLORS.black))
+  --   textScore:setFillColor(unpack(const.COLORS.Black))
   -- end
 
   return grp

@@ -2,7 +2,7 @@
 
 local const = require 'constants'
 local globalData = require 'globalData'
-
+local Util = require 'Util'
 local Tile = require 'Tile'
 
 local Tappy = {}
@@ -15,8 +15,8 @@ function Tappy.new(group, x, y, cmd, label, description)
 
   o.group = group
   o.cmd = cmd
-  o.description = description
   o.label = label
+  o.description = description
 
   o.grp = o:_createGraphics(o.group, x, y, o.label, o.description)
   o.grp[2]:setFillColor(unpack(globalData.colorTappy))
@@ -48,7 +48,7 @@ function Tappy:_createGraphics(parent, x, y, label, description)
       font = const.FONTS.ACME,
       fontSize = dim.halfQ / 3,
     })
-    txt:setFillColor(unpack(const.COLORS.black))
+    txt:setFillColor(unpack(const.COLORS.Black))
   else
     self.letterNormalY = 0
     self.letterDepressedY = dim.offset3D
@@ -82,7 +82,7 @@ function Tappy:enable(enabled)
   self.disabled = not enabled
 
   if self.grp and self.grp[3] then
-    local color = enabled and const.COLORS.black or const.COLORS.gray
+    local color = enabled and const.COLORS.Black or const.COLORS.Gray
     self.grp[3]:setFillColor(unpack(color))
     if self.description then
       self.grp[4]:setFillColor(unpack(color))
@@ -166,7 +166,11 @@ function Tappy:touch(event)
     display.getCurrentStage():setFocus(nil)
     self:undepress()
     if not self.disabled then -- nil and false are false
-      self.cmd()
+      local sceneX, sceneY = self.grp[2]:localToContent(0,0)
+      -- trace(event.x, event.y, absx, absy)
+      if Util.pointInCircle(event.x, event.y, sceneX, sceneY, globalData.dim.halfQ) then
+        self.cmd()
+      end
     end
 
   elseif event.phase == 'cancelled' then

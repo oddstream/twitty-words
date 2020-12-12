@@ -66,6 +66,7 @@ C.COLORS = {
   Green = RGB2DEC(0, 128, 0),
   MediumAquamarine = RGB2DEC(102, 205, 170),
   CornflowerBlue = RGB2DEC(100, 149, 237),
+  MediumSeaGreen = RGB2DEC(60, 179, 113),
 
   -- white = {1,1,1},
   -- offwhite = {0.91,0.9,0.9},
@@ -76,15 +77,15 @@ C.COLORS = {
   -- blue = {0,0,1},
   -- green = {0,1,0},
   -- purple = {0.5,0,0.5},
-  gray = {0.5,0.5,0.5},
-  black = {0,0,0},
+  Gray = {0.5,0.5,0.5},
+  Black = {0,0,0},
 }
 
 C.PALETTE = {
-  NATURAL = {
-    baize = C.COLORS.Tan,
+  GREENS = {
+    baize = C.COLORS.MediumSeaGreen,
     tile = C.COLORS.Ivory,
-    tappy = C.COLORS.Moccasin,
+    tappy = C.COLORS.MediumAquamarine,
     selected = C.COLORS.Gold,
     roboto = C.COLORS.Silver
   },
@@ -92,14 +93,14 @@ C.PALETTE = {
     baize = C.COLORS.CornflowerBlue,
     tile = C.COLORS.Ivory,
     tappy = C.COLORS.LightSkyBlue,
-    selected = C.COLORS.DodgerBlue,
+    selected = C.COLORS.Gold,
     roboto = C.COLORS.Silver
   },
-  GREENS = {
-    baize = RGB2DEC(60, 179, 113), -- MediumSeaGreen
+  NATURAL = {
+    baize = C.COLORS.Tan,
     tile = C.COLORS.Ivory,
-    tappy = C.COLORS.MediumAquamarine,
-    selected = RGB2DEC(124, 252, 0), -- LawnGreen
+    tappy = C.COLORS.Moccasin,
+    selected = C.COLORS.Gold,
     roboto = C.COLORS.Silver
   },
 }

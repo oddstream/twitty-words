@@ -1,7 +1,7 @@
 -- Slot.lua
 
 local globalData = require 'globalData'
-
+local Util = require 'Util'
 local Tile = require 'Tile'
 
 local Slot = {
@@ -59,16 +59,11 @@ function Slot:deselect()
   end
 end
 
-local function pointInCircle(x, y, cx, cy, radius)
-  local distanceSquared = (x - cx) * (x - cx) + (y - cy) * (y - cy)
-  return distanceSquared <= radius * radius
-end
-
 function Slot:select(x, y)
   if self.tile then
     -- only select this slot if event x/y is within radius of center
     -- otherwise diagonal drags select adjacent tiles
-    if pointInCircle(x, y, self.center.x, self.center.y, globalData.dim.Q / 3.33) then
+    if Util.pointInCircle(x, y, self.center.x, self.center.y, globalData.dim.Q / 3.33) then
       self.tile:select()
       self.grid:selectSlot(self)
     -- else

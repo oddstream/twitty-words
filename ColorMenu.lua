@@ -111,6 +111,10 @@ function scene:show(event)
 
     local y = dim.topInset + dim.Q
 
+    _titleRow(y, 'CHOOSE')
+    y = y + dim.Q
+    _titleRow(y, ' YOUR ')
+    y = y + dim.Q
     _titleRow(y, 'COLORS')
 
     y = y + dim.Q + dim.Q + dim.halfQ

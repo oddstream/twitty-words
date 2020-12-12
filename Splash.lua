@@ -29,7 +29,7 @@ function scene:show(event)
   if phase == 'will' then
     -- Code here runs when the scene is still off screen (but is about to come on screen)
 
-    Util.setBackground(sceneGroup)
+    -- Util.setBackground(sceneGroup)
 
     logo = display.newImage(sceneGroup, 'assets/splashlogo.png', system.ResourceDirectory, display.contentCenterX, display.contentCenterY)
     -- png is 420x420 pixels

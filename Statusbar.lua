@@ -44,7 +44,7 @@ function Statusbar.new()
       end
     end,
     label = '☰',
-    labelColor = { default=const.COLORS.uiforeground, over=const.COLORS.uicontrol },
+    labelColor = { default=globalData.colorTile, over=globalData.colorSelected },
     labelAlign = 'left',
     font = const.FONTS.ACME,
     fontSize = fontSize,
