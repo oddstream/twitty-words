@@ -78,6 +78,8 @@ C.COLORS = {
   -- green = {0,1,0},
   -- purple = {0.5,0,0.5},
   Gray = {0.5,0.5,0.5},
+  LightSlateGray = RGB2DEC(119, 136, 153),
+  DarkSlateGray = RGB2DEC(47, 79, 79),
   Black = {0,0,0},
 }
 
@@ -100,6 +102,13 @@ C.PALETTE = {
     baize = C.COLORS.Tan,
     tile = C.COLORS.Ivory,
     tappy = C.COLORS.Moccasin,
+    selected = C.COLORS.Gold,
+    roboto = C.COLORS.Silver
+  },
+  GRAY = {
+    baize = C.COLORS.Silver,
+    tile = C.COLORS.Ivory,
+    tappy = C.COLORS.LightSlateGray,
     selected = C.COLORS.Gold,
     roboto = C.COLORS.Silver
   },

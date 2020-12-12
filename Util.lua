@@ -518,6 +518,7 @@ function Util.showAlert(title, message, buttonLabels, listener)
   local textMessage = display.newText(grp, message, 0, 0, const.FONTS.ROBOTO_BOLD, messageFontSize)
   textMessage:setFillColor(0,0,0)
 
+  -- grp[5]
   local buttonGroup = display.newGroup()
   grp:insert(buttonGroup)
 

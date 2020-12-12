@@ -62,6 +62,7 @@ function Grid:createSaveable()
   o.humanScore = self.humanScore  -- could recalc this
   o.robotScore = self.robotScore  -- could recalc this
   o.swaps = self.swaps
+  o.swapLoss = self.swapLoss
   return o
 end
 
@@ -76,6 +77,7 @@ function Grid:replaceWithSaved(saved)
   self.humanScore = saved.humanScore  -- could recalc this
   self.robotScore = saved.robotScore  -- could recalc this
   self.swaps = saved.swaps
+  self.swapLoss = saved.swapLoss
 
   self:updateUI()
 end
@@ -151,9 +153,9 @@ function Grid:gameOver()
   Util.mergeIntoHintDictionary(self.humanFoundWords)
 
   if const.VARIANT[globalData.mode].robot then
-    composer.gotoScene('RobotEnd', { effect='slideLeft', params={humanScore=self.humanScore, humanFoundWords=self.humanFoundWords, robotScore=self.robotScore, robotFoundWords=self.robotFoundWords} })
+    composer.gotoScene('RobotEnd', { effect='slideLeft', params={humanScore=self.humanScore, humanFoundWords=self.humanFoundWords, robotScore=self.robotScore, robotFoundWords=self.robotFoundWords, swapLoss=self.swapLoss} })
   else
-    composer.gotoScene('HighScores', { effect='slideLeft', params={score=self.humanScore - deductions, words=self.humanFoundWords} })
+    composer.gotoScene('HighScores', { effect='slideLeft', params={score=self.humanScore - deductions, words=self.humanFoundWords, swapLoss=self.swapLoss} })
   end
 
 end
@@ -180,6 +182,7 @@ function Grid:newGame()
   self.humanFoundWords = {}
   self.robotFoundWords = {}
   self.swaps = 0  -- number of letter swaps human has made this turn
+  self.swapLoss = 0 -- points lost to swaps in this game
   self.hints = 1  -- number of hints human has left to use this game
   self.selectedSlots = {}
   self.undoStack = {}
@@ -548,6 +551,7 @@ function Grid:testSelection()
         local score = (const.SCRABBLE_SCORES[t1.letter] + const.SCRABBLE_SCORES[t2.letter]) * self.swaps
         Bubble.new(s2.center.x, s2.center.y, string.format('-%d', score)):flyTo(dim.statusbarX, dim.statusbarY)
         self.humanScore = self.humanScore - score
+        self.swapLoss = self.swapLoss + score
       end
 
     end

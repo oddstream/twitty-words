@@ -228,6 +228,12 @@ function scene:create(event)
     y = y + dim.halfQ
   end
 
+  if event.params.swapLoss > 0 then
+    y = y + dim.halfQ
+    Util.banner(sceneGroup, y, string.format('-%u SWAP POINTS', event.params.swapLoss))
+    y = y + dim.Q
+  end
+
   y = y + dim.halfQ
 
   Util.banner(sceneGroup, y, 'WORDS ROBOTO FOUND')

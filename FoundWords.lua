@@ -104,6 +104,12 @@ function scene:create(event)
     y = y + dim.halfQ
   end
 
+  if globalData.grid.swapLoss > 0 then
+    y = y + dim.Q
+    Util.banner(sceneGroup, y, string.format('-%u SWAP POINTS', globalData.grid.swapLoss))
+    y = y + dim.Q
+  end
+
   if #globalData.grid.robotFoundWords > 0 then
     y = y + dim.Q
     Util.banner(sceneGroup, y, 'WORDS ROBOTO FOUND')

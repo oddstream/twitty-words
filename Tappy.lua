@@ -168,6 +168,7 @@ function Tappy:touch(event)
     if not self.disabled then -- nil and false are false
       local sceneX, sceneY = self.grp[2]:localToContent(0,0)
       -- trace(event.x, event.y, absx, absy)
+      -- or use object.contentBounds (returns a table with 4 values)
       if Util.pointInCircle(event.x, event.y, sceneX, sceneY, globalData.dim.halfQ) then
         self.cmd()
       end
