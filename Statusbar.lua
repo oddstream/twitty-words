@@ -31,12 +31,17 @@ function Statusbar.new()
     y = dim.statusbarY,
     onRelease = function()
       Util.sound('ui')
-      Util.showAlert('Are you sure', 'Abandon this game?', {'Yes','No'}, function(event)
-        if event.index == 1 then
-          globalData.grid:cancelGame()
-          composer.gotoScene('ModeMenu', {effect='slideRight'})
-        end
-      end)
+      if #globalData.grid.humanFoundWords == 0 then
+        globalData.grid:cancelGame()
+        composer.gotoScene('ModeMenu', {effect='slideRight'})
+      else
+        Util.showAlert('Are you sure', 'Abandon this game?', {'Yes','No'}, function(event)
+          if event.index == 1 then
+            globalData.grid:cancelGame()
+            composer.gotoScene('ModeMenu', {effect='slideRight'})
+          end
+        end)
+      end
     end,
     label = '☰',
     labelColor = { default=const.COLORS.uiforeground, over=const.COLORS.uicontrol },

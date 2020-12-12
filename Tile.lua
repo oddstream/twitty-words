@@ -62,7 +62,7 @@ function Tile.createGraphics(parent, x, y, letter)
 ]]
   -- if alpha == 0, we don't get tap events
   -- set fill color AFTER applying paint
-  rectBack:setFillColor(unpack(const.COLORS.tile))
+  rectBack:setFillColor(unpack(globalData.colorTile))
   -- rectBack:setFillColor(math.random(),math.random(),math.random())
 
   -- grp[3]
@@ -172,9 +172,9 @@ end
 function Tile:select(who)
   who = who or 'HUMAN'
   if who == 'HUMAN' then
-    self.grp[2]:setFillColor(unpack(const.COLORS.selected))
+    self.grp[2]:setFillColor(unpack(globalData.colorSelected))
   elseif who == 'ROBOTO' then
-    self.grp[2]:setFillColor(unpack(const.COLORS.roboto))
+    self.grp[2]:setFillColor(unpack(globalData.colorRoboto))
   else
     self.grp[2]:setFillColor(unpack(const.COLORS.white))
   end
@@ -184,7 +184,7 @@ end
 
 function Tile:deselect()
   self.selected = false
-  self.grp[2]:setFillColor(unpack(const.COLORS.tile))
+  self.grp[2]:setFillColor(unpack(globalData.colorTile))
   self:undepress()
 end
 

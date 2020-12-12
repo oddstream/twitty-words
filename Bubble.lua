@@ -20,7 +20,7 @@ function Bubble.new(x, y, label)
   o.grp.x, o.grp.y = x, y
 
   o.circle = display.newCircle(o.grp, 0, 0,dim.quarterQ)
-  o.circle:setFillColor(unpack(const.COLORS.tile))
+  o.circle:setFillColor(unpack(globalData.colorTile))
 
   local fontSize
   if string.len(o.label) > 3 then -- eg '+100'

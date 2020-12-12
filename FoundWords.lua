@@ -100,7 +100,7 @@ function scene:create(event)
   y = y + dim.Q
 
   for i,word in ipairs(globalData.grid.humanFoundWords) do
-    _displayRow(y, i, word, const.COLORS.selected)
+    _displayRow(y, i, word, globalData.colorSelected)
     y = y + dim.halfQ
   end
 
@@ -109,7 +109,7 @@ function scene:create(event)
     Util.banner(sceneGroup, y, 'WORDS ROBOTO FOUND')
     y = y + dim.Q
     for i,word in ipairs(globalData.grid.robotFoundWords) do
-      _displayRow(y, i, word, const.COLORS.roboto)
+      _displayRow(y, i, word, globalData.colorRoboto)
       y = y + dim.halfQ
     end
   end

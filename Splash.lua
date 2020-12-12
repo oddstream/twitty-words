@@ -5,7 +5,7 @@ local composer = require('composer')
 local scene = composer.newScene()
 
 -- local const = require 'constants'
--- local globalData = require 'globalData'
+local globalData = require 'globalData'
 
 local Util = require 'Util'
 
@@ -48,6 +48,7 @@ function scene:show(event)
     -- Code here runs when the scene is entirely on screen
     tim = timer.performWithDelay(1000, gotoDestination, 1)
 
+    globalData:loadSettings()
     Util.loadMainDictionary()
     Util.loadHintDictionary()
 

@@ -43,14 +43,14 @@ end
 
 function Util.setBackground(group)
 
-  display.setDefault('background', unpack(const.COLORS.baize))
+  display.setDefault('background', unpack(globalData.colorBaize))
   -- tried a bitmap (wood effect) background
   -- it didn't scale well
   -- couldn't get textureWrapX/Y to work
 
   -- make background wide/high enough that scrolling it doesn't show edges
   local bg = display.newRect(group, display.contentCenterX, display.contentCenterY, display.contentWidth * 3, display.contentHeight * 3)
-  bg:setFillColor(unpack(const.COLORS.baize))
+  bg:setFillColor(unpack(globalData.colorBaize))
   bg.alpha = 0.95
 
 end
@@ -503,7 +503,7 @@ function Util.showAlert(title, message, buttonLabels, listener)
 
   -- grp[2]
   local rectBack = display.newRoundedRect(grp, 0, 0, width, height, radius)
-  rectBack:setFillColor(unpack(const.COLORS.selected))
+  rectBack:setFillColor(unpack(globalData.colorTappy))
 
   -- grp[3]
   local textTitle = display.newText(grp, title, 0, -vertOffset + titleFontSize, const.FONTS.ACME, titleFontSize)

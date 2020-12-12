@@ -224,7 +224,7 @@ function scene:create(event)
   y = y + dim.Q
 
   for _,word in ipairs(event.params.humanFoundWords) do
-    _displayRow(y, word, const.COLORS.selected)
+    _displayRow(y, word, globalData.colorSelected)
     y = y + dim.halfQ
   end
 
@@ -235,7 +235,7 @@ function scene:create(event)
   y = y + dim.Q
 
   for _,word in ipairs(event.params.robotFoundWords) do
-    _displayRow(y, word, const.COLORS.roboto)
+    _displayRow(y, word, globalData.colorRoboto)
     y = y + dim.halfQ
   end
 

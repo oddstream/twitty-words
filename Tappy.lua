@@ -19,7 +19,7 @@ function Tappy.new(group, x, y, cmd, label, description)
   o.label = label
 
   o.grp = o:_createGraphics(o.group, x, y, o.label, o.description)
-  o.grp[2]:setFillColor(unpack(const.COLORS.tappy))
+  o.grp[2]:setFillColor(unpack(globalData.colorTappy))
 
   -- removed the tap listener below; creates false hit when coming back from FoundWords
   -- o.grp:addEventListener('tap', o)

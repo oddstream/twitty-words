@@ -209,9 +209,9 @@ function scene:show(event)
       if scoresTable[i] then
         -- show the highest scoring word, which has been sorted (when inserted) to the front
         if scoresTable[i].score == score then
-          _showScoreAndWord(scoresTable[i].score, scoresTable[i].words[1], y, const.COLORS.selected)
+          _showScoreAndWord(scoresTable[i].score, scoresTable[i].words[1], y, globalData.colorSelected)
         else
-          _showScoreAndWord(scoresTable[i].score, scoresTable[i].words[1], y, const.COLORS.tile)
+          _showScoreAndWord(scoresTable[i].score, scoresTable[i].words[1], y, globalData.colorTile)
         end
         y = y + dim.halfQ
       end
@@ -222,7 +222,7 @@ function scene:show(event)
       if score < scoresTable[20].score then
         Util.sound('failure')
         y = y + dim.halfQ
-        _showScoreAndWord(score, words[1], y, const.COLORS.selected)
+        _showScoreAndWord(score, words[1], y, globalData.colorSelected)
       else
         Util.sound('complete')
       end

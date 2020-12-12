@@ -56,29 +56,16 @@ C.COLORS = {
   shadow = {0.3,0.3,0.3},
   -- uicontrol = {51*4/1020,181*4/1020,229*4/1020}, -- color from widget_theme_android_holo_dark@4x.png
 
-  -- baize = {240*4/1020, 1, 240*4/1020},  -- Honeydew
-  -- baize = {250*4/1020, 235*4/1020, 215*4/1020},  -- AntiqueWhite
-  -- baize = {255*4/1020, 245*4/1020, 238*4/1020},  -- SeaShell
-  -- baize = {248*4/1020, 248*4/1020, 255*4/1020},  -- GhostWhite
-
-  tile = {1, 1, 0.94}, -- ivory
-
-  baize = RGB2DEC(210, 180, 140), -- Tan
-  selected = RGB2DEC(255, 215, 0),  -- Gold
-  tappy = RGB2DEC(255, 228, 181), -- Moccasin
-  roboto = RGB2DEC(135, 206, 250), -- LightSkyBlue
-
-  -- baize = RGB2DEC(135, 206, 250), -- LightSkyBlue
-  -- selected = RGB2DEC(30, 144, 255),  -- Dodgerblue
-  -- tappy = RGB2DEC(30, 144, 255),
-
-  -- baize = RGB2DEC(0, 128, 0), -- Green
-  -- selected = RGB2DEC(102, 205, 170),  -- MediumAquamarine
-  -- tappy = RGB2DEC(102, 205, 170),
-
-  -- ivory = {1, 1, 0.94},
-  -- moccasin = RGB2DEC(255, 228, 181),
-  -- gold = {1, 0.84, 0},
+  Tan = RGB2DEC(210, 180, 140),
+  Gold = RGB2DEC(255, 215, 0),
+  Moccasin = RGB2DEC(255, 228, 181),
+  LightSkyBlue = RGB2DEC(135, 206, 250),
+  Silver = RGB2DEC(192, 192, 192),
+  Ivory = RGB2DEC(255, 255, 240),
+  DodgerBlue = RGB2DEC(30, 144, 255),
+  Green = RGB2DEC(0, 128, 0),
+  MediumAquamarine = RGB2DEC(102, 205, 170),
+  CornflowerBlue = RGB2DEC(100, 149, 237),
 
   -- white = {1,1,1},
   -- offwhite = {0.91,0.9,0.9},
@@ -91,6 +78,30 @@ C.COLORS = {
   -- purple = {0.5,0,0.5},
   gray = {0.5,0.5,0.5},
   black = {0,0,0},
+}
+
+C.PALETTE = {
+  NATURAL = {
+    baize = C.COLORS.Tan,
+    tile = C.COLORS.Ivory,
+    tappy = C.COLORS.Moccasin,
+    selected = C.COLORS.Gold,
+    roboto = C.COLORS.Silver
+  },
+  BLUES = {
+    baize = C.COLORS.CornflowerBlue,
+    tile = C.COLORS.Ivory,
+    tappy = C.COLORS.LightSkyBlue,
+    selected = C.COLORS.DodgerBlue,
+    roboto = C.COLORS.Silver
+  },
+  GREENS = {
+    baize = RGB2DEC(60, 179, 113), -- MediumSeaGreen
+    tile = C.COLORS.Ivory,
+    tappy = C.COLORS.MediumAquamarine,
+    selected = RGB2DEC(124, 252, 0), -- LawnGreen
+    roboto = C.COLORS.Silver
+  },
 }
 
 C.SOUNDS = {
