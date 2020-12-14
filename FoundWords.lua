@@ -10,8 +10,8 @@ local scene = composer.newScene()
 local const = require 'constants'
 local globalData = require 'globalData'
 
+local Ivory = require 'Ivory'
 local Tappy = require 'Tappy'
-local Tile = require 'Tile'
 local Util = require 'Util'
 
 -- -----------------------------------------------------------------------------------
@@ -81,11 +81,25 @@ function scene:create(event)
     for j=1, string.len(word) do
       local letter = string.sub(word, j, j)
       score = score + const.SCRABBLE_SCORES[letter]
-      Tile.createLittleGraphics(sceneGroup, xLetter, y, letter, color)
+      Ivory.new({
+        parent = sceneGroup,
+        x = xLetter,
+        y = y,
+        text = letter,
+        color = color,
+        scale = 0.5
+      })
       xLetter = xLetter + dim.halfQ
     end
 
-    Tile.createLittleGraphics(sceneGroup, xScore, y, tostring(score * string.len(word)), color)
+    Ivory.new({
+      parent = sceneGroup,
+      x = xScore,
+      y = y,
+      text = tostring(score * string.len(word)),
+      color = color,
+      scale = 0.5
+    })
   end
 
 --[[

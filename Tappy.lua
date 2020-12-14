@@ -3,7 +3,7 @@
 local const = require 'constants'
 local globalData = require 'globalData'
 local Util = require 'Util'
-local Tile = require 'Tile'
+local Ivory = require 'Ivory'
 
 local Tappy = {}
 Tappy.__index = Tappy
@@ -13,21 +13,25 @@ function Tappy.new(group, x, y, cmd, label, description)
   local o = {}
   setmetatable(o, Tappy)
 
-  o.group = group
   o.cmd = cmd
-  o.label = label
-  o.description = description
+  o.enabled = true
 
-  o.grp = o:_createGraphics(o.group, x, y, o.label, o.description)
-  o.grp[2]:setFillColor(unpack(globalData.colorTappy))
+  o.iv = Ivory.new({
+    parent = group,
+    x = x,
+    y = y,
+    text = label,
+    description = description,
+    color = globalData.colorTappy,
+  })
 
   -- removed the tap listener below; creates false hit when coming back from FoundWords
   -- o.grp:addEventListener('tap', o)
-  o:addTouchListener()
+  o.iv:addTouchListener(o)
 
   return o
 end
-
+--[[
 function Tappy:_createGraphics(parent, x, y, label, description)
   local dim = globalData.dim
   local grp = Tile.createGraphics(parent, x, y, label)
@@ -56,7 +60,9 @@ function Tappy:_createGraphics(parent, x, y, label, description)
 
   return grp
 end
+]]
 
+--[[
 function Tappy:setLabel(label)
   local dim = globalData.dim
 
@@ -75,74 +81,23 @@ function Tappy:setLabel(label)
     end
   end
 end
+]]
 
 function Tappy:enable(enabled)
   assert(type(enabled)=='boolean')
 
-  self.disabled = not enabled
+  self.enabled = enabled
 
-  if self.grp and self.grp[3] then
-    local color = enabled and const.COLORS.Black or const.COLORS.Gray
-    self.grp[3]:setFillColor(unpack(color))
-    if self.description then
-      self.grp[4]:setFillColor(unpack(color))
-    end
-  end
-
-end
-
-function Tappy:depress()
-  -- this is the same as Tile:depress, with description
-  local dim = globalData.dim
-
-  local rectShadow = self.grp[1]
-  rectShadow.x = 0
-  rectShadow.y = 0
-
-  local rectBack = self.grp[2]
-  rectBack.x = dim.offset3D
-  rectBack.y = dim.offset3D
-
-  local textLetter = self.grp[3]
-  textLetter.x = dim.offset3D
-  textLetter.y = self.letterDepressedY
-
-  if self.description then
-    local textDesc = self.grp[4]
-    textDesc.x = dim.offset3D
-    textDesc.y = self.descriptionDepressedY
-  end
-end
-
-function Tappy:undepress()
-  -- this is the same as Tile:undepress, with description
-  local dim = globalData.dim
-
-  local rectShadow = self.grp[1]
-  rectShadow.x = dim.offset3D
-  rectShadow.y = dim.offset3D
-
-  local rectBack = self.grp[2]
-  rectBack.x = 0
-  rectBack.y = 0
-
-  local textLetter = self.grp[3]
-  textLetter.x = 0
-  textLetter.y = self.letterNormalY
-
-  if self.description then
-    local textDesc = self.grp[4]
-    textDesc.x = 0
-    textDesc.y = self.descriptionNormalY
-  end
+  local color = enabled and const.COLORS.Black or const.COLORS.Gray
+  self.iv:setTextColor(color)
 end
 
 function Tappy:addTouchListener()
-  self.grp:addEventListener('touch', self)
+  self.iv:addTouchListener(self)
 end
 
 function Tappy:removeTouchListener()
-  self.grp:removeEventListener('touch', self)
+  self.iv:removeTouchListener(self)
 end
 
 -- function Tappy:tap(event)
@@ -155,19 +110,21 @@ function Tappy:touch(event)
 
   if event.phase == 'began' then
     -- trace('touch began', event.x, event.y, self.letter)
-    display.getCurrentStage():setFocus(event.target)
-    self:depress()
+
+    display.getCurrentStage():setFocus(event.target)  -- stop dragging the stage all over the place
+    self.iv:depress()
 
   elseif event.phase == 'moved' then
     -- trace('touch moved', event.x, event.y, self.letter)
 
   elseif event.phase == 'ended' then
     -- trace('touch ended', event.x, event.y, self.letter)
+
     display.getCurrentStage():setFocus(nil)
-    self:undepress()
-    if not self.disabled then -- nil and false are false
-      local sceneX, sceneY = self.grp[2]:localToContent(0,0)
-      -- trace(event.x, event.y, absx, absy)
+    self.iv:undepress()
+
+    if self.enabled then -- nil and false are false
+      local sceneX, sceneY = self.iv:localToContent()
       -- or use object.contentBounds (returns a table with 4 values)
       if Util.pointInCircle(event.x, event.y, sceneX, sceneY, globalData.dim.halfQ) then
         self.cmd()
@@ -176,19 +133,18 @@ function Tappy:touch(event)
 
   elseif event.phase == 'cancelled' then
     -- trace('touch cancelled', event.x, event.y, self.letter)
+
     display.getCurrentStage():setFocus(nil)
-    self:undepress()
+    self.iv:undepress()
+
   end
 
   return true
 end
 
 function Tappy:delete()
-  -- When you remove a display object, event listeners that are attached to it — tap and touch listeners,
-  -- for example — are also freed from memory.
-  -- self.grp:removeEventListener('touch', self)
-  display.remove(self.grp)
-  self.grp = nil
+  self.iv:delete()
+  self.iv = nil
 end
 
 return Tappy

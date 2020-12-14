@@ -111,9 +111,6 @@ end
 
 function Statusbar:setRight(s)
   self:set('right', s)
-  -- if self.right then
-  --   self.right:setLabel(s)
-  -- end
 end
 
 return Statusbar

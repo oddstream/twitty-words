@@ -10,7 +10,7 @@ local globalData = require 'globalData'
 local Dim = require 'Dim'
 
 local Tappy = require 'Tappy'
-local Tile = require 'Tile'
+local Ivory = require 'Ivory'
 local Util = require 'Util'
 
 -- -----------------------------------------------------------------------------------
@@ -85,7 +85,12 @@ function scene:show(event)
 
       local x = dim.halfQ
       for i=1, string.len(s) do
-        Tile.createGraphics(titleGroup, x, 0, string.sub(s, i, i))
+        Ivory.new({
+          parent = titleGroup,
+          x = x,
+          y = 0,
+          text = string.sub(s, i, i),
+        })
         x = x + dim.Q
       end
     end
@@ -99,7 +104,7 @@ function scene:show(event)
       -- the first tile is dim.halfQ over to the right
       local x = dim.halfQ
       for i=1, string.len(paletteName) do
-        local tappy = Tappy.new(tappyGroup, x, 0, function()
+        Tappy.new(tappyGroup, x, 0, function()
           Util.sound('ui')
           globalData:setPalette(paletteName)
           globalData:saveSettings()

@@ -2,7 +2,7 @@
 
 local globalData = require 'globalData'
 
-local Tile = require 'Tile'
+local Ivory = require 'Ivory'
 
 local Wordbar = {}
 Wordbar.__index = Wordbar
@@ -58,11 +58,17 @@ function Wordbar:setCenter(s)
   if s then
     local x = dim.halfQ
     for i=1, string.len(s) do
-      local tile = Tile.createLittleGraphics(self.center, x, dim.wordbarY, string.sub(s, i, i))
-      self.center:insert(tile)
+      -- Ivory.new creates a grp which it inserts into self.center
+      Ivory.new({
+        parent = self.center,
+        x = x,
+        y = dim.wordbarY,
+        text = string.sub(s, i, i),
+        scale = 0.5,
+      })
       x = x + dim.halfQ
     end
-    -- the first tile is dim.halfQ over to the right
+    -- the first ivory is dim.halfQ over to the right
     self.center.x = display.contentCenterX - (string.len(s) * dim.quarterQ) - dim.quarterQ
   end
 

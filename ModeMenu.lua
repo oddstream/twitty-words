@@ -10,8 +10,8 @@ local const = require 'constants'
 local globalData = require 'globalData'
 local Dim = require 'Dim'
 
+local Ivory = require 'Ivory'
 local Tappy = require 'Tappy'
-local Tile = require 'Tile'
 local Util = require 'Util'
 
 -- -----------------------------------------------------------------------------------
@@ -93,7 +93,12 @@ function scene:show(event)
             composer.gotoScene('ColorMenu', {effect='slideLeft'})
           end, ch, 'SETTINGS')
         else
-          Tile.createGraphics(titleGroup, x, 0, utf8.sub(s, i, i))
+          Ivory.new({
+            parent = titleGroup,
+            x = x,
+            y = 0,
+            text = utf8.sub(s, i, i)
+          })
         end
         x = x + dim.Q
       end
@@ -108,7 +113,7 @@ function scene:show(event)
       -- the first tile is dim.halfQ over to the right
       local x = dim.halfQ
       for i=1, string.len(mode) do
-        local tappy = Tappy.new(tappyGroup, x, 0, function()
+        Tappy.new(tappyGroup, x, 0, function()
           Util.sound('ui')
           composer.gotoScene('Twitty', {effect='slideLeft', params={mode=mode}})
         end, string.sub(mode, i, i)) -- no description

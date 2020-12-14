@@ -8,13 +8,12 @@ local scene = composer.newScene()
 -- local widget = require('widget')
 local json = require('json')
 
-local const = require 'constants'
 local globalData = require 'globalData'
 
 local Dim = require 'Dim'
 
+local Ivory = require 'Ivory'
 local Tappy = require 'Tappy'
-local Tile = require 'Tile'
 local Util = require 'Util'
 
 local toolbarGroup
@@ -191,10 +190,24 @@ function scene:show(event)
     end
 
     local function _showScoreAndWord(thisScore, thisWord, yPos, color)
-      Tile.createLittleGraphics(sceneGroup, dim.halfQ, yPos, tostring(thisScore), color)
+      Ivory.new({
+        parent = sceneGroup, 
+        x = dim.halfQ,
+        y = yPos,
+        text = tostring(thisScore),
+        color = color,
+        scale = 0.5,
+      })
       local x = dim.firstTileX + (dim.halfQ * 3)
       for j=1, string.len(thisWord) do
-        Tile.createLittleGraphics(sceneGroup, x, yPos, string.sub(thisWord, j, j), color)
+        Ivory.new({
+          parent = sceneGroup,
+          x = x,
+          y = yPos,
+          text = string.sub(thisWord, j, j),
+          color = color,
+          scale = 0.5,
+        })
         x = x + dim.halfQ
       end
     end
@@ -241,7 +254,7 @@ function scene:show(event)
 
     -- create a group for the tappy so it doesn't scroll with the background
     toolbarGroup = display:newGroup()
-    local tappy = Tappy.new(toolbarGroup, dim.halfQ, dim.topInset + dim.halfQ, function()
+    Tappy.new(toolbarGroup, dim.halfQ, dim.topInset + dim.halfQ, function()
       Util.sound('ui')
       composer.gotoScene('ModeMenu', {effect='slideRight'})
     end, '☰', 'MENU') -- '★'

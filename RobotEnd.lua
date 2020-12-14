@@ -10,8 +10,8 @@ local globalData = require 'globalData'
 
 local Dim = require 'Dim'
 
+local Ivory = require 'Ivory'
 local Tappy = require 'Tappy'
-local Tile = require 'Tile'
 local Util = require 'Util'
 
 -- -----------------------------------------------------------------------------------
@@ -99,7 +99,7 @@ function scene:create(event)
   Util.setBackground(sceneGroup)
   globalData.dim = Dim.new(7,7)
   local dim = globalData.dim
-
+--[[
   local function _titleRow(y, s)
     local titleGroup = display.newGroup()
     -- the first tile is dim.quarterQ over to the right
@@ -109,11 +109,17 @@ function scene:create(event)
 
     local x = dim.halfQ
     for i=1, string.len(s) do
-      Tile.createLittleGraphics(titleGroup, x, 0, string.sub(s, i, i))
+      Ivory.new({
+        parent = titleGroup,
+        x = x,
+        y = 0,
+        text = string.sub(s, i, i),
+        scale = 0.5,
+      })
       x = x + dim.halfQ
     end
   end
-
+]]
   local function _doubletext(y, s, n)
     local txt = display.newText({
       parent = sceneGroup,
@@ -137,11 +143,25 @@ function scene:create(event)
     for j=1, string.len(word) do
       local letter = string.sub(word, j, j)
       score = score + const.SCRABBLE_SCORES[letter]
-      Tile.createLittleGraphics(sceneGroup, xLetter, y, letter, color)
+      Ivory.new({
+        parent = sceneGroup,
+        x = xLetter,
+        y = y,
+        text = letter,
+        color = color,
+        scale = 0.5,
+      })
       xLetter = xLetter + dim.halfQ
     end
 
-    Tile.createLittleGraphics(sceneGroup, xScore, y, tostring(score * string.len(word)), color)
+    Ivory.new({
+      parent = sceneGroup,
+      x = xScore,
+      y = y,
+      text = tostring(score * string.len(word)),
+      color = color,
+      scale = 0.5,
+    })
   end
 
   local stats = loadStats()
@@ -149,7 +169,8 @@ function scene:create(event)
   local y = dim.topInset + dim.halfQ
 
   if event.params.humanScore > event.params.robotScore then
-    _titleRow(y, 'YOU WON')
+    -- _titleRow(y, 'YOU WON')
+    Util.banner(sceneGroup, y, 'YOU WON')
     Util.sound('complete')
 
     stats.gamesWon = stats.gamesWon + 1
@@ -164,7 +185,8 @@ function scene:create(event)
     end
 
   elseif event.params.humanScore < event.params.robotScore then
-    _titleRow(y, 'YOU LOSE')
+    -- _titleRow(y, 'YOU LOSE')
+    Util.banner(sceneGroup, y, 'YOU LOSE')
     Util.sound('failure')
 
     stats.gamesLost = stats.gamesLost + 1
@@ -179,7 +201,8 @@ function scene:create(event)
     end
 
   else
-    _titleRow(y, 'GAME TIED')
+    -- _titleRow(y, 'GAME TIED')
+    Util.banner(sceneGroup, y, 'GAME TIED')
   end
 
   if event.params.humanScore > stats.bestScore then
@@ -250,7 +273,7 @@ function scene:create(event)
     -- create a group for the tappy so it doesn't scroll with the background
   toolbarGroup = display:newGroup()
 
-  local tappy = Tappy.new(toolbarGroup, dim.halfQ, dim.topInset + dim.halfQ, function()
+  Tappy.new(toolbarGroup, dim.halfQ, dim.topInset + dim.halfQ, function()
     Util.sound('ui')
     composer.gotoScene('ModeMenu', {effect='slideRight'})
   end, '☰', 'MENU') -- '★'

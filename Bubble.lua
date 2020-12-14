@@ -18,6 +18,7 @@ function Bubble.new(x, y, label)
   o.grp = display.newGroup()
   globalData.gridGroup:insert(o.grp)
   o.grp.x, o.grp.y = x, y
+  o.grp.alpha = 0.75
 
   o.circle = display.newCircle(o.grp, 0, 0,dim.quarterQ)
   o.circle:setFillColor(unpack(globalData.colorTile))

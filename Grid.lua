@@ -292,7 +292,7 @@ function Grid:updateUI(word)
   end
 
   if word == nil and #self.selectedSlots > 0 then
-    word, _ = self:getSelectedWord()
+    word = self:getSelectedWord()
   end
 
   globalData.wordbar:setCenter(word)
@@ -500,6 +500,7 @@ function Grid:selectSlot(slot)
     if #self.selectedSlots == 1 then
       local dim = globalData.dim
       local src = self.selectedSlots[1]
+      assert(src)
       local score = const.SCRABBLE_SCORES[src.tile.letter]
       Bubble.new(src.center.x, src.center.y - dim.halfQ, string.format('%u', score)):fadeOut()
     elseif #self.selectedSlots == 2 then
@@ -508,11 +509,13 @@ function Grid:selectSlot(slot)
       local t2 = self.selectedSlots[2].tile
       local score = (const.SCRABBLE_SCORES[t1.letter] + const.SCRABBLE_SCORES[t2.letter]) * (self.swaps + 1)
       local src = self.selectedSlots[#self.selectedSlots]
+      assert(src)
       Bubble.new(src.center.x, src.center.y - dim.halfQ, string.format('-%d', score)):fadeOut()
     else -- >2 slots selected
       local dim = globalData.dim
       local _, score = self:getSelectedWord()
       local src = self.selectedSlots[#self.selectedSlots]
+      assert(src)
       Bubble.new(src.center.x, src.center.y - dim.halfQ, string.format('%+d', score)):fadeOut()
     end
 
@@ -628,8 +631,8 @@ function Grid:dropColumn(bottomSlot)
   -- trace('#contigTiles', #contigTiles)
 
   -- copy contigous tiles to original column of slots
-  -- y is kept in two places: slot.center.y and slot.tile.grp.y
-  -- slot.center.y does not change; slot.tile.grp.y does
+  -- y is kept in two places: slot.center.y and slot.tile.iv.grp.y
+  -- slot.center.y does not change; slot.tile.iv.grp.y does
 
   -- length of src will be less than or equal to 'length' of dst
   assert(#contigTiles <= self.height)
@@ -644,23 +647,18 @@ function Grid:dropColumn(bottomSlot)
 
     -- assert(src.center.x==dst.center.x)
     -- trace('transitioning')
-    assert(tile.grp)
+    assert(tile.iv)
 
     dst.tile = tile
     tile.slot = dst
 
-    -- transition.moveTo(tile.grp, {
-    --   y = dst.center.y,
-    --   time = _G.FLIGHT_TIME,
-    --   transition = easing.outQuart,
-    -- })
     tile:settle()
 
     dst = dst.n
   end
 
   -- blank out any remaining slots in the original column
-  -- tile.grp may be cloned, in two slots at once
+  -- tile.iv.grp may be cloned, in two slots at once
   -- so don't mess with it
 
   while dst do
@@ -688,12 +686,6 @@ function Grid:slideColumn(col, dir)
     if src.tile then
       local dst = src[dir]
       assert(not dst.tile)
-
-      -- transition.moveTo(src.tile.grp, {
-      --   x = dst.center.x,
-      --   time = _G.FLIGHT_TIME,
-      --   transition = easing.outQuart,
-      -- })
 
       dst.tile = src.tile
       dst.tile.slot = dst
@@ -750,41 +742,10 @@ function Grid:compactColumns()
     slot.center.x = (slot.x * dim.Q) - dim.Q + dim.halfQ  -- copied from Slot.new()
     slot.center.x = slot.center.x + newMargin
     if slot.tile then
-      -- transition.moveTo(slot.tile.grp, {
-      --   x = slot.center.x,
-      --   time = _G.FLIGHT_TIME,
-      --   transition = easing.outQuart,
-      -- })
       slot.tile:settle()
     end
   end
 end
-
---[[
-function Grid:shuffle1(tiles)
-
-  local function _reslot(slot)
-    slot.tile.slot = slot
-    transition.moveTo(slot.tile.grp, {
-      x = slot.center.x,
-      y = slot.center.y,
-      time = _G.FLIGHT_TIME,
-      transition = easing.outQuart,
-    })
-  end
-
-  while #tiles > 1 do
-    local slot1 = table.remove(tiles).slot
-    local slot2 = table.remove(tiles).slot
-    -- swap the tiles (with transition)
-    slot1.tile, slot2.tile = slot2.tile, slot1.tile
-    _reslot(slot1)
-    _reslot(slot2)
-  end
-  assert(#tiles==0 or #tiles==1)
-  -- if #tiles == 1, that's okay; one didn't have a partner to swap with, so stays put
-end
-]]
 
 function Grid:shuffle2(tiles)
 
@@ -797,12 +758,6 @@ function Grid:shuffle2(tiles)
         dst.tile = tile
         tile.slot = dst
         dst.tile:settle()
-        -- transition.moveTo(tile.grp, {
-        --   x = dst.center.x,
-        --   y = dst.center.y,
-        --   time = _G.FLIGHT_TIME,
-        --   transition = easing.outQuart,
-        -- })
       else
         dst.tile = nil
       end
@@ -868,7 +823,9 @@ function Grid:addTiles()
       local slot = column
       while slot and slot.tile == nil and #self.letterPool > 0 do
         if slot:createTile() then
-          slot.tile.grp.y = -(display.contentHeight / 2)  -- fall from a great height, to create slight delay
+          -- TODO slot.tile.iv.grp WTF
+          -- slot.tile.iv.grp.y = -(display.contentHeight / 2)  -- fall from a great height, to create slight delay
+          slot.tile:elevate()
           slot.tile:settle()
           tilesAdded = true
         end
@@ -906,7 +863,9 @@ function Grid:addRowOfTiles()
       local slot = column
       if slot and slot.tile == nil then
         if slot:createTile() then
-          slot.tile.grp.y = -(display.contentHeight / 2)  -- fall from a great height, to create slight delay
+          -- TODO slot.tile.iv.grp WTF
+          -- slot.tile.iv.grp.y = -(display.contentHeight / 2)  -- fall from a great height, to create slight delay
+          slot.tile:elevate()
           slot.tile:settle()
           tilesAdded = true
         end
