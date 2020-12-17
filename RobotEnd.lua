@@ -273,10 +273,17 @@ function scene:create(event)
     -- create a group for the tappy so it doesn't scroll with the background
   toolbarGroup = display:newGroup()
 
-  Tappy.new(toolbarGroup, dim.halfQ, dim.topInset + dim.halfQ, function()
-    Util.sound('ui')
-    composer.gotoScene('ModeMenu', {effect='slideRight'})
-  end, '☰', 'MENU') -- '★'
+  Tappy.new({
+    parent = toolbarGroup,
+    x = dim.halfQ,
+    y = dim.topInset + dim.halfQ,
+    command = function()
+      Util.sound('ui')
+      composer.gotoScene('ModeMenu', {effect='slideRight'})
+    end,
+    text = '☰',
+    description = 'MENU'
+  }) -- '★'
 
 end
 

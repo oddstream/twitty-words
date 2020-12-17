@@ -137,12 +137,12 @@ function scene:create(event)
   if y > display.contentHeight then Util.genericMore(sceneGroup) end
 
   local Tappies = {
-    {element='back', label='<', subtitle='BACK', cmd=function()
+    {element='back', label='<', subtitle='BACK', command=function()
       Util.sound('ui')
       composer.hideOverlay('slideLeft') -- default is recycleOnly=false, so overlay scene will be completely removed, including its scene object
       globalData.grid:resumeCountdown()
     end},
-    {element='finish', label='Fin', subtitle='FINISH', cmd=function()
+    {element='finish', label='Fin', subtitle='FINISH', command=function()
       Util.sound('ui')
       composer.hideOverlay('slideLeft') -- default is recycleOnly=false, so overlay scene will be completely removed, including its scene object
       globalData.grid:gameOver()
@@ -155,14 +155,14 @@ function scene:create(event)
   local tappies = {}
   for i=1,#Tappies do
     local tp = Tappies[i]
-    tappies[tp.element] = Tappy.new(
-      tappiesGroup,
-      Util.mapValue(i, 1, #Tappies, dim.halfQ, display.actualContentWidth - dim.halfQ),
-      dim.toolbarY,
-      tp.cmd,
-      tp.label,
-      tp.subtitle
-    )
+    tappies[tp.element] = Tappy.new({
+      parent = tappiesGroup,
+      x = Util.mapValue(i, 1, #Tappies, dim.halfQ, display.actualContentWidth - dim.halfQ),
+      y = dim.toolbarY,
+      command = tp.command,
+      text = tp.label,
+      description = tp.subtitle
+    })
   end
 
   if const.VARIANT[globalData.mode].robot then  -- TODO this is ugly and smelly

@@ -88,10 +88,17 @@ function scene:show(event)
       for i=1, utf8.len(s) do
         local ch = utf8.sub(s, i, i)
         if ch == '⚙' then
-          Tappy.new(titleGroup, x, 0, function()
-            Util.sound('ui')
-            composer.gotoScene('ColorMenu', {effect='slideLeft'})
-          end, ch, 'SETTINGS')
+          Tappy.new({
+            parent = titleGroup,
+            x = x,
+            y = 0,
+            command = function()
+              Util.sound('ui')
+              composer.gotoScene('ColorMenu', {effect='slideLeft'})
+            end,
+            text = ch,
+            description = 'SETTINGS'
+          })
         else
           Ivory.new({
             parent = titleGroup,
@@ -113,10 +120,17 @@ function scene:show(event)
       -- the first tile is dim.halfQ over to the right
       local x = dim.halfQ
       for i=1, string.len(mode) do
-        Tappy.new(tappyGroup, x, 0, function()
-          Util.sound('ui')
-          composer.gotoScene('Twitty', {effect='slideLeft', params={mode=mode}})
-        end, string.sub(mode, i, i)) -- no description
+        Tappy.new({
+          parent = tappyGroup,
+          x = x,
+          y = 0,
+          command = function()
+            Util.sound('ui')
+            composer.gotoScene('Twitty', {effect='slideLeft', params={mode=mode}})
+          end,
+          text = string.sub(mode, i, i),
+          -- no description
+        })
         x = x + dim.Q
       end
     end

@@ -42,7 +42,6 @@ function Slot:createTile(letter)
   end
   if letter then
     self.tile = Tile.new(self, letter)
-    self.tile:addTouchListener()
   end
   return letter ~= nil
 end

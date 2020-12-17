@@ -78,17 +78,30 @@ C.COLORS = {
   Silver = RGB2DEC(192,192,192),
   LightGray = RGB2DEC(211,211,211),
   Gainsboro = RGB2DEC(220,220,220),
+
+  -- https://coolors.co/c1c1c1-645e9d-4c2c69-575a4b-2a2c24
+  Ebony = RGB2DEC(87, 90, 75),
+  PineTree = RGB2DEC(42, 44, 36),
+  SpanishViolet = RGB2DEC(76, 44, 105),
+  DarkBlueGray = RGB2DEC(100, 94, 157),
+
+  -- https://coolors.co/454851-73956f-7bae7f-95d7ae-fceff9
+  RomanSilver = RGB2DEC(123, 128, 142),
+  RussianGreen = RGB2DEC(115, 149, 111),
+  DarkSeaGreen = RGB2DEC(123, 174, 127),
+  TurquoiseGreen = RGB2DEC(149, 215, 174),
+  LavenderBlush = RGB2DEC(252, 239, 249),
 }
 
 C.PALETTE = {
-  GREENS = {
-    baize = C.COLORS.MediumSeaGreen,
-    tile = C.COLORS.Ivory,
-    tappy = C.COLORS.MediumAquamarine,
-    selected = C.COLORS.Gold,
-    roboto = C.COLORS.Silver
+  GREEN = {
+    baize = C.COLORS.DarkSeaGreen,
+    tile = C.COLORS.LavenderBlush,
+    tappy = C.COLORS.RussianGreen,
+    selected = C.COLORS.TurquoiseGreen,
+    roboto = C.COLORS.RomanSilver
   },
-  BLUES = {
+  BLUE = {
     baize = C.COLORS.CornflowerBlue,
     tile = C.COLORS.Ivory,
     tappy = C.COLORS.LightSkyBlue,
@@ -102,12 +115,13 @@ C.PALETTE = {
     selected = C.COLORS.Gold,
     roboto = C.COLORS.Silver
   },
+  -- Gray has been the preferred American spelling since approximately 1825, although grey is an accepted variant.
   GRAY = {
-    baize = C.COLORS.Gray,
-    tile = C.COLORS.Ivory,
-    tappy = C.COLORS.LightSlateGray,
+    baize = C.COLORS.Ebony,
+    tile = C.COLORS.Silver,
+    tappy = C.COLORS.DarkBlueGray,
     selected = C.COLORS.Gold,
-    roboto = C.COLORS.Silver
+    roboto = C.COLORS.DarkBlueGray
   },
 }
 

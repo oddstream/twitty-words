@@ -81,6 +81,10 @@ function Ivory.new(params)
 
 end
 
+function Ivory:getText()
+  return self.textLetter.text
+end
+
 function Ivory:localToContent()
   return self.rectBack:localToContent(0,0)
 end

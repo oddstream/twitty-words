@@ -95,7 +95,7 @@ function scene:show(event)
       end
     end
 
-    local function _tappyRow(y, paletteName)
+    local function _tappyRow(y, paletteName, color)
       local tappyGroup = display.newGroup()
       tappyGroup.x = display.contentCenterX - (string.len(paletteName) * dim.halfQ)
       tappyGroup.y = y
@@ -104,12 +104,20 @@ function scene:show(event)
       -- the first tile is dim.halfQ over to the right
       local x = dim.halfQ
       for i=1, string.len(paletteName) do
-        Tappy.new(tappyGroup, x, 0, function()
-          Util.sound('ui')
-          globalData:setPalette(paletteName)
-          globalData:saveSettings()
-          composer.gotoScene('ModeMenu', {effect='slideRight'})
-        end, string.sub(paletteName, i, i)) -- no description
+        Tappy.new({
+          parent = tappyGroup,
+          x = x,
+          y = 0,
+          text = string.sub(paletteName, i, i),
+          color = color,
+          command = function()
+            Util.sound('ui')
+            globalData:setPalette(paletteName)
+            globalData:saveSettings()
+            composer.gotoScene('ModeMenu', {effect='slideRight'})
+          end,
+          -- no description
+        })
         x = x + dim.Q
       end
     end
@@ -125,7 +133,7 @@ function scene:show(event)
     y = y + dim.Q + dim.Q + dim.halfQ
 
     for k,_ in pairs(const.PALETTE) do
-      _tappyRow(y, k)
+      _tappyRow(y, k, const.PALETTE[k].tappy)
       y = y + dim.Q + dim.Q
     end
 

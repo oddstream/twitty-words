@@ -949,6 +949,7 @@ function Grid:hint(who)
     local timeStart = system.getTimer()
 
     for _,slot in ipairs(self.slots) do
+      -- to speed things up, don't start a search with a wildcard tile
       if slot.tile and slot.tile.letter ~= ' ' then
         Util.sound('select')
         slot.tile:select(who)

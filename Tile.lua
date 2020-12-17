@@ -15,18 +15,17 @@ function Tile.new(slot, letter)
 
   o.slot = slot
 
-  o.letter = letter
-
   o.iv = Ivory.new({
     parent = globalData.gridGroup,
     x = slot.center.x,
     y = slot.center.y,
-    text = o.letter,
+    text = letter,
   })
 
-  -- don't add event listers here, as tiles are also used for displaying found words and high scores
-
+  o.letter = letter
   o.selected = false
+
+  o:addTouchListener()
 
   return o
 end
@@ -49,7 +48,7 @@ end
 
 --[[
 function Tile:tap()
-  trace('tap', self.letter)
+  trace('tap', self.iv:getText())
   self:select()
   self.slot:tapped()
 end
@@ -66,24 +65,24 @@ function Tile:touch(event)
   -- event.xStart / event.yStart
 
   if event.phase == 'began' then
-    -- trace('touch began', event.x, event.y, self.letter)
+    -- trace('touch began', event.x, event.y, self.iv:getText())
     -- deselect any selected tiles
     self.slot:deselectAll()
     self.slot:select(event.x, event.y)
 
   elseif event.phase == 'moved' then
-    -- trace('touch moved', event.x, event.y, self.letter)
+    -- trace('touch moved', event.x, event.y, self.iv:getText())
     -- inform slot>grid to select tile under x,y
     -- adds to selected word/table of selected tiles if tile is not that previously selected
     self.slot:select(event.x, event.y)
 
   elseif event.phase == 'ended' then
-    -- trace('touch ended', event.x, event.y, self.letter)
+    -- trace('touch ended', event.x, event.y, self.iv:getText())
     -- inform slot>grid to test selected tiles (in the order they were selected)
     self.slot:testSelection()
 
   elseif event.phase == 'cancelled' then
-    -- trace('touch cancelled', event.x, event.y, self.letter)
+    -- trace('touch cancelled', event.x, event.y, self.iv:getText())
     self.slot:deselectAll()
   end
 
@@ -141,8 +140,8 @@ function Tile:flyAway(n, wordLength)
     dim.wordbarY,
     2000
   )
-  self.iv:shrink()
-  -- TODO delete Ivory
+
+  self.iv:shrink() -- shrink deletes Ivory
 end
 
 return Tile

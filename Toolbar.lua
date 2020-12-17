@@ -6,10 +6,10 @@ local Tappy = require 'Tappy'
 local Util = require 'Util'
 
 local Tappies = {
-  {element='shuffle', label='Sh', subtitle='SHUFFLE', cmd=function() globalData.grid:shuffle() end},
-  {element='hint', label='Hi', subtitle='HINT', cmd=function() globalData.grid:hint() end},
-  {element='undo', label='Un', subtitle='UNDO', cmd=function() globalData.grid:undo() end},
-  {element='result', label='Wo', subtitle='WORDS', cmd=function() globalData.grid:showFoundWords() end},
+  {element='shuffle', label='Sh', subtitle='SHUFFLE', command=function() globalData.grid:shuffle() end},
+  {element='hint', label='Hi', subtitle='HINT', command=function() globalData.grid:hint() end},
+  {element='undo', label='Un', subtitle='UNDO', command=function() globalData.grid:undo() end},
+  {element='result', label='Wo', subtitle='WORDS', command=function() globalData.grid:showFoundWords() end},
 }
 
 local Toolbar = {}
@@ -29,14 +29,14 @@ function Toolbar.new()
 
   for i=1,#Tappies do
     local tp = Tappies[i]
-    o[tp.element] = Tappy.new(
-      globalData.uiGroup,
-      Util.mapValue(i, 1, #Tappies, dim.halfQ, display.actualContentWidth - dim.halfQ),
-      dim.toolbarY,
-      tp.cmd,
-      tp.label,
-      tp.subtitle
-    )
+    o[tp.element] = Tappy.new({
+      parent = globalData.uiGroup,
+      x = Util.mapValue(i, 1, #Tappies, dim.halfQ, display.actualContentWidth - dim.halfQ),
+      y = dim.toolbarY,
+      command = tp.command,
+      text = tp.label,
+      description = tp.subtitle
+    })
   end
 
   return o

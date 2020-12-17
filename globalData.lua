@@ -29,6 +29,9 @@ function GD:setPalette(paletteName)
   self.paletteName = paletteName
 
   local paletteValues = const.PALETTE[paletteName]
+  if not paletteValues then
+    paletteValues = const.PALETTE.NATURAL
+  end
 
   self.colorBaize = paletteValues.baize
   self.colorTile = paletteValues.tile
