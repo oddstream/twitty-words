@@ -823,8 +823,6 @@ function Grid:addTiles()
       local slot = column
       while slot and slot.tile == nil and #self.letterPool > 0 do
         if slot:createTile() then
-          -- TODO slot.tile.iv.grp WTF
-          -- slot.tile.iv.grp.y = -(display.contentHeight / 2)  -- fall from a great height, to create slight delay
           slot.tile:elevate()
           slot.tile:settle()
           tilesAdded = true
@@ -863,8 +861,6 @@ function Grid:addRowOfTiles()
       local slot = column
       if slot and slot.tile == nil then
         if slot:createTile() then
-          -- TODO slot.tile.iv.grp WTF
-          -- slot.tile.iv.grp.y = -(display.contentHeight / 2)  -- fall from a great height, to create slight delay
           slot.tile:elevate()
           slot.tile:settle()
           tilesAdded = true

@@ -1,6 +1,6 @@
 I started out to write a falling-block/matching-tile game which generated random musical melodies. It morphed into a Scrabble trainer, with underlying evil elements drawn from the real world to subtly test, confound and unnerve the player:
 
-The hint system is deliberately disappointing and of limited use. It's throttled to one use per game; it uses a much smaller dictionary; it mostly contains just word roots (eg BOX) so you have to find longer words (BOXES, BOXED, BOXING); you won't get a very high score using it.
+The hint system is deliberately disappointing and of limited use. It's throttled to one use per game; it uses a relatively small dictionary; it mostly contains just word roots (eg BOX) so you have to find longer words (BOXES, BOXED, BOXING); you won't get a very high score using it.
 
 You can swap adjacent letters by selecting two adjacent tiles, but this hurts your score. The cost is the two letter values times the number of times you've swapped letters since last finding a word.
 
@@ -18,4 +18,4 @@ The mode names on the opening menu are obtuse.
 
 In the timed and untimed modes, the value of the remaining tiles is quietly deducted from your score with no warning. I was doing my taxes when I thought of that.
 
-The sound effects are largely random; drive yourself mad trying to give them meaning.
+The sound effects are almost random; distract yourself trying to give them meaning.

@@ -56,6 +56,7 @@ C.COLORS = {
   shadow = {0.3,0.3,0.3},
   -- uicontrol = {51*4/1020,181*4/1020,229*4/1020}, -- color from widget_theme_android_holo_dark@4x.png
 
+  White = {1,1,1},
   Tan = RGB2DEC(210,180,140),
   Gold = RGB2DEC(255,215,0),
   Moccasin = RGB2DEC(255,228,181),
@@ -66,7 +67,7 @@ C.COLORS = {
   MediumAquamarine = RGB2DEC(102,205,170),
   CornflowerBlue = RGB2DEC(100,149,237),
   MediumSeaGreen = RGB2DEC(60,179,113),
-
+  CadetBlueCrayola = RGB2DEC(173, 181, 189),
   -- https://en.wikipedia.org/wiki/Web_colors
   Black = {0,0,0},
   DarkSlateGray = RGB2DEC(47, 79, 79),
@@ -117,11 +118,11 @@ C.PALETTE = {
   },
   -- Gray has been the preferred American spelling since approximately 1825, although grey is an accepted variant.
   GRAY = {
-    baize = C.COLORS.Ebony,
-    tile = C.COLORS.Silver,
-    tappy = C.COLORS.DarkBlueGray,
+    baize = C.COLORS.RomanSilver,
+    tile = C.COLORS.White,
+    tappy = C.COLORS.SlateGray,
     selected = C.COLORS.Gold,
-    roboto = C.COLORS.DarkBlueGray
+    roboto = C.COLORS.CadetBlueCrayola
   },
 }
 
