@@ -94,9 +94,9 @@ function scene:show(event)
     if not Runtime:addEventListener('key', scene) then
       trace('ERROR: could not addEventListener key in Twitty scene:show')
     end
-    -- if not Runtime:addEventListener('system', scene) then
-    --   trace('ERROR: could not addEventListener system in scene:show')
-    -- end
+    if not Runtime:addEventListener('system', scene) then
+      trace('ERROR: could not addEventListener system in scene:show')
+    end
 
     globalData.grid:newGame()
 
@@ -121,9 +121,9 @@ function scene:hide(event)
     if not Runtime:removeEventListener('key', scene) then
       trace('ERROR: could not removeEventListener key in Twitty scene:hide')
     end
-    -- if not Runtime:removeEventListener('system', scene) then
-    --   trace('ERROR: could not removeEventListener system in scene:hide')
-    -- end
+    if not Runtime:removeEventListener('system', scene) then
+      trace('ERROR: could not removeEventListener system in scene:hide')
+    end
   elseif phase == 'did' then
     -- Code here runs immediately after the scene goes entirely off screen
     globalData.grid:destroy()
@@ -194,7 +194,6 @@ function scene:key(event)
   end
 end
 
---[[
 function scene:system(event)
   -- print( "System event name and type: " .. event.name, event.type )
   if event.type == 'applicationExit' then
@@ -204,7 +203,6 @@ function scene:system(event)
     globalData.grid:resumeCountdown()
   end
 end
-]]
 
 -- -----------------------------------------------------------------------------------
 -- Scene event function listeners
