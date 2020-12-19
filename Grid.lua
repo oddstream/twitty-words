@@ -63,6 +63,7 @@ function Grid:createSaveable()
   o.robotScore = self.robotScore  -- could recalc this
   o.swaps = self.swaps
   o.swapLoss = self.swapLoss
+  -- o.selectedSlots = table.clone(self.selectedSlots)
   return o
 end
 
@@ -78,6 +79,8 @@ function Grid:replaceWithSaved(saved)
   self.robotScore = saved.robotScore  -- could recalc this
   self.swaps = saved.swaps
   self.swapLoss = saved.swapLoss
+  -- self.selectedSlots = saved.selectedSlots
+  self.selectedSlots = {}
 
   self:updateUI()
 end
