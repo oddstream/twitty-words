@@ -19,6 +19,7 @@ local Util = require 'Util'
 -- the scene is removed entirely (not recycled) via 'composer.removeScene()'
 -- -----------------------------------------------------------------------------------
 
+local genericMore
 local filePath = system.pathForFile('ROBOTO_stats.json', system.DocumentsDirectory)
 
 local function loadStats()
@@ -78,6 +79,11 @@ local function backTouch(event)
     -- trace('touch ended', event.x, event.y)
 
     transition.moveTo(grp, {x = 0, y = 0, transition = easing.outQuad })
+
+    if genericMore then
+      genericMore:removeSelf()
+      genericMore = nil
+    end
 
   elseif event.phase == 'cancelled' then
     -- trace('touch cancelled', event.x, event.yet)
@@ -268,7 +274,7 @@ function scene:create(event)
     y = y + dim.halfQ
   end
 
-  if y > display.contentHeight then Util.genericMore(sceneGroup) end
+  if y > display.contentHeight then genericMore = Util.genericMore(sceneGroup, 'center') end
 
     -- create a group for the tappy so it doesn't scroll with the background
   toolbarGroup = display:newGroup()

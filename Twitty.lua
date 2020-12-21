@@ -190,6 +190,9 @@ function scene:key(event)
         --       Util.mergeIntoHintDictionary({'AAA','BBB','ZOOM','ZZZ'})
         --     end
         --   end)
+    elseif event.keyName == 'b' then
+      local word, score = Util.bestHint()
+      Util.showAlert('BEST HINT WORD', string.format('%s(%d)', word, score))
     end
   end
 end

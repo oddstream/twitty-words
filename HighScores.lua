@@ -17,7 +17,7 @@ local Tappy = require 'Tappy'
 local Util = require 'Util'
 
 local toolbarGroup
-
+local genericMore
 local filePath = system.pathForFile(globalData.mode .. '_scores.json', system.DocumentsDirectory)
 -- win32 c:\Users\oddst\AppData\Roaming\Wychwood Paddocks\Must\Documents
 -- print(filePath)
@@ -118,6 +118,11 @@ local function backTouch(event)
     -- trace('touch ended', event.x, event.y)
 
     transition.moveTo(grp, {x = 0, y = 0, transition = easing.outQuad })
+
+    if genericMore then
+      genericMore:removeSelf()
+      genericMore = nil
+    end
 
   elseif event.phase == 'cancelled' then
     -- trace('touch cancelled', event.x, event.yet)
@@ -241,7 +246,7 @@ function scene:show(event)
       end
     end
 
-    if y > display.contentHeight then Util.genericMore(sceneGroup) end
+    if y > display.contentHeight then genericMore = Util.genericMore(sceneGroup, 'center') end
 
     sceneGroup:addEventListener('touch', backTouch)
 

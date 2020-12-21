@@ -126,6 +126,7 @@ if not table.clone then
   end
 end
 
+--[[
 if not string.split then
   function _G.string:split( inSplitPattern )
     -- https://docs.coronalabs.com/tutorial/data/luaStringMagic/index.html
@@ -144,6 +145,7 @@ if not string.split then
     return outResults
   end
 end
+]]
 
 -- for k,v in pairs( _G ) do
 --   print( k , v )

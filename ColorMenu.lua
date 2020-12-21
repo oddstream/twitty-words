@@ -13,6 +13,8 @@ local Tappy = require 'Tappy'
 local Ivory = require 'Ivory'
 local Util = require 'Util'
 
+local genericMore
+
 -- -----------------------------------------------------------------------------------
 -- Code outside of the scene event functions below will only be executed ONCE unless
 -- the scene is removed entirely (not recycled) via 'composer.removeScene()'
@@ -35,6 +37,11 @@ local function backTouch(event)
     -- trace('touch ended', event.x, event.y)
 
     transition.moveTo(grp, {x = 0, y = 0, transition = easing.outQuad })
+
+    if genericMore then
+      genericMore:removeSelf()
+      genericMore = nil
+    end
 
   elseif event.phase == 'cancelled' then
     -- trace('touch cancelled', event.x, event.yet)
@@ -137,7 +144,7 @@ function scene:show(event)
       y = y + dim.Q + dim.Q
     end
 
-    if y > display.contentHeight then Util.genericMore(sceneGroup) end
+    if y > display.contentHeight then genericMore = Util.genericMore(sceneGroup, 'right') end
 
     sceneGroup:addEventListener('touch', backTouch)
     if not Runtime:addEventListener('key', scene) then

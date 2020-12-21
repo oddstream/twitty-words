@@ -3,7 +3,7 @@
 
 local composer = require('composer')
 local scene = composer.newScene()
-local utf8 = require 'plugin.utf8'  -- https://docs.coronalabs.com/plugin/utf8/index.html
+-- local utf8 = require 'plugin.utf8'  -- https://docs.coronalabs.com/plugin/utf8/index.html
 
 local const = require 'constants'
 
@@ -13,6 +13,8 @@ local Dim = require 'Dim'
 local Ivory = require 'Ivory'
 local Tappy = require 'Tappy'
 local Util = require 'Util'
+
+local genericMore
 
 -- -----------------------------------------------------------------------------------
 -- Code outside of the scene event functions below will only be executed ONCE unless
@@ -36,6 +38,11 @@ local function backTouch(event)
     -- trace('touch ended', event.x, event.y)
 
     -- transition.moveTo(grp, {x = 0, y = 0, transition = easing.outQuad })
+
+    if genericMore then
+      genericMore:removeSelf()
+      genericMore = nil
+    end
 
   elseif event.phase == 'cancelled' then
     -- trace('touch cancelled', event.x, event.yet)
@@ -80,38 +87,23 @@ function scene:show(event)
 
     local function _titleRow(y, s)
       local titleGroup = display.newGroup()
-      titleGroup.x = display.contentCenterX - (utf8.len(s) * dim.halfQ)
+      titleGroup.x = display.contentCenterX - (string.len(s) * dim.halfQ)
       titleGroup.y = y
       sceneGroup:insert(titleGroup)
 
       local x = dim.halfQ
-      for i=1, utf8.len(s) do
-        local ch = utf8.sub(s, i, i)
-        if ch == '⚙' then
-          Tappy.new({
-            parent = titleGroup,
-            x = x,
-            y = 0,
-            command = function()
-              Util.sound('ui')
-              composer.gotoScene('ColorMenu', {effect='slideLeft'})
-            end,
-            text = ch,
-            description = 'SETTINGS'
-          })
-        else
-          Ivory.new({
-            parent = titleGroup,
-            x = x,
-            y = 0,
-            text = utf8.sub(s, i, i)
-          })
-        end
+      for i=1, string.len(s) do
+        Ivory.new({
+          parent = titleGroup,
+          x = x,
+          y = 0,
+          text = string.sub(s, i, i)
+        })
         x = x + dim.Q
       end
     end
 
-    local function _tappyRow(y, mode)
+    local function _tappyModeRow(y, mode)
       local tappyGroup = display.newGroup()
       tappyGroup.x = display.contentCenterX - (string.len(mode) * dim.halfQ)
       tappyGroup.y = y
@@ -135,22 +127,52 @@ function scene:show(event)
       end
     end
 
+    local function _tappySceneRow(y, s, scn)
+      local tappyGroup = display.newGroup()
+      tappyGroup.x = display.contentCenterX - (string.len(s) * dim.halfQ)
+      tappyGroup.y = y
+      sceneGroup:insert(tappyGroup)
+
+      local x = dim.halfQ
+      for i=1, string.len(s) do
+        local ch = string.sub(s, i, i)
+        Tappy.new({
+          parent = tappyGroup,
+          x = x,
+          y = 0,
+          command = function()
+            Util.sound('ui')
+            composer.gotoScene(scn, {effect='slideLeft'})
+          end,
+          text = ch,
+        })
+        x = x + dim.Q
+      end
+    end
+
     local y = dim.topInset + dim.Q
 
     _titleRow(y, 'TWITTY')
 
     y = y + dim.Q
 
-    -- _titleRow(y, ({'WORDES', 'SWORDS', 'WOORDS', 'VVORDS'})[math.random(1, 4)])
-    _titleRow(y, 'WORDS⚙')
+    _titleRow(y, ({'WORDES', 'SWORDS', 'WOORDS', 'VVORDS'})[math.random(1, 4)])
 
     y = y + dim.Q + dim.halfQ
 
     for k,v in pairs(const.VARIANT) do
       -- trace('VARIANT', k, v)
-      _tappyRow(y, k)
+      _tappyModeRow(y, k)
       y = y + dim.Q * 0.75
       local help1 = display.newText(sceneGroup, v.description, display.contentCenterX, y, const.FONTS.ROBOTO_MEDIUM, dim.tileFontSize / 3)
+      help1:setFillColor(0,0,0)
+      y = y + dim.Q
+    end
+
+    do
+      _tappySceneRow(y, 'COLORS', 'ColorMenu')
+      y = y + dim.Q * 0.75
+      local help1 = display.newText(sceneGroup, 'Set the screen colors', display.contentCenterX, y, const.FONTS.ROBOTO_MEDIUM, dim.tileFontSize / 3)
       help1:setFillColor(0,0,0)
       y = y + dim.Q
     end
@@ -158,7 +180,7 @@ function scene:show(event)
     local ver = display.newText(sceneGroup, system.getInfo('appVersionString'), display.contentCenterX, y, const.FONTS.ROBOTO_MEDIUM, dim.tileFontSize / 3)
     ver:setFillColor(0,0,0)
 
-    if y > display.contentHeight then Util.genericMore(sceneGroup) end
+    if y > display.contentHeight then genericMore = Util.genericMore(sceneGroup, 'right') end
 
       sceneGroup:addEventListener('touch', backTouch)
     if not Runtime:addEventListener('key', scene) then

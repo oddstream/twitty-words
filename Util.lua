@@ -80,20 +80,33 @@ function Util.banner(grp, y, text)
   txt:setFillColor(0,0,0)
 end
 
-function Util.genericMore(grp)
+function Util.genericMore(grp, pos)
   local dim = globalData.dim
+
+  local x
+
+  if pos == 'left' then
+    x = dim.halfQ
+  elseif pos == 'center' then
+    x = display.contentCenterX
+  elseif pos == 'right' then
+    x = display.contentWidth - dim.halfQ
+  end
 
   local txt = display.newText({
     parent = grp,
-    text = '...',
-    x = display.contentWidth - dim.quarterQ,
-    y = display.contentHeight - dim.quarterQ,
+    text = ' ... ', -- ↓ ',
+    x = x,
+    y = display.contentHeight - dim.halfQ,
     font = const.FONTS.ACME,
-    fontSize = dim.halfQ,
+    fontSize = dim.Q,
     align = 'center',
   })
   -- txt.anchorX = 0
-  txt:setFillColor(0,0,0)
+  -- txt:setFillColor(0,0,0)
+  transition.blink(txt, {time=3000})
+
+  return txt
 end
 
 --[[
@@ -373,6 +386,31 @@ function Util.checkDictionaries()
 
   print('finished, checking', count, 'words in', math.floor((timeStop - timeStart) / 1000), 'seconds')
   -- checked 1324 words in 206 seconds (0.155 seconds/word to check main dictionary)
+end
+
+function Util.bestHint()
+
+  local function _wordScore(s)
+    local score = 0
+      for i=1, string.len(s) do
+        score = score + const.SCRABBLE_SCORES[string.sub(s, i, i)]
+      end
+    return score * string.len(s)
+  end
+
+  local bestScore = 0
+  local bestWord
+
+  local filePath = const.FILES.SYS_HINT_DICTIONARY
+  for line in io.lines(filePath) do
+    local score = _wordScore(line)
+    if score > bestScore then
+      bestScore = score
+      bestWord = line
+    end
+  end
+
+  return bestWord, bestScore
 end
 
 function Util.fileExists(filePath)

@@ -484,13 +484,14 @@ function Grid:selectSlot(slot)
         local lastButOne = self.selectedSlots[#self.selectedSlots-1]
         if slot == lastButOne then
           -- trace('backtracking')
-          Util.sound('select')
+          Util.sound('timer')  -- TODO need deselect sound
           table.remove(self.selectedSlots)  -- remove last element
           last:deselect()
         end
       else
         -- selecting a new/unselected tile
         if not _connected(slot, last) then
+          Util.sound('failure')
           self:deselectAllSlots()
         else
           Util.sound('select')
@@ -499,27 +500,29 @@ function Grid:selectSlot(slot)
       end
     end
 
+    -- pearl from the mudbank; selection may have backtracked so selectedSlots may have shrunk
 
-    if #self.selectedSlots == 1 then
+    do
       local dim = globalData.dim
-      local src = self.selectedSlots[1]
-      assert(src)
-      local score = const.SCRABBLE_SCORES[src.tile.letter]
-      Bubble.new(src.center.x, src.center.y - dim.halfQ, string.format('%u', score)):fadeOut()
-    elseif #self.selectedSlots == 2 then
-      local dim = globalData.dim
-      local t1 = self.selectedSlots[1].tile
-      local t2 = self.selectedSlots[2].tile
-      local score = (const.SCRABBLE_SCORES[t1.letter] + const.SCRABBLE_SCORES[t2.letter]) * (self.swaps + 1)
-      local src = self.selectedSlots[#self.selectedSlots]
-      assert(src)
-      Bubble.new(src.center.x, src.center.y - dim.halfQ, string.format('-%d', score)):fadeOut()
-    else -- >2 slots selected
-      local dim = globalData.dim
-      local _, score = self:getSelectedWord()
-      local src = self.selectedSlots[#self.selectedSlots]
-      assert(src)
-      Bubble.new(src.center.x, src.center.y - dim.halfQ, string.format('%+d', score)):fadeOut()
+
+      if #self.selectedSlots == 1 then
+        local src = self.selectedSlots[1]
+        assert(src)
+        local score = const.SCRABBLE_SCORES[src.tile.letter]
+        Bubble.new(src.center.x, src.center.y - dim.halfQ, string.format('%d', score)):fadeOut()
+      elseif #self.selectedSlots == 2 then
+        local t1 = self.selectedSlots[1].tile
+        local t2 = self.selectedSlots[2].tile
+        local score = (const.SCRABBLE_SCORES[t1.letter] + const.SCRABBLE_SCORES[t2.letter]) * (self.swaps + 1)
+        local src = self.selectedSlots[#self.selectedSlots]
+        assert(src)
+        Bubble.new(src.center.x, src.center.y - dim.halfQ, string.format('-%d', score)):fadeOut()
+      elseif #self.selectedSlots > 2 then
+        local _, score = self:getSelectedWord()
+        local src = self.selectedSlots[#self.selectedSlots]
+        assert(src)
+        Bubble.new(src.center.x, src.center.y - dim.halfQ, string.format('%+d', score)):fadeOut()
+      end
     end
 
   end

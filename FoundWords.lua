@@ -19,6 +19,7 @@ local Util = require 'Util'
 -- the scene is removed entirely (not recycled) via 'composer.removeScene()'
 -- -----------------------------------------------------------------------------------
 
+local genericMore
 local tappiesGroup
 
 -- -----------------------------------------------------------------------------------
@@ -42,6 +43,11 @@ local function backTouch(event)
     -- trace('touch ended', event.x, event.y)
 
     transition.moveTo(grp, {x = 0, y = 0, transition = easing.outQuad })
+
+    if genericMore then
+      genericMore:removeSelf()
+      genericMore = nil
+    end
 
   elseif event.phase == 'cancelled' then
     -- trace('touch cancelled', event.x, event.yet)
@@ -134,7 +140,7 @@ function scene:create(event)
     end
   end
 
-  if y > display.contentHeight then Util.genericMore(sceneGroup) end
+  if y > display.contentHeight then genericMore = Util.genericMore(sceneGroup, 'center') end
 
   local Tappies = {
     {element='back', label='<', subtitle='BACK', command=function()
