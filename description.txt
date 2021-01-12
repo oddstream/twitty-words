@@ -1,4 +1,11 @@
-I started out to write a falling-block/matching-tile game which generated random musical melodies. It morphed into a Scrabble trainer, with underlying evil elements drawn from the real world to subtly test, confound and unnerve the player:
+
+* NO ADVERTS * NO FEES * NO SPOOKY PERMISSIONS * MODEST DOWNLOAD SIZE *
+
+Twitty Words is a small "find words in a grid of letters" game. It aims to provide distraction free, absorbing gameplay.
+
+You can play in your own time, or against the clock, or against a robot, on grid of various sizes.
+
+The game features high scores, hints, undo, and shuffles.
 
 The hint system is deliberately disappointing and of limited use. It's throttled to one use per game; it uses a relatively small dictionary; it mostly contains just word roots (eg BOX) so you have to find longer words (BOXES, BOXED, BOXING); you won't get a very high score using it.
 
@@ -8,7 +15,7 @@ You have to compromise when using the high value tiles (Q and Z, then J and X) n
 
 The dictionary contains obscure words for you to discover. You're not told what the obscure words mean.
 
-The user interface contains things for you to explore. It's not immediately clear how you 'finish'.
+The user interface contains things for you to explore. It's not immediately clear how you find the 'choose a color scheme' menu or how you can finish some games.
 
 The high score table taunts you with a record of 1000.
 
@@ -19,3 +26,5 @@ The mode names on the opening menu are obtuse.
 In the timed and untimed modes, the value of the remaining tiles is quietly deducted from your score with no warning. I was doing my taxes when I thought of that.
 
 The sound effects are almost random; distract yourself trying to give them meaning.
+
+I have no idea why it got called "Twitty Words".
